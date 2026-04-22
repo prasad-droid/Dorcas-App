@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, Wallet, CheckCircle, Users, Copy, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../App";
+import { useAuth } from "../../context/AuthContext";
 
 export function DashboardScreen() {
   const navigate = useNavigate();
-  const { isAuthenticated, setShowAuthPopup } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <motion.div 

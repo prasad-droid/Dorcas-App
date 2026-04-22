@@ -8,9 +8,21 @@
 }
 
 @layer base {
-  html {
+  :root {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    font-feature-settings: "kern", "liga", "clig", "calt";
+    font-variant-ligatures: common-ligatures;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  body {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 }
 

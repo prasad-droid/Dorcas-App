@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useAuth } from "../../App";
+import { useAuth } from "../../context/AuthContext";
 
 export function OrderHistoryScreen() {
   const { myBookings } = useAuth();

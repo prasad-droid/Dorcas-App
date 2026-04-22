@@ -6,10 +6,10 @@ import {
   FileText, LayoutDashboard, Calendar, Bell, ChevronLeft,
   CreditCard, MapPin
 } from "lucide-react";
-import { useAuth } from "../../App";
+import { useAuth } from "../../context/AuthContext";
 
 export function ProfileScreen() {
-  const { isAuthenticated, setIsAuthenticated, setShowAuthPopup } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ export function ProfileScreen() {
           </div>
           <div className="flex-1">
             <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">Status</p>
-            <p className="text-sm font-black text-brand mt-1">PRO</p>
+            <p className="text-sm font-black text-brand mt-1">TECH</p>
           </div>
         </div>
       </div>

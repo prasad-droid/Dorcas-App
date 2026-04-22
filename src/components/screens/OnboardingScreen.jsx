@@ -19,7 +19,7 @@ const slides = [
     image: "https://images.unsplash.com/photo-1506784408103-31713d360efc?q=80&w=800&fit=crop"
   },
   {
-    title: "Verified Pro Arrives",
+    title: "Verified Technician Arrives",
     desc: "Skilled, verified experts reach your doorstep perfectly on time and fully equipped.",
     image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&fit=crop"
   },
