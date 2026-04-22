@@ -1,0 +1,8 @@
+{
+  "name": "Dorcas Home Services",
+  "description": "Mobile-first PWA for Trusted Home Services mimicking a native Android experience. Features service booking, technician pairing, and customer authentication.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
