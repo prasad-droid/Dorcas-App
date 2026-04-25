@@ -42,11 +42,38 @@ export const RegisterScreen = () => {
     setStep(1);
   }, [authMode]);
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     if (e) e.preventDefault();
-    
+    console.log("Here",authMode);    
     if (step === 1) {
-      setStep(2); // Move to OTP
+      // Validate phone number and send OTP
+      if (!formData.phoneNumber.trim()) {
+        alert("Please enter a phone number");
+        return;
+      }
+
+      try {
+        const response = await fetch("https://dorcasapi.psmcodes.in/api/send_otp.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phoneNumber: formData.phoneNumber,
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          setStep(2);
+        } else {
+          alert(data.message || "Failed to send OTP. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error sending OTP:", error);
+        alert("Error sending OTP. Please try again.");
+      }
     } else if (step === 2) {
       setStep(3); // Move to Details
     } else if (step === 3) {
