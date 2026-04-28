@@ -65,8 +65,6 @@ export function MobileAppLayout({ children }) {
               </Link>
             );
           })}
-          {/* iOS Home Indicator Pill */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[35%] h-[5px] bg-black/20 rounded-full"></div>
         </nav>
       )}
     </div>

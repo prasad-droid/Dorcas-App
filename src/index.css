@@ -34,5 +34,12 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Hide native date/time picker icons */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+      display: none;
+      -webkit-appearance: none;
+  }
 }
 

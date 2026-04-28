@@ -6,27 +6,27 @@ const slides = [
   {
     title: "Happiness Starts with a Clean Space",
     desc: "Happiness truly starts with a clean space where you can relax, breathe easily, and feel at peace.",
-    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&fit=crop"
+    image: "/onboarding/clean_space.png"
   },
   {
     title: "Choose a Service",
     desc: "Select from a wide range of top-rated home services tailored to your everyday needs.",
-    image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&fit=crop"
+    image: "/onboarding/services.png"
   },
   {
     title: "Schedule Your Slot",
     desc: "Pick a date & time that suits you. We work entirely around your schedule.",
-    image: "https://images.unsplash.com/photo-1506784408103-31713d360efc?q=80&w=800&fit=crop"
+    image: "/onboarding/schedule.png"
   },
   {
     title: "Verified Technician Arrives",
     desc: "Skilled, verified experts reach your doorstep perfectly on time and fully equipped.",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&fit=crop"
+    image: "/onboarding/technician.png"
   },
   {
     title: "Relax & Pay Securely",
     desc: "Pay online or after service completion with seamless and highly secure options.",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&fit=crop"
+    image: "/onboarding/payment.png"
   }
 ];
 

@@ -80,7 +80,7 @@ export function BookingFormScreen() {
         <div className="w-11" />
       </div>
 
-      <div className="px-6 pb-40">
+      <div className="px-6 pb-30">
         {/* Service Summary Card */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-brand/5 mb-8 mt-4">
           <div className="flex items-center gap-4">
@@ -173,7 +173,7 @@ export function BookingFormScreen() {
           </div>
 
           {/* Scratch Card Promo */}
-          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl">
+          <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-6 text-white relative overflow-hidden shadow-xl mt-8">
              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
              <div className="relative z-10 flex items-center gap-4">
                 <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg">
@@ -186,29 +186,30 @@ export function BookingFormScreen() {
              </div>
           </div>
 
-          <div className="h-4" />
-        </form>
-      </div>
-
-      {/* Fixed Bottom Action Bar */}
-      <div className="absolute bottom-0 w-full bg-white/90 backdrop-blur-3xl border-t border-brand/5 px-8 pt-6 pb-10 z-50">
-        <div className="flex items-center justify-between mb-6 px-1">
-          <div>
-            <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">Service Amount</span>
-            <span className="text-2xl font-black text-brand tracking-tighter">{providerPrice}</span>
+          {/* Service Amount and Confirm Booking at the end */}
+          <div className="mt-8 pt-8 border-t border-brand/5 space-y-6">
+            <div className="flex items-center justify-between px-1">
+              <div>
+                <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">Service Amount</span>
+                <span className="text-2xl font-black text-brand tracking-tighter">{providerPrice}</span>
+              </div>
+              <button type="button" className="flex items-center gap-1.5 text-[11px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10">
+                 <Star size={12} className="fill-brand" /> 5.0 Rating
+              </button>
+            </div>
+            
+            <motion.button 
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] hover:opacity-90 transition-all flex items-center justify-center gap-3"
+            >
+              Confirm Booking
+              <Shield size={20} />
+            </motion.button>
           </div>
-          <button className="flex items-center gap-1.5 text-[11px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10">
-             <Star size={12} className="fill-brand" /> 5.0 Rating
-          </button>
-        </div>
-        <motion.button 
-          whileTap={{ scale: 0.98 }}
-          onClick={handleConfirm}
-          className="w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] hover:opacity-90 transition-all flex items-center justify-center gap-3"
-        >
-          Confirm Booking
-          <Shield size={20} />
-        </motion.button>
+
+
+        </form>
       </div>
     </motion.div>
   );
