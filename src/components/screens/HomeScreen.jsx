@@ -12,16 +12,16 @@ export function HomeScreen() {
   const navigate = useNavigate();
 
   const offers = [
-    { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!" },
-    { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!" },
-    { title: "Best Value", desc: "Professional Home Services Starting at Just ₹399 - AC &  cleaning" },
+    { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!", image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop" },
+    { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" },
+    { title: "Best Value", desc: "Professional Home Services Starting at Just ₹399 - AC & cleaning", image: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?q=80&w=800&auto=format&fit=crop" },
   ];
 
   const trendingServices = [
-    { id: 401, name: "Home Deep Cleaning", rating: "4.9", reviews: "3.2k reviews", image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop" },
-    { id: 201, name: "AC Check-up & Clean", rating: "4.8", reviews: "1.1k reviews", image: "https://images.unsplash.com/photo-1620888200632-475aeb7bc671?q=80&w=400&auto=format&fit=crop" },
-    { id: 301, name: "Men's Haircut", rating: "4.7", reviews: "854 reviews", image: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=400&auto=format&fit=crop" },
-    { id: 501, name: "Electrician Visit", rating: "4.8", reviews: "2.1k reviews", image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=400&auto=format&fit=crop" }
+    { id: 401, name: "Home Deep Cleaning", rating: "4.9", reviews: "3.2k reviews", image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop" },
+    { id: 201, name: "AC Check-up & Clean", rating: "4.8", reviews: "1.1k reviews", image: "/services/ac_unit.png" },
+    { id: 301, name: "Men's Haircut", rating: "4.7", reviews: "854 reviews", image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop" },
+    { id: 501, name: "Electrician Visit", rating: "4.8", reviews: "2.1k reviews", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop" }
   ];
 
   const categories = Object.keys(categoryDetails);
@@ -72,20 +72,20 @@ export function HomeScreen() {
         <section className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-lg border-4 border-base">
           {/* 2x2 Grid Background */}
           <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[2px] bg-base">
-            {/* Top Left: Plumber/Mechanic */}
+            {/* Top Left: Cleaning */}
             <div className="relative overflow-hidden bg-brand/10">
               <img 
-                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop" 
-                alt="Plumbing service"
+                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop" 
+                alt="Professional Cleaning"
                 className="w-full h-full object-cover animate-[pulse_4s_ease-in-out_infinite]"
                 referrerPolicy="no-referrer"
               />
             </div>
-            {/* Top Right: Appliance/AC */}
+            {/* Top Right: AC Service */}
             <div className="relative overflow-hidden bg-brand/10">
               <img 
-                src="https://images.unsplash.com/photo-1620888200632-475aeb7bc671?q=80&w=400&auto=format&fit=crop" 
-                alt="AC Cleaning"
+                src="/services/ac_unit.png" 
+                alt="AC Repair Service"
                 className="w-full h-full object-cover animate-[pulse_5s_ease-in-out_infinite_reverse]"
                 referrerPolicy="no-referrer"
               />
@@ -93,17 +93,17 @@ export function HomeScreen() {
             {/* Bottom Left: Painting */}
             <div className="relative overflow-hidden bg-brand/10">
               <img 
-                src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=400&auto=format&fit=crop" 
-                alt="Painting service"
+                src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=800&auto=format&fit=crop" 
+                alt="Painting Service"
                 className="w-full h-full object-cover animate-[pulse_6s_ease-in-out_infinite]"
                 referrerPolicy="no-referrer"
               />
             </div>
-            {/* Bottom Right: Bathroom Fitting */}
+            {/* Bottom Right: Plumbing/Bathroom */}
             <div className="relative overflow-hidden bg-brand/10">
               <img 
-                src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400&auto=format&fit=crop" 
-                alt="Bathroom fitting"
+                src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop" 
+                alt="Plumbing & Fitting"
                 className="w-full h-full object-cover animate-[pulse_4.5s_ease-in-out_infinite_reverse]"
                 referrerPolicy="no-referrer"
               />
@@ -200,7 +200,7 @@ export function HomeScreen() {
                 </div>
 
                 {/* Bottom overlay gradient using pure brand color */}
-                <div className="absolute bottom-0 inset-x-0 h-[50%] bg-gradient-to-t from-brand/95 via-brand/70 to-transparent pointer-events-none z-0"></div>
+                <div className="absolute bottom-0 inset-x-0 h-[40%] bg-gradient-to-t from-brand/80 via-brand/40 to-transparent pointer-events-none z-0"></div>
                 <div className="absolute bottom-3 inset-x-3 flex justify-between items-end z-10">
                   <h4 className="text-base text-[14px] font-bold leading-tight max-w-[70%] pb-1 drop-shadow-md">
                     {svc.name}
@@ -223,15 +223,29 @@ export function HomeScreen() {
             {offers.map((offer, idx) => (
               <div 
                 key={idx} 
-                className={`min-w-[260px] bg-brand rounded-2xl p-5 text-base shadow-md snap-start flex flex-col justify-between`}
+                className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-brand/10"
               >
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-base/20 px-2 py-1 rounded-md mb-2 inline-block text-base">
+                {/* Background Image */}
+                <img 
+                  src={offer.image} 
+                  alt={offer.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  referrerPolicy="no-referrer"
+                />
+                
+                {/* Gradient Overlay (Right to Left) */}
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-brand/40 to-brand/95 z-10"></div>
+                
+                {/* Content */}
+                <div className="relative z-20">
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-base/20 backdrop-blur-md px-2 py-1 rounded-md mb-2 inline-block text-base">
                     {offer.title}
                   </span>
-                  <p className="text-sm font-medium mt-1 leading-snug">{offer.desc}</p>
+                  <p className="text-sm font-bold text-base leading-snug drop-shadow-md">{offer.desc}</p>
                 </div>
-                <button className="mt-4 text-xs font-semibold bg-base text-brand px-4 py-2 rounded-xl w-max self-start shadow-sm">
+                
+                {/* Floating Claim Button */}
+                <button className="absolute top-4 right-4 z-20 bg-base text-brand text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg transform active:scale-95 transition-transform">
                   Claim Now
                 </button>
               </div>
@@ -274,9 +288,8 @@ export function HomeScreen() {
                   src={svc.image} 
                   alt={svc.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand/95 via-brand/10 to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand/80 via-brand/10 to-transparent pointer-events-none"></div>
                 <div className="absolute bottom-0 w-full p-4 flex justify-between items-end z-10">
                   <h4 className="text-base font-bold text-base leading-tight max-w-[70%] drop-shadow-md">{svc.name}</h4>
                   <span className="bg-brand text-base px-3 py-1 rounded-full text-xs font-bold shadow-md border border-base/20 border-opacity-50">
