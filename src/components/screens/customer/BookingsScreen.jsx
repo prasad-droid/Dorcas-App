@@ -1,15 +1,25 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Search, SlidersHorizontal, Star, Eye, CalendarCheck } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Search, SlidersHorizontal, Star, Eye, CalendarCheck, X } from "lucide-react";
 import { categoryDetails } from "../../../data/services";
 import { useLanguage } from "../../../context/LanguageContext";
 
 export function BookingsScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [sortBy, setSortBy] = useState("Popularity");
+  const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get("q");
+    if (q) setSearchQuery(q);
+  }, [location.search]);
 
   const categories = ["All", ...Object.keys(categoryDetails)];
 
@@ -18,10 +28,20 @@ export function BookingsScreen() {
   );
 
   const filteredServices = allServices.filter((svc) => {
+    const price = parseInt(svc.price.replace(/[^0-9]/g, "")) || 0;
     const matchesCategory = activeCategory === "All" || svc.categoryName === activeCategory;
     const matchesSearch = svc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           svc.desc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
+    return matchesCategory && matchesSearch && matchesPrice;
+  }).sort((a, b) => {
+    if (sortBy === "Price: Low to High") {
+      return parseInt(a.price.replace(/[^0-9]/g, "")) - parseInt(b.price.replace(/[^0-9]/g, ""));
+    }
+    if (sortBy === "Price: High to Low") {
+      return parseInt(b.price.replace(/[^0-9]/g, "")) - parseInt(a.price.replace(/[^0-9]/g, ""));
+    }
+    return 0; // Default popularity (no sort)
   });
 
   return (
@@ -53,8 +73,14 @@ export function BookingsScreen() {
                 placeholder={t('search_placeholder')}
               />
             </div>
-            <button className="w-12 h-12 bg-base shadow-[0_2px_12px_rgba(13,110,253,0.04)] border border-brand/10 rounded-2xl flex items-center justify-center text-brand shrink-0 hover:bg-brand/5 relative">
+            <button 
+              onClick={() => setShowFilters(true)}
+              className={`w-12 h-12 bg-base shadow-[0_2px_12px_rgba(13,110,253,0.04)] border rounded-2xl flex items-center justify-center text-brand shrink-0 transition-colors relative ${sortBy !== 'Popularity' || priceRange[1] < 5000 ? 'border-brand bg-brand/5' : 'border-brand/10'}`}
+            >
               <SlidersHorizontal size={20} className="text-brand" />
+              {(sortBy !== 'Popularity' || priceRange[1] < 5000) && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-brand rounded-full border-2 border-base"></span>
+              )}
             </button>
           </div>
 
@@ -102,10 +128,6 @@ export function BookingsScreen() {
 
                 {/* Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)} className="flex items-center justify-center gap-2 bg-base border border-brand/15 text-brand py-[12px] rounded-2xl text-[13px] font-bold hover:bg-brand/5 transition-colors shadow-sm">
-                    <Eye size={16} />
-                    Details
-                  </button>
                   <button onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)} className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
                     <CalendarCheck size={16} />
                     {t('book_now')}
@@ -124,6 +146,73 @@ export function BookingsScreen() {
           )}
         </div>
       </div>
+
+      {/* Filter Modal */}
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[200] bg-brand/40 backdrop-blur-sm flex items-end justify-center"
+            onClick={() => setShowFilters(false)}
+          >
+            <motion.div 
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="bg-white w-full rounded-t-[3rem] p-8 pb-10 shadow-2xl space-y-8 relative z-[201]"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-black text-brand">Filter & Sort</h3>
+                <button onClick={() => setShowFilters(false)} className="w-10 h-10 bg-brand/5 rounded-full flex items-center justify-center text-brand">
+                   <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-xs font-black text-brand/40 uppercase tracking-widest">Sort By</h4>
+                <div className="flex flex-wrap gap-2">
+                  {["Popularity", "Price: Low to High", "Price: High to Low"].map(opt => (
+                    <button 
+                      key={opt}
+                      onClick={() => setSortBy(opt)}
+                      className={`px-5 py-3 rounded-2xl text-[13px] font-bold transition-all ${sortBy === opt ? 'bg-brand text-white shadow-lg' : 'bg-brand/5 text-brand'}`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <h4 className="text-xs font-black text-brand/40 uppercase tracking-widest">Price Range</h4>
+                  <span className="text-xs font-bold text-brand">₹{priceRange[0]} - ₹{priceRange[1]}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="5000" 
+                  step="100"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
+                  className="w-full h-2 bg-brand/10 rounded-lg appearance-none cursor-pointer accent-brand"
+                />
+              </div>
+
+              <button 
+                onClick={() => setShowFilters(false)}
+                className="w-full bg-brand text-white py-4 rounded-[1.5rem] font-black text-sm shadow-xl shadow-brand/20 active:scale-[0.98] transition-transform"
+              >
+                Apply Filters
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -4,7 +4,7 @@ import { Gift, Copy, Share2, Sparkles, X, Trophy, CheckCircle2 } from "lucide-re
 import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function RewardsScreen() {
   const { isAuthenticated } = useAuth();
@@ -49,7 +49,7 @@ export function RewardsScreen() {
     try {
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-      
+
       const response = await fetch(`${API_BASE}/rewards/scratch_card.php`, {
         method: "POST",
         headers: {
@@ -59,7 +59,7 @@ export function RewardsScreen() {
         },
         body: JSON.stringify({ card_id: cardId })
       });
-      
+
       const data = await response.json();
       if (data.status) {
         setScratchCards(prev => prev.map(c => c.id === cardId ? { ...c, is_scratched: 1 } : c));
@@ -88,7 +88,7 @@ export function RewardsScreen() {
       setIsRedeeming(true);
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-      
+
       const response = await fetch(`${API_BASE}/rewards/redeem_points.php`, {
         method: "POST",
         headers: {
@@ -98,7 +98,7 @@ export function RewardsScreen() {
         },
         body: `points=${points}`
       });
-      
+
       const data = await response.json();
       if (data.status) {
         setProfileData(prev => ({
@@ -140,7 +140,7 @@ export function RewardsScreen() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -153,42 +153,41 @@ export function RewardsScreen() {
           <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} Points</span>
         </div>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto pb-28 space-y-8 remove-scrollbar">
         {/* Points Banner */}
         <div className="bg-gradient-to-br from-brand to-brand/80 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-           <div className="relative z-10">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">Available for redemption</p>
-              <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">Value</span></h3>
-              <button 
-                onClick={handleRedeem}
-                disabled={isRedeeming}
-                className="bg-white text-brand px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-black/10 active:scale-95 transition-transform disabled:opacity-50"
-              >
-                {isRedeeming ? "Redeeming..." : "Redeem to Wallet"}
-              </button>
-           </div>
+          <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+          <div className="relative z-10">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">Available for redemption</p>
+            <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">Value</span></h3>
+            <button
+              onClick={handleRedeem}
+              disabled={isRedeeming}
+              className="bg-white text-brand px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-black/10 active:scale-95 transition-transform disabled:opacity-50"
+            >
+              {isRedeeming ? "Redeeming..." : "Redeem to Wallet"}
+            </button>
+          </div>
         </div>
 
         {/* Scratch Cards Section */}
         <section>
           <div className="flex justify-between items-center mb-4">
-             <h3 className="text-[15px] font-black text-brand tracking-tight">Your Scratch Cards</h3>
-             <span className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{scratchCards.filter(c => !c.is_scratched).length} Pending</span>
+            <h3 className="text-[15px] font-black text-brand tracking-tight">Your Scratch Cards</h3>
+            <span className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{scratchCards.filter(c => !c.is_scratched).length} Pending</span>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             {scratchCards.map((card) => (
-              <motion.div 
+              <motion.div
                 key={card.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => !card.is_scratched && setActiveCard(card)}
-                className={`aspect-[4/5] rounded-3xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-sm border ${
-                  card.is_scratched 
-                    ? "bg-emerald-50 border-emerald-100" 
+                className={`aspect-[4/5] rounded-3xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-sm border ${card.is_scratched
+                    ? "bg-emerald-50 border-emerald-100"
                     : "bg-brand border-brand/5 cursor-pointer"
-                }`}
+                  }`}
               >
                 {card.is_scratched ? (
                   <>
@@ -204,7 +203,7 @@ export function RewardsScreen() {
                     <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-3 shadow-lg">
                       <Gift size={32} className="text-white" />
                     </div>
-                    <span className="text-white font-black text-[13px] text-center leading-tight">Lucky<br/>Reward</span>
+                    <span className="text-white font-black text-[13px] text-center leading-tight">Lucky<br />Reward</span>
                     <span className="absolute bottom-3 text-white/60 text-[9px] font-bold uppercase tracking-widest">Tap to reveal</span>
                   </>
                 )}
@@ -213,10 +212,10 @@ export function RewardsScreen() {
 
             {/* Empty State placeholder */}
             {scratchCards.length === 0 && (
-               <div className="col-span-2 py-10 bg-brand/5 border-2 border-dashed border-brand/10 rounded-3xl flex flex-col items-center">
-                  <Gift size={32} className="text-brand/20 mb-3" />
-                  <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">Book services to get cards</p>
-               </div>
+              <div className="col-span-2 py-10 bg-brand/5 border-2 border-dashed border-brand/10 rounded-3xl flex flex-col items-center">
+                <Gift size={32} className="text-brand/20 mb-3" />
+                <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">Book services to get cards</p>
+              </div>
             )}
           </div>
         </section>
@@ -226,17 +225,17 @@ export function RewardsScreen() {
           <div className="absolute -right-6 -bottom-6 text-brand/5 rotate-12">
             <Share2 size={120} />
           </div>
-          
+
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-brand/10 rounded-2xl flex items-center justify-center">
               <Share2 size={24} className="text-brand" />
             </div>
             <div>
-               <h3 className="text-lg font-black text-brand tracking-tight">Refer & Earn</h3>
-               <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">Invite friends, get points</p>
+              <h3 className="text-lg font-black text-brand tracking-tight">Refer & Earn</h3>
+              <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">Invite friends, get points</p>
             </div>
           </div>
-          
+
           <p className="text-sm text-brand/70 font-semibold mb-6 leading-relaxed">
             Earn <span className="text-brand font-black">100 Points</span> instantly when your friends complete their first booking.
           </p>
@@ -246,14 +245,14 @@ export function RewardsScreen() {
               <div className="flex-1 bg-white border border-brand/10 rounded-2xl px-5 py-4 text-sm font-bold text-brand/60 truncate shadow-inner">
                 {profileData?.referral_code || "REF6X9Q"}
               </div>
-              <button 
+              <button
                 onClick={copyReferral}
                 className="bg-brand text-white p-4 rounded-2xl transition-all shadow-lg active:scale-90"
               >
                 <Copy size={20} />
               </button>
             </div>
-            <button 
+            <button
               onClick={shareWhatsApp}
               className="w-full bg-emerald-600 text-white font-black py-4.5 rounded-[2rem] shadow-xl shadow-emerald-600/20 mt-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
             >
@@ -267,37 +266,37 @@ export function RewardsScreen() {
       {/* Scratch Modal */}
       <AnimatePresence>
         {activeCard && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[1000] bg-brand/90 backdrop-blur-md flex items-center justify-center p-6"
           >
-             <motion.div 
-               initial={{ scale: 0.8, y: 20 }}
-               animate={{ scale: 1, y: 0 }}
-               exit={{ scale: 0.8, y: 20 }}
-               className="w-full max-w-sm flex flex-col items-center"
-             >
-                <button 
-                  onClick={() => setActiveCard(null)}
-                  className="absolute top-12 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white"
-                >
-                  <X size={24} />
-                </button>
-                
-                <div className="text-center mb-10">
-                   <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Lucky Reward!</h2>
-                   <p className="text-white/60 font-bold uppercase tracking-widest text-xs">Scratch the card to reveal your prize</p>
-                </div>
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
+              className="w-full max-w-sm flex flex-col items-center"
+            >
+              <button
+                onClick={() => setActiveCard(null)}
+                className="absolute top-12 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white"
+              >
+                <X size={24} />
+              </button>
 
-                <ScratchCard 
-                  cashback={activeCard.reward_amount} 
-                  onReveal={() => handleScratchComplete(activeCard.id)}
-                />
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Lucky Reward!</h2>
+                <p className="text-white/60 font-bold uppercase tracking-widest text-xs">Scratch the card to reveal your prize</p>
+              </div>
 
-                <p className="mt-10 text-white/40 text-[10px] font-bold uppercase tracking-[4px]">Verified by Dorcasaid Rewards</p>
-             </motion.div>
+              <ScratchCard
+                cashback={activeCard.reward_amount}
+                onReveal={() => handleScratchComplete(activeCard.id)}
+              />
+
+              <p className="mt-10 text-white/40 text-[10px] font-bold uppercase tracking-[4px]">Verified by Dorcasaid Rewards</p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -305,14 +304,14 @@ export function RewardsScreen() {
       {/* Copy Toast */}
       <AnimatePresence>
         {showCopyToast && (
-          <motion.div 
+          <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
             className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[2000] bg-brand text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-2xl font-bold text-sm"
           >
-             <CheckCircle2 size={18} />
-             Referral code copied!
+            <CheckCircle2 size={18} />
+            Referral code copied!
           </motion.div>
         )}
       </AnimatePresence>

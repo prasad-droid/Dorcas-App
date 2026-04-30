@@ -12,6 +12,7 @@ import {
 import { Logo } from "../../ui/Logo";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { API_BASE } from "../../../config";
 
 export const LoginScreen = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export const LoginScreen = () => {
 
       try {
         const response = await fetch(
-          "http://localhost/dorcasApi/api/auth/login_send_otp.php",
+          `${API_BASE}/auth/login_send_otp.php`,
           {
             method: "POST",
             headers: {
@@ -75,7 +76,7 @@ export const LoginScreen = () => {
 
       try {
         const response = await fetch(
-          "http://localhost/dorcasApi/api/auth/login_verify_otp.php",
+          `${API_BASE}/auth/login_verify_otp.php`,
           {
             method: "POST",
             headers: {

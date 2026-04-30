@@ -9,7 +9,7 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function ProfileScreen() {
   const { isAuthenticated, authMode, logout } = useAuth();
@@ -110,7 +110,7 @@ export function ProfileScreen() {
             <p className="text-xl font-black text-[#ffb800]">{profileData?.stats?.value2 || "0"}</p>
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">Status</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">Wallet</p>
             <p className="text-sm font-black text-brand mt-1">{profileData?.stats?.value3 || "REGULAR"}</p>
           </div>
         </div>

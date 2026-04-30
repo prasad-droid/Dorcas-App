@@ -9,7 +9,7 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function SettingsScreen() {
   const navigate = useNavigate();

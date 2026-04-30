@@ -4,7 +4,7 @@ import { ChevronLeft, Wallet, CheckCircle, Users, Copy, ArrowRight } from "lucid
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function DashboardScreen() {
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ export function DashboardScreen() {
   const rewardCycleStep = (bookingsCount % 5) + 1;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -63,7 +63,7 @@ export function DashboardScreen() {
       <div className="bg-brand pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 bg-base/20 rounded-full flex items-center justify-center hover:bg-base/30 transition-colors shadow-sm"
           >
@@ -86,7 +86,7 @@ export function DashboardScreen() {
             <div className="relative z-10">
               <span className="text-[11px] font-semibold text-base/80 uppercase tracking-widest mb-1 block">Your Wallet</span>
               <span className="text-3xl font-black">{profileData?.stats?.value3 || "₹0"}</span>
-              <button 
+              <button
                 onClick={() => navigate("/rewards")}
                 className="mt-2 bg-base text-brand text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 transition-transform w-max"
               >
@@ -101,7 +101,7 @@ export function DashboardScreen() {
         {/* Reward Meter Cycle */}
         <div className="bg-white rounded-3xl shadow-[0_4px_16px_rgba(13,110,253,0.06)] border border-brand/10 p-6 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-bl-full pointer-events-none"></div>
-          
+
           <h3 className="text-[15px] font-bold text-brand tracking-tight mb-1">Service Reward Cycle</h3>
           <p className="text-[12px] font-medium text-brand/60 mb-6 leading-snug pr-4">Complete {5 - (bookingsCount % 5)} more services to instantly unlock a verified coupon or cash reward.</p>
 
@@ -112,14 +112,13 @@ export function DashboardScreen() {
             {[1, 2, 3, 4, 5].map((step) => {
               const isCompleted = step <= (bookingsCount % 5);
               const isCurrent = step === rewardCycleStep;
-              
+
               return (
                 <div key={step} className="relative z-10 flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[12px] transition-all shadow-sm ${
-                    isCompleted ? "bg-brand text-white scale-110 shadow-brand/30" :
-                    isCurrent ? "bg-white border-2 border-brand text-brand scale-125 shadow-md shadow-brand/20" :
-                    "bg-white border-2 border-brand/20 text-brand/40"
-                  }`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[12px] transition-all shadow-sm ${isCompleted ? "bg-brand text-white scale-110 shadow-brand/30" :
+                      isCurrent ? "bg-white border-2 border-brand text-brand scale-125 shadow-md shadow-brand/20" :
+                        "bg-white border-2 border-brand/20 text-brand/40"
+                    }`}>
                     {isCompleted ? <CheckCircle size={14} className="text-white" /> : step}
                   </div>
                 </div>
@@ -138,16 +137,16 @@ export function DashboardScreen() {
             <span className="bg-[#ffb800] text-brand text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md">Refer & Earn</span>
           </div>
           <h3 className="text-lg font-extrabold text-brand tracking-tight mb-1 relative z-10">Invite Friends. Earn Real Money.</h3>
-          
+
           <div className="mt-4 mb-5 bg-white/60 backdrop-blur-sm border border-[#ffb800]/30 rounded-2xl p-4 relative z-10 text-center flex divide-x divide-brand/10">
-             <div className="flex-1 px-2">
-                <span className="block text-[11px] font-bold text-brand/60 uppercase mb-1">1 Sign Up</span>
-                <span className="block text-xl font-black text-brand">100<span className="text-[12px] opacity-70 ml-0.5">pts</span></span>
-             </div>
-             <div className="flex-1 px-2">
-                <span className="block text-[11px] font-bold text-brand/60 uppercase mb-1">100 Pts =</span>
-                <span className="block text-xl font-black text-[#ffb800]">₹10</span>
-             </div>
+            <div className="flex-1 px-2">
+              <span className="block text-[11px] font-bold text-brand/60 uppercase mb-1">1 Sign Up</span>
+              <span className="block text-xl font-black text-brand">100<span className="text-[12px] opacity-70 ml-0.5">pts</span></span>
+            </div>
+            <div className="flex-1 px-2">
+              <span className="block text-[11px] font-bold text-brand/60 uppercase mb-1">100 Pts =</span>
+              <span className="block text-xl font-black text-[#ffb800]">₹10</span>
+            </div>
           </div>
 
           <p className="text-[12px] font-semibold text-brand/70 mb-4 relative z-10 leading-snug">
@@ -158,7 +157,7 @@ export function DashboardScreen() {
             <div className="flex-1 bg-white border border-brand/20 rounded-xl px-4 py-3 flex items-center shadow-inner overflow-hidden">
               <span className="text-[13px] font-mono text-brand/80 truncate font-semibold">https://dorcas.app/ref/{profileData?.referral_code || "D9X2Q"}</span>
             </div>
-            <button 
+            <button
               onClick={copyReferral}
               className="bg-brand text-white w-12 rounded-xl flex items-center justify-center hover:bg-brand/90 transition-colors shadow-md shrink-0"
             >

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { 
-  ChevronLeft, MoreVertical, Search, SlidersHorizontal, 
+import {
+  ChevronLeft, MoreVertical, Search, SlidersHorizontal,
   Star, Eye, CalendarCheck, X, Check, LayoutGrid
 } from "lucide-react";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE, UPLOAD_BASE } from "../../../config";
 
 export function ServiceProvidersScreen() {
   const { serviceId } = useParams();
@@ -37,7 +37,7 @@ export function ServiceProvidersScreen() {
               rating: parseFloat(v.rating) || 0,
               reviews: parseInt(v.review_count) || 0,
               price: v.price || 0,
-              image: v.image ? (v.image.startsWith('http') ? v.image : `http://localhost/dorcasApi/uploads/services/${v.image}`) : "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?q=80&w=200&auto=format&fit=crop",
+              image: v.image ? (v.image.startsWith('http') ? v.image : `${UPLOAD_BASE}/services/${v.image}`) : "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?q=80&w=200&auto=format&fit=crop",
               address: v.address,
               city: v.city
             }));
@@ -71,7 +71,7 @@ export function ServiceProvidersScreen() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -79,8 +79,8 @@ export function ServiceProvidersScreen() {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-12 pb-4 bg-base sticky top-0 z-20">
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="w-[42px] h-[42px] bg-base rounded-[14px] shadow-[0_2px_10px_rgba(13,110,253,0.08)] flex items-center justify-center border border-brand/5 transition-colors hover:bg-brand/5"
         >
           <ChevronLeft size={20} className="text-brand pr-0.5" />
@@ -94,7 +94,7 @@ export function ServiceProvidersScreen() {
       </div>
 
       <div className="flex-1 overflow-y-auto w-full remove-scrollbar pb-28 pt-2">
-        
+
         {/* Search and Filters */}
         <div className="px-5 space-y-4 mb-6">
           <div className="flex gap-3">
@@ -108,7 +108,7 @@ export function ServiceProvidersScreen() {
                 placeholder={`Search in ${serviceName}...`}
               />
             </div>
-            <button 
+            <button
               onClick={() => setIsSortOpen(true)}
               className="w-12 h-12 bg-base shadow-[0_2px_12px_rgba(13,110,253,0.04)] border border-brand/10 rounded-2xl flex items-center justify-center text-brand shrink-0 hover:bg-brand/5 relative"
             >
@@ -136,12 +136,12 @@ export function ServiceProvidersScreen() {
           ) : (
             sortedProviders.map((p) => (
               <div key={p.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
-                
+
                 {/* Top: Details */}
                 <div className="flex gap-3 items-start">
-                  <img 
-                    src={p.image} 
-                    alt="provider" 
+                  <img
+                    src={p.image}
+                    alt="provider"
                     referrerPolicy="no-referrer"
                     className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5"
                   />
@@ -154,23 +154,23 @@ export function ServiceProvidersScreen() {
                         {p.city || "Professional"}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-1.5 mb-2">
                       <Star size={14} className="fill-brand text-brand" />
                       <span className="text-[12px] font-bold text-brand/80">
                         {p.rating} <span className="font-medium opacity-60">({p.reviews} reviews)</span>
                       </span>
                     </div>
-  
+
                     <div className="text-[13px] font-bold text-brand">
                       ₹{p.price}/visit
                     </div>
                   </div>
                 </div>
-  
+
                 {/* Bottom: Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button 
+                  <button
                     onClick={() => navigate(`/book/${serviceId}/${p.id}?name=${encodeURIComponent(serviceName)}`)}
                     className="flex items-center justify-center gap-2 bg-brand text-base py-[14px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity"
                   >
@@ -178,7 +178,7 @@ export function ServiceProvidersScreen() {
                     Book Now
                   </button>
                 </div>
-  
+
               </div>
             ))
           )}
@@ -189,14 +189,14 @@ export function ServiceProvidersScreen() {
       {/* Slide-out Sort Bottom Sheet */}
       <AnimatePresence>
         {isSortOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-50 bg-brand/40 backdrop-blur-sm flex flex-col justify-end"
             onClick={() => setIsSortOpen(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -205,10 +205,10 @@ export function ServiceProvidersScreen() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-12 h-1.5 bg-brand/10 rounded-full mx-auto mb-6"></div>
-              
+
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-[18px] font-bold text-brand">Sort & Filter</h3>
-                <button 
+                <button
                   onClick={() => setIsSortOpen(false)}
                   className="w-8 h-8 flex items-center justify-center bg-brand/5 rounded-full text-brand/70 hover:text-brand transition-colors"
                 >
@@ -230,11 +230,10 @@ export function ServiceProvidersScreen() {
                       setSortBy(option.value);
                       setIsSortOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${
-                      sortBy === option.value 
-                        ? "border-brand bg-brand/5 shadow-sm" 
+                    className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${sortBy === option.value
+                        ? "border-brand bg-brand/5 shadow-sm"
                         : "border-brand/10 bg-base hover:bg-brand/5"
-                    }`}
+                      }`}
                   >
                     <span className={`text-[14px] font-bold ${sortBy === option.value ? 'text-brand' : 'text-brand/80'}`}>
                       {option.label}

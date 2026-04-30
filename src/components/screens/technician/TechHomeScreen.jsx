@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Briefcase, IndianRupee, MapPin, PhoneCall, CheckCircle } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function TechHomeScreen() {
   const { isAuthenticated } = useAuth();
@@ -42,7 +42,7 @@ export function TechHomeScreen() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -58,7 +58,7 @@ export function TechHomeScreen() {
 
       <div className="relative z-20 px-5 -mt-8 mb-6">
         <div className="bg-white shadow-[0_8px_24px_rgba(13,110,253,0.12)] border border-brand/5 rounded-3xl p-5 flex gap-4">
-           <div className="flex-[1.5] bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-4 flex flex-col justify-center text-white shadow-inner overflow-hidden relative">
+          <div className="flex-[1.5] bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-4 flex flex-col justify-center text-white shadow-inner overflow-hidden relative">
             <div className="absolute top-2 right-2 opacity-20"><IndianRupee size={48} /></div>
             <div className="relative z-10">
               <span className="text-[11px] font-semibold text-white/80 uppercase tracking-widest mb-1 block">Active Earnings</span>
@@ -80,12 +80,12 @@ export function TechHomeScreen() {
             <h3 className="text-[15px] font-black text-brand tracking-tight">Recent Tasks</h3>
             <span className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">Waiting for jobs</span>
           </div>
-          
+
           <div className="bg-white border border-brand/10 shadow-[0_4px_16px_rgba(13,110,253,0.04)] rounded-3xl p-10 flex flex-col items-center justify-center text-center opacity-60">
-             <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mb-4">
-                <Briefcase size={32} className="text-brand/20" />
-             </div>
-             <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">No active jobs assigned</p>
+            <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mb-4">
+              <Briefcase size={32} className="text-brand/20" />
+            </div>
+            <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">No active jobs assigned</p>
           </div>
         </div>
       </div>

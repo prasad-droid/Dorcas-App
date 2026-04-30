@@ -30,6 +30,8 @@ import { ProfileScreen } from "./components/screens/shared/ProfileScreen";
 import { SupportScreen } from "./components/screens/shared/SupportScreen";
 import { TermsPolicyScreen } from "./components/screens/shared/TermsPolicyScreen";
 import { SettingsScreen } from "./components/screens/shared/SettingsScreen";
+import { NotificationScreen } from "./components/screens/customer/NotificationScreen";
+import { DealsScreen } from "./components/screens/customer/DealsScreen";
 
 import { Logo } from "./components/ui/Logo";
 import { AnimatePresence, motion } from "framer-motion";
@@ -188,6 +190,8 @@ export default function App() {
                       <Route path="/settings" element={<SettingsScreen />} />
                       <Route path="/dashboard" element={<DashboardScreen />} />
                       <Route path="/order-history" element={<OrderHistoryScreen />} />
+                      <Route path="/notifications" element={<NotificationScreen />} />
+                      <Route path="/deals" element={<DealsScreen />} />
                       <Route path="/category/:categoryId" element={<CategoryScreen />} />
                       <Route path="/service/:serviceId" element={<ServiceProvidersScreen />} />
                       <Route path="/book/:serviceId/:providerId" element={<BookingFormScreen />} />

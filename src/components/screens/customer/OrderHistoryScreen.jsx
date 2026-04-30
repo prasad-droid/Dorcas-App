@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Calendar, Clock, MapPin, User, Star, MoreVertical, RefreshCw, MessageSquare } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
+import { API_BASE } from "../../../config";
 
 export function OrderHistoryScreen() {
   const { isAuthenticated } = useAuth();
@@ -60,13 +60,13 @@ export function OrderHistoryScreen() {
     if (isAuthenticated) fetchBookings();
   }, [isAuthenticated]);
 
-  const filteredBookings = activeTab === "All" 
-    ? bookings 
+  const filteredBookings = activeTab === "All"
+    ? bookings
     : bookings.filter(b => b.status.toLowerCase() === activeTab.toLowerCase());
 
   const getStatusStyles = (status) => {
     const s = status.toLowerCase();
-    switch(s) {
+    switch (s) {
       case 'confirmed': return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case 'pending': return "bg-amber-100 text-amber-700 border-amber-200";
       case 'completed': return "bg-brand/10 text-brand border-brand/20";
@@ -96,7 +96,7 @@ export function OrderHistoryScreen() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -105,15 +105,15 @@ export function OrderHistoryScreen() {
       {/* Header */}
       <div className="px-5 pt-12 pb-4 flex items-center justify-between sticky top-0 bg-[#f8fbff]/80 backdrop-blur-md z-30">
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => navigate(-1)} 
+          <button
+            onClick={() => navigate(-1)}
             className="w-11 h-11 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-brand/5 hover:bg-brand/5 transition-colors"
           >
             <ChevronLeft size={22} className="text-brand pr-0.5" />
           </button>
           <h2 className="text-xl font-black text-brand tracking-tight">Booking History</h2>
         </div>
-        <button 
+        <button
           onClick={() => fetchBookings(true)}
           disabled={isRefreshing}
           className={`w-11 h-11 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-brand/5 text-brand ${isRefreshing ? 'animate-spin' : ''}`}
@@ -129,23 +129,22 @@ export function OrderHistoryScreen() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2.5 rounded-2xl text-[13px] font-black transition-all border shadow-sm ${
-                activeTab === tab 
-                  ? "bg-brand text-white border-brand shadow-brand/20" 
+              className={`px-5 py-2.5 rounded-2xl text-[13px] font-black transition-all border shadow-sm ${activeTab === tab
+                  ? "bg-brand text-white border-brand shadow-brand/20"
                   : "bg-white text-brand/50 border-brand/5 hover:border-brand/20"
-              }`}
+                }`}
             >
               {tab}
             </button>
           ))}
         </div>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto px-5 pt-4 pb-28 space-y-5 remove-scrollbar">
         <AnimatePresence mode="popLayout">
           {filteredBookings.length > 0 ? (
             filteredBookings.map((booking) => (
-              <motion.div 
+              <motion.div
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -206,8 +205,8 @@ export function OrderHistoryScreen() {
 
                 {/* Address Snippet */}
                 <div className="flex items-start gap-2 px-1 text-brand/60">
-                   <MapPin size={14} className="mt-0.5 shrink-0" />
-                   <p className="text-[11px] font-medium leading-relaxed line-clamp-1">{booking.address}, {booking.city}</p>
+                  <MapPin size={14} className="mt-0.5 shrink-0" />
+                  <p className="text-[11px] font-medium leading-relaxed line-clamp-1">{booking.address}, {booking.city}</p>
                 </div>
 
                 {/* Action Buttons */}
@@ -231,19 +230,19 @@ export function OrderHistoryScreen() {
               </motion.div>
             ))
           ) : (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
               className="w-full py-20 flex flex-col items-center justify-center text-center"
             >
               <div className="w-24 h-24 bg-brand/5 rounded-full flex items-center justify-center mb-6 relative">
-                 <div className="absolute inset-0 bg-brand/10 rounded-full animate-ping opacity-20"></div>
-                 <MessageSquare size={40} className="text-brand/20" />
+                <div className="absolute inset-0 bg-brand/10 rounded-full animate-ping opacity-20"></div>
+                <MessageSquare size={40} className="text-brand/20" />
               </div>
               <h3 className="text-xl font-black text-brand mb-2">No {activeTab} Bookings</h3>
               <p className="text-xs font-bold text-brand/40 max-w-[240px] leading-relaxed uppercase tracking-wider">
                 When you book a service, your history will magically appear here.
               </p>
-              <button 
+              <button
                 onClick={() => navigate("/")}
                 className="mt-8 bg-brand text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-xl shadow-brand/20 active:scale-95 transition-transform"
               >

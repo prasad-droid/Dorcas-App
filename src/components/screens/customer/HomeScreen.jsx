@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { 
+import {
   Search, MapPin, Bell, ArrowRight, Star, Heart, ArrowUpRight, Wallet,
   Tv, Wind, Scissors, Sparkles, Wrench, Package, Laptop, HeartPulse, FileSignature, PartyPopper, LayoutGrid, Gift
 } from "lucide-react";
 import { mainCategories as fallbackCategories, categoryDetails as fallbackDetails } from "../../../data/services";
 import { useLanguage } from "../../../context/LanguageContext";
 
-const API_BASE = "http://localhost/dorcasApi/api";
-const IMAGE_BASE = "http://localhost/dorcasApi/uploads/categories/";
+import { API_BASE, UPLOAD_BASE } from "../../../config";
+
+const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
 
 const iconMap = {
   "Appliance": Tv,
@@ -27,12 +28,14 @@ const iconMap = {
 
 export function HomeScreen() {
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("AC Services");
   const [locationName, setLocationName] = useState("Mumbai, Maharashtra");
   const [categories, setCategories] = useState([]);
   const [categoryDetails, setCategoryDetails] = useState({});
   const [trendingServices, setTrendingServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [offers, setOffers] = useState([]);
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
 
@@ -67,11 +70,35 @@ export function HomeScreen() {
           if (profData.status) setProfileData(profData.data);
         }
 
+        // Fetch Categories
         const catRes = await fetch(`${API_BASE}/categories/get_categories.php`);
         const catData = await catRes.json();
-        
+
+        // Fetch Subcategories
         const subRes = await fetch(`${API_BASE}/categories/get_subcategories.php`);
         const subData = await subRes.json();
+
+        // Fetch Offers
+        try {
+          const offerRes = await fetch(`${API_BASE}/categories/get_offers.php`);
+          const offerData = await offerRes.json();
+          if (offerData.status) {
+            setOffers(offerData.data);
+          } else {
+            setOffers([
+              { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!", image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop" },
+              { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" },
+              // { title: "Best Value", desc: "Professional Home Services Starting at Just ₹399 - AC & cleaning", image: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?q=80&w=800&auto=format&fit=crop" },
+            ]);
+          }
+        } catch (e) {
+          console.warn("Offers fetch failed, using fallback");
+          setOffers([
+            { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!", image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop" },
+            { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" },
+            // { title: "Best Value", desc: "Professional Home Services Starting at Just ₹399 - AC & cleaning", image: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?q=80&w=800&auto=format&fit=crop" },
+          ]);
+        }
 
         if (catData.status && subData.status) {
           const apiCats = catData.data.map(cat => ({
@@ -91,7 +118,7 @@ export function HomeScreen() {
               .map(sub => ({
                 id: sub.id,
                 name: sub.subcategory_name,
-                price: "₹299", 
+                price: "₹299",
                 desc: sub.meta_description || "Expert service at your doorstep",
                 image: sub.subcategory_img ? (sub.subcategory_img.startsWith('http') ? sub.subcategory_img : `${IMAGE_BASE}${sub.subcategory_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
               }));
@@ -125,12 +152,6 @@ export function HomeScreen() {
     fetchData();
   }, []);
 
-  const offers = [
-    { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!", image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop" },
-    { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" },
-    { title: "Best Value", desc: "Professional Home Services Starting at Just ₹399 - AC & cleaning", image: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?q=80&w=800&auto=format&fit=crop" },
-  ];
-
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-base">
@@ -141,7 +162,7 @@ export function HomeScreen() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
@@ -157,19 +178,22 @@ export function HomeScreen() {
             <div>
               <p className="text-[10px] text-base/80 uppercase font-semibold tracking-wider">{t('current_location')}</p>
               <h2 className="text-sm font-semibold flex items-center gap-1">
-              {locationName}
+                {locationName}
               </h2>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => navigate("/rewards")}
               className="bg-base/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-base/10"
             >
               <Sparkles size={14} className="text-amber-400" />
               <span className="text-xs font-bold">{profileData?.stats?.value2 || 0}</span>
             </button>
-            <button className="bg-base/20 p-2 rounded-full relative">
+            <button
+              onClick={() => navigate("/notifications")}
+              className="bg-base/20 p-2 rounded-full relative"
+            >
               <Bell size={20} className="text-base" />
               <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-base"></span>
             </button>
@@ -183,6 +207,13 @@ export function HomeScreen() {
           </div>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchQuery.trim()) {
+                navigate(`/bookings?q=${encodeURIComponent(searchQuery)}`);
+              }
+            }}
             className="w-full bg-base text-brand rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
             placeholder={t('search_placeholder')}
           />
@@ -190,27 +221,27 @@ export function HomeScreen() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-28 space-y-8 remove-scrollbar">
-        
+
         {/* Wallet Balance Strip */}
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           onClick={() => navigate("/rewards")}
           className="bg-white border border-brand/5 rounded-2xl p-4 flex justify-between items-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform"
         >
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center">
-                <Wallet size={20} className="text-brand" />
-             </div>
-             <div>
-                <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{t('available_balance')}</p>
-                <h4 className="text-lg font-black text-brand">{profileData?.stats?.value3 || "₹0"}</h4>
-             </div>
+            <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center">
+              <Wallet size={20} className="text-brand" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{t('available_balance')}</p>
+              <h4 className="text-lg font-black text-brand">{profileData?.stats?.value3 || "₹0"}</h4>
+            </div>
           </div>
           <div className="flex items-center gap-2 bg-brand/5 px-3 py-2 rounded-xl">
-             <Gift size={16} className="text-brand" />
-             <span className="text-xs font-black text-brand">{profileData?.stats?.value2 || 0} pts</span>
-             <ArrowRight size={14} className="text-brand/40 ml-1" />
+            <Gift size={16} className="text-brand" />
+            <span className="text-xs font-black text-brand">{profileData?.stats?.value2 || 0} pts</span>
+            <ArrowRight size={14} className="text-brand/40 ml-1" />
           </div>
         </motion.div>
 
@@ -256,22 +287,18 @@ export function HomeScreen() {
           <div className="flex justify-between items-center mb-1">
             <h3 className="text-lg font-bold text-brand tracking-tight">{t('popular_services')}</h3>
           </div>
-          
+
           <div className="grid grid-cols-4 gap-x-2 gap-y-4">
             {(categories.length > 0 ? categories : fallbackCategories).slice(0, 11).map((service) => {
               const Icon = service.icon || LayoutGrid;
               return (
-                <div 
-                  key={service.id} 
+                <div
+                  key={service.id}
                   onClick={() => navigate(`/category/${service.id}?name=${encodeURIComponent(service.name)}`)}
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
                   <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-brand/20 transition-colors">
-                    {service.image ? (
-                      <img src={service.image} alt={service.name} className="w-8 h-8 object-contain" />
-                    ) : (
-                      <Icon size={24} strokeWidth={2} className="text-brand" />
-                    )}
+                    <Icon size={24} strokeWidth={2} className="text-brand" />
                   </div>
                   <span className="text-[10px] font-semibold text-brand text-center leading-tight w-full break-words px-1">
                     {service.name}
@@ -279,8 +306,10 @@ export function HomeScreen() {
                 </div>
               );
             })}
-            
-            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+            <div
+              onClick={() => navigate("/bookings")}
+              className="flex flex-col items-center gap-2 group cursor-pointer"
+            >
               <div className="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center shadow-md group-hover:bg-brand/90 transition-colors">
                 <ArrowRight size={24} strokeWidth={2.5} className="text-base" />
               </div>
@@ -292,8 +321,8 @@ export function HomeScreen() {
 
           <div className="flex gap-4 overflow-x-auto remove-scrollbar pb-2 pt-2 snap-x snap-mandatory w-full">
             {(trendingServices.length > 0 ? trendingServices : []).map((svc) => (
-              <div 
-                key={svc.id} 
+              <div
+                key={svc.id}
                 onClick={() => navigate(`/service/${svc.id}?name=${encodeURIComponent(svc.name)}`)}
                 className="w-[200px] h-[260px] shrink-0 rounded-[1.5rem] overflow-hidden relative snap-center shadow-[0_4px_12px_rgba(13,110,253,0.15)] bg-brand border border-brand/10 group cursor-pointer"
               >
@@ -326,14 +355,21 @@ export function HomeScreen() {
           </div>
           <div className="flex gap-4 overflow-x-auto remove-scrollbar pb-2 snap-x">
             {offers.map((offer, idx) => (
-              <div key={idx} className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-brand/10">
+              <div
+                key={idx}
+                onClick={() => navigate("/deals")}
+                className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-brand/10"
+              >
                 <img src={offer.image} alt={offer.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-l from-transparent via-brand/40 to-brand/95 z-10"></div>
                 <div className="relative z-20">
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-base/20 backdrop-blur-md px-2 py-1 rounded-md mb-2 inline-block text-white">{offer.title}</span>
                   <p className="text-sm font-bold text-white leading-snug drop-shadow-md">{offer.desc}</p>
                 </div>
-                <button className="absolute top-4 right-4 z-20 bg-base text-brand text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg transform active:scale-95 transition-transform">
+                <button
+                  onClick={(e) => { e.stopPropagation(); navigate("/deals"); }}
+                  className="absolute top-4 right-4 z-20 bg-base text-brand text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg transform active:scale-95 transition-transform"
+                >
                   {t('claim_now')}
                 </button>
               </div>
@@ -346,7 +382,7 @@ export function HomeScreen() {
           <div className="mb-4">
             <h3 className="text-lg font-bold text-brand tracking-tight">{t('browse_rated')}</h3>
           </div>
-          
+
           <div className="flex flex-wrap justify-center gap-2 pb-3">
             {(Object.keys(categoryDetails).length > 0 ? Object.keys(categoryDetails) : Object.keys(fallbackDetails)).map((cat) => (
               <button

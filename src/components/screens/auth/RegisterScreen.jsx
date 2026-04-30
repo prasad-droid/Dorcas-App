@@ -15,6 +15,7 @@ import { Logo } from "../../ui/Logo";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { mainCategories } from "../../../data/services";
+import { API_BASE } from "../../../config";
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export const RegisterScreen = () => {
   }, [authMode]);
 
   useEffect(() => {
-    fetch("http://localhost/dorcasApi/api/services/get_services.php")
+    fetch(`${API_BASE}/services/get_services.php`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
@@ -138,7 +139,7 @@ export const RegisterScreen = () => {
       
       try {
         const response = await fetch(
-          `http://localhost/dorcasApi/api/auth/send_otp.php`,
+          `${API_BASE}/auth/send_otp.php`,
           {
             method: "POST",
             headers: {
@@ -169,7 +170,7 @@ export const RegisterScreen = () => {
     else if (step === 2) {
       try {
         const response = await fetch(
-          `http://localhost/dorcasApi/api/auth/verify_otp.php`,
+          `${API_BASE}/auth/verify_otp.php`,
           {
             method: "POST",
             headers: {
@@ -203,7 +204,7 @@ export const RegisterScreen = () => {
       } else {
         try {
           const response = await fetch(
-            `http://localhost/dorcasApi/api/auth/complete-profile.php`,
+            `${API_BASE}/auth/complete-profile.php`,
             {
               method: "POST",
               headers: {
@@ -231,7 +232,7 @@ export const RegisterScreen = () => {
     } else if (step === 4) {
       try {
         const response = await fetch(
-          `http://localhost/dorcasApi/api/auth/complete-profile.php`,
+          `${API_BASE}/auth/complete-profile.php`,
           {
             method: "POST",
             headers: {
