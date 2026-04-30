@@ -2,24 +2,26 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, Calendar, User, Gift, Briefcase, IndianRupee } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 export function MobileAppLayout({ children }) {
   const location = useLocation();
   const { authMode } = useAuth();
+  const { t } = useLanguage();
 
   const isTechMode = authMode === "technician"; // strict separation irrespective of isAuthenticated
 
   const customerNavItems = [
-    { path: "/", icon: Home, label: "Home" },
-    { path: "/bookings", icon: Calendar, label: "Bookings" },
-    { path: "/rewards", icon: Gift, label: "Rewards" },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/", icon: Home, label: t('home') },
+    { path: "/bookings", icon: Calendar, label: t('bookings') },
+    { path: "/rewards", icon: Gift, label: t('rewards') },
+    { path: "/profile", icon: User, label: t('profile') },
   ];
 
   const techNavItems = [
-    { path: "/tech", icon: Briefcase, label: "Jobs" },
-    { path: "/tech/earnings", icon: IndianRupee, label: "Earnings" },
-    { path: "/tech/profile", icon: User, label: "Profile" },
+    { path: "/tech", icon: Briefcase, label: t('jobs') },
+    { path: "/tech/earnings", icon: IndianRupee, label: t('earnings') },
+    { path: "/tech/profile", icon: User, label: t('profile') },
   ];
 
   const navItems = isTechMode ? techNavItems : customerNavItems;
@@ -32,11 +34,11 @@ export function MobileAppLayout({ children }) {
       </main>
 
       {/* Bottom Navigation (iOS Style) */}
-      {!["/login", "/register"].includes(location.pathname) && (
+      {!["/login", "/register"].includes(location.pathname) && 
+       !location.pathname.startsWith("/book/") && 
+       !["/settings", "/support", "/terms-policy"].includes(location.pathname) && (
         <nav className="absolute sm:absolute bottom-0 w-full bg-base/70 backdrop-blur-2xl border-t-[0.5px] border-black/10 pt-2 pb-8 sm:pb-6 flex justify-around items-center z-[100]">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(`${item.path}/`) && item.path !== "/tech"); 
-            // For tech home (/tech), exact match or starts with (/tech/) but since all tech routes start with /tech, we check exact match for /tech.
             const isReallyActive = item.path === "/tech" ? location.pathname === "/tech" : (location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path)));
 
             const Icon = item.icon;

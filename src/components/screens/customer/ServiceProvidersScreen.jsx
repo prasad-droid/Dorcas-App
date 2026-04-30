@@ -1,38 +1,73 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { 
   ChevronLeft, MoreVertical, Search, SlidersHorizontal, 
-  Star, Eye, CalendarCheck, X, Check
+  Star, Eye, CalendarCheck, X, Check, LayoutGrid
 } from "lucide-react";
+
+const API_BASE = "http://localhost/dorcasApi/api";
 
 export function ServiceProvidersScreen() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
-  const serviceName = serviceId ? decodeURIComponent(serviceId) : "Service";
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const serviceName = queryParams.get("name") || "Service";
 
   const [sortBy, setSortBy] = useState("recommended");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [providers, setProviders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock providers offering this specific service matching the UI reference
-  // Upgraded price and reviews to integers to support sorting
-  const baseProviders = [
-    { id: 1, worker: "Ramesh Services", rating: 4.8, reviews: 250, price: 80, image: "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?q=80&w=200&auto=format&fit=crop" },
-    { id: 2, worker: "Elite Care Team", rating: 4.8, reviews: 356, price: 50, image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop" },
-    { id: 3, worker: "Singh Professionals", rating: 4.4, reviews: 180, price: 90, image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=200&auto=format&fit=crop" },
-    { id: 4, worker: "Quick Fix Pros", rating: 4.9, reviews: 450, price: 100, image: "https://images.unsplash.com/photo-1533621430040-cde4a706be22?q=80&w=200&auto=format&fit=crop" }
-  ];
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        setIsLoading(true);
+        console.log(serviceId);
+        // If serviceId is a number, fetch from API
+        if (!isNaN(serviceId)) {
+          const res = await fetch(`${API_BASE}/vendors/get_vendors_by_service.php?service_id=${serviceId}`);
 
-  // Sorting logic
-  let providers = [...baseProviders];
+          const data = await res.json();
+          if (data.status) {
+            const apiProviders = data.data.map(v => ({
+              id: v.id,
+              worker: v.name,
+              rating: parseFloat(v.rating) || 0,
+              reviews: parseInt(v.review_count) || 0,
+              price: v.price || 0,
+              image: v.image ? (v.image.startsWith('http') ? v.image : `http://localhost/dorcasApi/uploads/services/${v.image}`) : "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?q=80&w=200&auto=format&fit=crop",
+              address: v.address,
+              city: v.city
+            }));
+            setProviders(apiProviders);
+          } else {
+            setProviders([]);
+          }
+        } else {
+          setProviders([]);
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProviders();
+  }, [serviceId]);
+
+  // Sorting logic applied to the dynamic state
+  let sortedProviders = [...providers];
   if (sortBy === "price_low") {
-    providers.sort((a, b) => a.price - b.price);
+    sortedProviders.sort((a, b) => a.price - b.price);
   } else if (sortBy === "price_high") {
-    providers.sort((a, b) => b.price - a.price);
+    sortedProviders.sort((a, b) => b.price - a.price);
   } else if (sortBy === "rating") {
-    providers.sort((a, b) => b.rating - a.rating);
+    sortedProviders.sort((a, b) => b.rating - a.rating);
   } else if (sortBy === "reviews") {
-    providers.sort((a, b) => b.reviews - a.reviews);
+    sortedProviders.sort((a, b) => b.reviews - a.reviews);
   }
 
   return (
@@ -87,58 +122,66 @@ export function ServiceProvidersScreen() {
 
         {/* Service Provider Cards */}
         <div className="px-5 flex flex-col gap-4">
-          {providers.map((p) => (
-            <div key={p.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
-              
-              {/* Top: Details */}
-              <div className="flex gap-3 items-start">
-                <img 
-                  src={p.image} 
-                  alt="provider" 
-                  referrerPolicy="no-referrer"
-                  className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5"
-                />
-                <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">
-                      {serviceName}
-                    </h3>
-                    <span className="bg-brand/10 text-brand px-3 py-1 rounded-xl text-[10px] font-bold shrink-0">
-                       {/* Hardcoding "Cleaning" string similar to reference to show tag concept, but this would be dynamic */}
-                       {p.worker.split(" ")[0]}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Star size={14} className="fill-brand text-brand" />
-                    <span className="text-[12px] font-bold text-brand/80">
-                      {p.rating} <span className="font-medium opacity-60">({p.reviews} reviews)</span>
-                    </span>
-                  </div>
-
-                  <div className="text-[13px] font-bold text-brand">
-                    ${p.price}/hour
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
+              <p className="text-brand/50 font-bold text-sm">Finding experts...</p>
+            </div>
+          ) : sortedProviders.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50 text-center">
+              <LayoutGrid size={48} className="text-brand mb-2" />
+              <p className="text-brand font-bold text-sm">No providers found for this service</p>
+              <p className="text-[11px] text-brand/60 px-10">We're expanding! Check back soon for professionals in your area.</p>
+            </div>
+          ) : (
+            sortedProviders.map((p) => (
+              <div key={p.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
+                
+                {/* Top: Details */}
+                <div className="flex gap-3 items-start">
+                  <img 
+                    src={p.image} 
+                    alt="provider" 
+                    referrerPolicy="no-referrer"
+                    className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5"
+                  />
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">
+                        {p.worker}
+                      </h3>
+                      <span className="bg-brand/10 text-brand px-3 py-1 rounded-xl text-[10px] font-bold shrink-0">
+                        {p.city || "Professional"}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Star size={14} className="fill-brand text-brand" />
+                      <span className="text-[12px] font-bold text-brand/80">
+                        {p.rating} <span className="font-medium opacity-60">({p.reviews} reviews)</span>
+                      </span>
+                    </div>
+  
+                    <div className="text-[13px] font-bold text-brand">
+                      ₹{p.price}/visit
+                    </div>
                   </div>
                 </div>
+  
+                {/* Bottom: Actions */}
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <button 
+                    onClick={() => navigate(`/book/${serviceId}/${p.id}?name=${encodeURIComponent(serviceName)}`)}
+                    className="flex items-center justify-center gap-2 bg-brand text-base py-[14px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity"
+                  >
+                    <CalendarCheck size={16} />
+                    Book Now
+                  </button>
+                </div>
+  
               </div>
-
-              {/* Bottom: Actions */}
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <button className="flex items-center justify-center gap-2 bg-base border border-brand/15 text-brand py-[14px] rounded-2xl text-[13px] font-bold hover:bg-brand/5 transition-colors shadow-sm">
-                  <Eye size={16} />
-                  View Details
-                </button>
-                <button 
-                  onClick={() => navigate(`/book/${encodeURIComponent(serviceName)}/${p.id}`)}
-                  className="flex items-center justify-center gap-2 bg-brand text-base py-[14px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity"
-                >
-                  <CalendarCheck size={16} />
-                  Book Now
-                </button>
-              </div>
-
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
       </div>

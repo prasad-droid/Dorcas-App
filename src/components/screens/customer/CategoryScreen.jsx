@@ -1,18 +1,60 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, ShoppingCart } from "lucide-react";
-import { categoryDetails } from "../../data/services";
+import { ChevronLeft, ShoppingCart, LayoutGrid } from "lucide-react";
+import { categoryDetails as fallbackDetails } from "../../../data/services";
+
+const API_BASE = "http://localhost/dorcasApi/api";
+const IMAGE_BASE = "http://localhost/dorcasApi/uploads/categories/";
 
 export function CategoryScreen() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const categoryName = queryParams.get("name") || "Services";
 
-  // Decode URI component in case there are spaces or special characters
-  const decodedCategory = categoryId ? decodeURIComponent(categoryId) : "";
-  const services = categoryDetails[decodedCategory] || categoryDetails["Cleaning"];
+  const [services, setServices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Use the decoded name or fallback
-  const displayName = categoryDetails[decodedCategory] ? decodedCategory : "Services";
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      try {
+        setIsLoading(true);
+        // If categoryId is a number, it's an API ID
+        if (!isNaN(categoryId)) {
+          const res = await fetch(`${API_BASE}/categories/get_subcategories.php?category_id=${categoryId}`);
+          const data = await res.json();
+          if (data.status) {
+            const apiSubs = data.data.map(sub => ({
+              id: sub.id,
+              name: sub.subcategory_name,
+              price: "₹299", // Placeholder
+              desc: sub.meta_description || "Expert service at your doorstep",
+              image: sub.subcategory_img ? (sub.subcategory_img.startsWith('http') ? sub.subcategory_img : `${IMAGE_BASE}${sub.subcategory_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop",
+              icon: LayoutGrid
+            }));
+            setServices(apiSubs);
+          } else {
+            setServices(fallbackDetails[categoryName] || []);
+          }
+        } else {
+          // Fallback for name-based navigation
+          const decodedCategory = decodeURIComponent(categoryId);
+          setServices(fallbackDetails[decodedCategory] || fallbackDetails["Cleaning"] || []);
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        setServices(fallbackDetails[categoryName] || []);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubcategories();
+  }, [categoryId, categoryName]);
+
+  const displayName = categoryName;
 
   return (
     <motion.div 
@@ -38,8 +80,18 @@ export function CategoryScreen() {
 
       {/* List of Services */}
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-24 space-y-5 remove-scrollbar">
-        {services.map((sub) => {
-          const Icon = sub.icon;
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
+            <p className="text-brand/50 font-bold text-sm">Loading services...</p>
+          </div>
+        ) : services.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4 opacity-50">
+            <LayoutGrid size={48} className="text-brand" />
+            <p className="text-brand font-bold text-sm">No services found in this category</p>
+          </div>
+        ) : services.map((sub) => {
+          const Icon = sub.icon || LayoutGrid;
           return (
             <div 
               key={sub.id} 
@@ -51,10 +103,10 @@ export function CategoryScreen() {
                   <Icon size={18} />
                 </div>
                 <h3 className="text-base font-bold text-brand leading-tight mt-1">{sub.name}</h3>
-                <p className="text-xs text-brand/70 font-semibold leading-snug pe-4">{sub.desc}</p>
+                <p className="text-xs text-brand/70 font-semibold leading-snug pe-4 line-clamp-2">{sub.desc}</p>
                 
                 <button 
-                  onClick={() => navigate(`/service/${encodeURIComponent(sub.name)}`)}
+                  onClick={() => navigate(`/service/${sub.id}?name=${encodeURIComponent(sub.name)}`)}
                   className="mt-auto bg-brand text-base px-5 py-2.5 rounded-full text-xs font-bold hover:bg-brand/90 transition-colors shadow-sm"
                 >
                   Book Now

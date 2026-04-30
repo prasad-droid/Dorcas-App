@@ -11,10 +11,10 @@ import {
   Check,
   Search,
 } from "lucide-react";
-import { Logo } from "../ui/Logo";
+import { Logo } from "../../ui/Logo";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { mainCategories } from "../../data/services";
+import { useAuth } from "../../../context/AuthContext";
+import { mainCategories } from "../../../data/services";
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
@@ -610,7 +610,7 @@ export const RegisterScreen = () => {
         <div className="flex items-center gap-2">
           <Logo className="w-8 h-8 text-brand" />
           <span className="font-black text-xl tracking-tight text-brand">
-            Dorcas
+            Dorcasaid
           </span>
         </div>
         <div className="w-10" />

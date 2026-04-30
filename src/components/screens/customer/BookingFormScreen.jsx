@@ -1,17 +1,27 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { 
   ChevronLeft, Bell, MapPin, Star, MessageSquare, Phone, User, Calendar, Clock, Map, AlignLeft, Info, Check, Shield, Wallet, Gift, Trophy
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
+import { ScratchCard } from "../../ui/ScratchCard";
+
+const API_BASE = "http://localhost/dorcasApi/api";
 
 export function BookingFormScreen() {
-  const { serviceId } = useParams();
+  const { serviceId, providerId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const { setMyBookings, isAuthenticated } = useAuth();
   
   const [step, setStep] = useState("form"); // "form" or "success"
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [providerDetails, setProviderDetails] = useState(null);
+  const [generatedCard, setGeneratedCard] = useState(null);
+  
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -24,36 +34,124 @@ export function BookingFormScreen() {
     paymentType: "Pay After Service"
   });
 
-  const serviceName = serviceId ? decodeURIComponent(serviceId) : "Home Cleaning";
-  const providerName = "Mr. James Wilson";
-  const providerPrice = "₹1,499";
+  const serviceName = queryParams.get("name") || "Home Cleaning";
 
-  const handleConfirm = (e) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        // 1. Fetch Profile Data to pre-fill
+        const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Role": role
+          }
+        });
+        const profileData = await profileRes.json();
+        if (profileData.status) {
+          setFormData(prev => ({
+            ...prev,
+            fullName: profileData.data.name || "",
+            phoneNumber: profileData.data.phone || "",
+            address: profileData.data.address || "",
+            city: profileData.data.city || "",
+            pincode: profileData.data.pincode || ""
+          }));
+        }
+
+        // 2. Fetch Provider Details
+        const vendorRes = await fetch(`${API_BASE}/vendors/get_vendor_details.php?vendor_id=${providerId}`);
+        const vendorData = await vendorRes.json();
+        if (vendorData.status) {
+          setProviderDetails(vendorData.data);
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [providerId]);
+
+  const handleConfirm = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
 
-    const newBooking = {
-      id: `B-${Math.floor(1000 + Math.random() * 9000)}`,
-      service: serviceName,
-      date: formData.date || "Tomorrow",
-      time: formData.time || "10:00 AM",
-      status: "Confirmed",
-      price: providerPrice,
-      provider: providerName,
-      address: `${formData.address}, ${formData.city} - ${formData.pincode}`
-    };
+    try {
+      setIsSubmitting(true);
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
 
-    setMyBookings(prev => [newBooking, ...prev]);
-    setStep("success");
+      const response = await fetch(`${API_BASE}/bookings/create_booking.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "Role": role
+        },
+        body: JSON.stringify({
+          vendor_id: providerId,
+          service_id: serviceId,
+          booking_name: formData.fullName,
+          booking_phone: formData.phoneNumber,
+          address: formData.address,
+          city: formData.city,
+          pincode: formData.pincode,
+          service_date: formData.date,
+          service_time: formData.time,
+          notes: formData.instructions,
+          payment_mode: "cash"
+        })
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        setGeneratedCard(data.data.scratch_card);
+        const newBooking = {
+          id: `B-${data.data.booking_id}`,
+          service: serviceName,
+          date: formData.date,
+          time: formData.time,
+          status: "Confirmed",
+          price: `₹${providerDetails?.price || "499"}`,
+          provider: providerDetails?.name || "Professional",
+          address: `${formData.address}, ${formData.city} - ${formData.pincode}`
+        };
+
+        setMyBookings(prev => [newBooking, ...prev]);
+        setStep("success");
+      } else {
+        alert(data.message || "Failed to create booking");
+      }
+    } catch (error) {
+      console.error("Booking Error:", error);
+      alert("Something went wrong while creating your booking.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-base">
+        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (step === "success") {
     return (
       <BookingSuccessView 
-        details={{ ...formData, service: serviceName, price: providerPrice }} 
+        details={{ ...formData, service: serviceName, price: `₹${providerDetails?.price || "499"}` }} 
+        card={generatedCard}
         onClose={() => navigate("/")} 
       />
     );
@@ -191,20 +289,21 @@ export function BookingFormScreen() {
             <div className="flex items-center justify-between px-1">
               <div>
                 <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">Service Amount</span>
-                <span className="text-2xl font-black text-brand tracking-tighter">{providerPrice}</span>
+                <span className="text-2xl font-black text-brand tracking-tighter">₹{providerDetails?.price || "499"}</span>
               </div>
               <button type="button" className="flex items-center gap-1.5 text-[11px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10">
-                 <Star size={12} className="fill-brand" /> 5.0 Rating
+                 <Star size={12} className="fill-brand" /> {providerDetails?.rating || "5.0"} Rating
               </button>
             </div>
             
             <motion.button 
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] hover:opacity-90 transition-all flex items-center justify-center gap-3"
+              disabled={isSubmitting}
+              className={`w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
             >
-              Confirm Booking
-              <Shield size={20} />
+              {isSubmitting ? "Processing..." : "Confirm Booking"}
+              {!isSubmitting && <Shield size={20} />}
             </motion.button>
           </div>
 
@@ -234,12 +333,43 @@ function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, ma
   );
 }
 
-function BookingSuccessView({ details, onClose }) {
+
+
+// Inside BookingSuccessView
+function BookingSuccessView({ details, onClose, card }) {
+  const [rewardClaimed, setRewardClaimed] = useState(false);
+
+  const handleScratch = async () => {
+    if (!card?.id || rewardClaimed) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      
+      const response = await fetch(`${API_BASE}/rewards/scratch_card.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "Role": role
+        },
+        body: JSON.stringify({ card_id: card.id })
+      });
+      
+      const data = await response.json();
+      if (data.status) {
+        setRewardClaimed(true);
+      }
+    } catch (error) {
+      console.error("Scratch reward error:", error);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex-1 flex flex-col w-full h-full bg-[#f0f4f8] overflow-y-auto remove-scrollbar relative p-6 pt-16"
+      className="flex-1 flex flex-col w-full h-full bg-[#f0f4f8] overflow-y-auto remove-scrollbar relative p-6 pt-16 pb-12"
     >
       <div className="text-center mb-8">
          <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/20">
@@ -265,8 +395,27 @@ function BookingSuccessView({ details, onClose }) {
       </div>
 
       {/* Interactive Scratch Card */}
-      <h3 className="text-center text-[11px] font-black text-brand/40 uppercase tracking-[2px] mb-4">Scratch to reveal your reward</h3>
-      <ScratchCardCanvas cashback={Math.floor(Math.random() * 450) + 49} />
+      <div className="text-center mb-4">
+         <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] mb-1">
+           {rewardClaimed ? "Reward Added to Wallet!" : "Scratch to reveal your reward"}
+         </h3>
+         {rewardClaimed && (
+           <motion.p 
+             initial={{ opacity: 0, y: 5 }}
+             animate={{ opacity: 1, y: 0 }}
+             className="text-[10px] font-bold text-emerald-600 flex items-center justify-center gap-1"
+           >
+             <Check size={12} strokeWidth={4} /> Points successfully added
+           </motion.p>
+         )}
+      </div>
+
+      <div className="max-w-[280px] mx-auto w-full">
+         <ScratchCard 
+           cashback={card?.reward_amount || 0} 
+           onReveal={handleScratch}
+         />
+      </div>
 
       <div className="mt-auto pt-10 pb-6">
         <motion.button 
@@ -286,105 +435,6 @@ function DetailRow({ label, value }) {
     <div className="flex justify-between items-start gap-4">
        <span className="text-[12px] font-bold text-brand/40 uppercase tracking-wider shrink-0 mt-0.5">{label}</span>
        <span className="text-[14px] font-black text-brand text-right leading-tight">{value || "Not Specified"}</span>
-    </div>
-  );
-}
-
-function ScratchCardCanvas({ cashback }) {
-  const canvasRef = useRef(null);
-  const [isRevealed, setIsRevealed] = useState(false);
-  const [percent, setPercent] = useState(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-
-    // Fill with pattern/silver
-    ctx.fillStyle = '#C0C0C0';
-    ctx.fillRect(0, 0, width, height);
-    
-    // Add some noise/pattern to looks like scratch
-    ctx.fillStyle = '#A0A0A0';
-    for (let i = 0; i < 200; i++) {
-       ctx.beginPath();
-       ctx.arc(Math.random() * width, Math.random() * height, Math.random() * 2, 0, Math.PI * 2);
-       ctx.fill();
-    }
-    
-    // Text on scratch area
-    ctx.font = "bold 16px Inter";
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
-    ctx.textAlign = "center";
-    ctx.fillText("SCRATCH HERE", width/2, height/2 + 6);
-
-    const scratch = (x, y) => {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath();
-      ctx.arc(x, y, 20, 0, Math.PI * 2);
-      ctx.fill();
-      checkReveal();
-    };
-
-    const checkReveal = () => {
-      const imageData = ctx.getImageData(0, 0, width, height);
-      const data = imageData.data;
-      let count = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i + 3] === 0) count++;
-      }
-      const p = (count / (width * height)) * 100;
-      setPercent(p);
-      if (p > 75 && !isRevealed) {
-        setIsRevealed(true);
-        ctx.clearRect(0,0,width,height); // Full reveal
-      }
-    };
-
-    const handleMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = (e.clientX || e.touches[0].clientX) - rect.left;
-      const y = (e.clientY || e.touches[0].clientY) - rect.top;
-      scratch(x, y);
-    };
-
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('touchmove', handleMove);
-    
-    return () => {
-      canvas.removeEventListener('mousemove', handleMove);
-      canvas.removeEventListener('touchmove', handleMove);
-    };
-  }, []);
-
-  return (
-    <div className="relative w-full max-w-[280px] h-[180px] mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden group">
-       {/* Prize Underneath */}
-       <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-brand/5 to-brand/10 p-4">
-          <Trophy size={48} className="text-amber-500 mb-2 drop-shadow-lg" />
-          <p className="text-[10px] font-black text-brand/40 uppercase tracking-widest">You Won</p>
-          <h4 className="text-4xl font-black text-brand tracking-tighter">₹{cashback}</h4>
-          <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mt-1">Added to Wallet</p>
-       </div>
-
-       {/* Scratch Layer */}
-       <canvas 
-        ref={canvasRef} 
-        width={300} 
-        height={200} 
-        className={`absolute inset-0 w-full h-full cursor-crosshair transition-opacity duration-500 ${isRevealed ? 'opacity-0' : 'opacity-100'}`}
-       />
-       
-       {isRevealed && (
-          <motion.div 
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="absolute top-2 right-2 p-1.5 bg-emerald-500 rounded-full text-white shadow-lg z-20"
-          >
-             <Check size={14} strokeWidth={4} />
-          </motion.div>
-       )}
     </div>
   );
 }

@@ -5,20 +5,32 @@
 import { useState, createContext, useContext, useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { MobileAppLayout } from "./components/layout/MobileAppLayout";
-import { HomeScreen } from "./components/screens/HomeScreen";
-import { BookingsScreen } from "./components/screens/BookingsScreen";
-import { ProfileScreen } from "./components/screens/ProfileScreen";
-import { RewardsScreen } from "./components/screens/RewardsScreen";
-import { CategoryScreen } from "./components/screens/CategoryScreen";
-import { ServiceProvidersScreen } from "./components/screens/ServiceProvidersScreen";
-import { BookingFormScreen } from "./components/screens/BookingFormScreen";
-import { DashboardScreen } from "./components/screens/DashboardScreen"; 
-import { TechHomeScreen } from "./components/screens/TechHomeScreen";
-import { TechEarningsScreen } from "./components/screens/TechEarningsScreen";
-import { OnboardingScreen } from "./components/screens/OnboardingScreen";
-import { OrderHistoryScreen } from "./components/screens/OrderHistoryScreen";
-import { LoginScreen } from "./components/screens/LoginScreen";
-import { RegisterScreen } from "./components/screens/RegisterScreen";
+
+// Auth Screens
+import { LoginScreen } from "./components/screens/auth/LoginScreen";
+import { RegisterScreen } from "./components/screens/auth/RegisterScreen";
+import { OnboardingScreen } from "./components/screens/auth/OnboardingScreen";
+
+// Customer Screens
+import { HomeScreen } from "./components/screens/customer/HomeScreen";
+import { BookingsScreen } from "./components/screens/customer/BookingsScreen";
+import { RewardsScreen } from "./components/screens/customer/RewardsScreen";
+import { CategoryScreen } from "./components/screens/customer/CategoryScreen";
+import { ServiceProvidersScreen } from "./components/screens/customer/ServiceProvidersScreen";
+import { BookingFormScreen } from "./components/screens/customer/BookingFormScreen";
+import { DashboardScreen } from "./components/screens/customer/DashboardScreen"; 
+import { OrderHistoryScreen } from "./components/screens/customer/OrderHistoryScreen";
+
+// Technician Screens
+import { TechHomeScreen } from "./components/screens/technician/TechHomeScreen";
+import { TechEarningsScreen } from "./components/screens/technician/TechEarningsScreen";
+
+// Shared Screens
+import { ProfileScreen } from "./components/screens/shared/ProfileScreen";
+import { SupportScreen } from "./components/screens/shared/SupportScreen";
+import { TermsPolicyScreen } from "./components/screens/shared/TermsPolicyScreen";
+import { SettingsScreen } from "./components/screens/shared/SettingsScreen";
+
 import { Logo } from "./components/ui/Logo";
 import { AnimatePresence, motion } from "framer-motion";
 import { Shield, Zap } from "lucide-react";
@@ -28,8 +40,15 @@ import { AuthContext } from "./context/AuthContext";
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authMode, setAuthMode] = useState("customer");
+  
+  // Initialize state from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem("token");
+  });
+  const [authMode, setAuthMode] = useState(() => {
+    return localStorage.getItem("role") || "customer";
+  });
+  
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(false); 
   const [myBookings, setMyBookings] = useState([]); 
@@ -38,25 +57,52 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAppLoading(false);
-      setShowSplash(true); 
+      // Only show onboarding if not authenticated
+      if (!isAuthenticated) {
+        setShowSplash(true); 
+      }
     }, 1500); 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAuthenticated]);
   
-  // Redirect to login if not authenticated and not on public routes
+  // Sync auth state with localStorage
   useEffect(() => {
-    if (!isAppLoading && !showSplash && !isAuthenticated && !["/login", "/register"].includes(location.pathname)) {
-      navigate("/login");
+    if (isAuthenticated) {
+      const savedRole = localStorage.getItem("role");
+      if (savedRole && savedRole !== authMode) {
+        setAuthMode(savedRole);
+      }
     }
-  }, [isAuthenticated, location.pathname, isAppLoading, showSplash, navigate]);
+  }, [isAuthenticated]);
+
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
+
+  // Redirect logic
+  useEffect(() => {
+    const publicRoutes = ["/login", "/register"];
+    const isOnPublicRoute = publicRoutes.includes(location.pathname);
+
+    if (!isAppLoading && !showSplash) {
+      if (!isAuthenticated && !isOnPublicRoute) {
+        navigate("/login");
+      } else if (isAuthenticated && isOnPublicRoute) {
+        // Already logged in, redirect to respective home
+        navigate(authMode === "technician" ? "/tech" : "/");
+      }
+    }
+  }, [isAuthenticated, location.pathname, isAppLoading, showSplash, navigate, authMode]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, authMode, setAuthMode, myBookings, setMyBookings }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, authMode, setAuthMode, myBookings, setMyBookings, logout }}>
       <div className="min-h-[100dvh] h-[100dvh] sm:min-h-screen bg-brand flex items-center justify-center sm:p-4 overflow-hidden font-sans tracking-normal">
-        {/* Mobile emulator constraint for desktop, full width on mobile */}
         <div className="w-full h-[100dvh] sm:h-[844px] sm:w-[390px] sm:max-h-[95vh] sm:rounded-[2.5rem] sm:border-[14px] sm:border-black sm:overflow-hidden bg-base relative flex flex-col items-center shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
           
-          {/* Fake iOS Dynamic Island for Desktop preview */}
           <div className="hidden sm:block absolute top-[10px] left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-full z-[999] shadow-inner"></div>
 
           {/* Loading Screen Overlay */}
@@ -78,9 +124,8 @@ export default function App() {
                   <div className="w-28 h-28 bg-base rounded-3xl flex items-center justify-center mb-6 shadow-2xl p-5 border border-white/20">
                     <Logo className="w-full h-full text-brand" />
                   </div>
-                  <h1 className="text-4xl font-extrabold text-white tracking-tight mb-8">Dorcas</h1>
+                  <h1 className="text-4xl font-extrabold text-white tracking-tight mb-8">Dorcasaid</h1>
                   
-                  {/* Loading Dots */}
                   <div className="flex gap-2">
                     {[0, 1, 2].map((i) => (
                       <motion.div
@@ -101,7 +146,7 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* New Onboarding Splash Screen Overlay */}
+          {/* Onboarding Screen Overlay */}
           <AnimatePresence>
             {showSplash && (
               <OnboardingScreen onComplete={() => {
@@ -126,7 +171,10 @@ export default function App() {
                     <>
                       <Route path="/tech" element={<TechHomeScreen />} />
                       <Route path="/tech/earnings" element={<TechEarningsScreen />} />
-                      <Route path="/tech/profile" element={<ProfileScreen />} />
+                      <Route path="/profile" element={<ProfileScreen />} />
+                      <Route path="/support" element={<SupportScreen />} />
+                      <Route path="/terms-policy" element={<TermsPolicyScreen />} />
+                      <Route path="/settings" element={<SettingsScreen />} />
                       <Route path="*" element={<Navigate to={isAuthenticated ? "/tech" : "/login"} replace />} />
                     </>
                   ) : (
@@ -135,6 +183,9 @@ export default function App() {
                       <Route path="/bookings" element={<BookingsScreen />} />
                       <Route path="/rewards" element={<RewardsScreen />} />
                       <Route path="/profile" element={<ProfileScreen />} />
+                      <Route path="/support" element={<SupportScreen />} />
+                      <Route path="/terms-policy" element={<TermsPolicyScreen />} />
+                      <Route path="/settings" element={<SettingsScreen />} />
                       <Route path="/dashboard" element={<DashboardScreen />} />
                       <Route path="/order-history" element={<OrderHistoryScreen />} />
                       <Route path="/category/:categoryId" element={<CategoryScreen />} />

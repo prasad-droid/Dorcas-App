@@ -2,10 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search, SlidersHorizontal, Star, Eye, CalendarCheck } from "lucide-react";
-import { categoryDetails } from "../../data/services";
+import { categoryDetails } from "../../../data/services";
+import { useLanguage } from "../../../context/LanguageContext";
 
 export function BookingsScreen() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -48,7 +50,7 @@ export function BookingsScreen() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-base border border-brand/10 text-brand rounded-2xl py-3.5 pl-11 pr-4 text-[13px] font-semibold focus:outline-none focus:ring-1 focus:ring-brand shadow-[0_2px_12px_rgba(13,110,253,0.04)] placeholder:text-brand/40"
-                placeholder="Search for any service..."
+                placeholder={t('search_placeholder')}
               />
             </div>
             <button className="w-12 h-12 bg-base shadow-[0_2px_12px_rgba(13,110,253,0.04)] border border-brand/10 rounded-2xl flex items-center justify-center text-brand shrink-0 hover:bg-brand/5 relative">
@@ -68,7 +70,7 @@ export function BookingsScreen() {
                     : 'bg-base text-brand border border-brand/5 hover:bg-brand/5'
                 }`}
               >
-                {cat}
+                {cat === 'All' ? 'All' : cat}
               </button>
             ))}
           </div>
@@ -82,53 +84,33 @@ export function BookingsScreen() {
                 
                 {/* Details */}
                 <div className="flex gap-3 items-start">
-                  <img 
-                    src={svc.image} 
-                    alt={svc.name} 
-                    referrerPolicy="no-referrer"
-                    className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5"
-                  />
+                  <img src={svc.image} alt={svc.name} className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5" />
                   <div className="flex-1 min-w-0 pt-0.5">
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">
-                        {svc.name}
-                      </h3>
-                      <span className="bg-brand/10 text-brand px-2 py-1 rounded-lg text-[9px] uppercase tracking-wider font-bold shrink-0 line-clamp-1 max-w-[80px] text-center">
-                         {svc.categoryName}
-                      </span>
+                      <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">{svc.name}</h3>
+                      <span className="bg-brand/10 text-brand px-2 py-1 rounded-lg text-[9px] uppercase tracking-wider font-bold shrink-0 line-clamp-1 max-w-[80px] text-center">{svc.categoryName}</span>
                     </div>
                     
                     <div className="flex items-center gap-1.5 mb-2">
                       <Star size={14} className="fill-brand text-brand" />
-                      <span className="text-[12px] font-bold text-brand/80">
-                        4.8 <span className="font-medium opacity-60">(1.2k)</span>
-                      </span>
+                      <span className="text-[12px] font-bold text-brand/80">4.8 <span className="font-medium opacity-60">(1.2k)</span></span>
                     </div>
 
-                    <div className="text-[13px] font-bold text-brand">
-                      {svc.price} <span className="opacity-60 text-[11px] font-semibold">onwards</span>
-                    </div>
+                    <div className="text-[13px] font-bold text-brand">{svc.price} <span className="opacity-60 text-[11px] font-semibold">onwards</span></div>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button 
-                    onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)}
-                    className="flex items-center justify-center gap-2 bg-base border border-brand/15 text-brand py-[12px] rounded-2xl text-[13px] font-bold hover:bg-brand/5 transition-colors shadow-sm"
-                  >
+                  <button onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)} className="flex items-center justify-center gap-2 bg-base border border-brand/15 text-brand py-[12px] rounded-2xl text-[13px] font-bold hover:bg-brand/5 transition-colors shadow-sm">
                     <Eye size={16} />
                     Details
                   </button>
-                  <button 
-                    onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)}
-                    className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity"
-                  >
+                  <button onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)} className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
                     <CalendarCheck size={16} />
-                    Book Now
+                    {t('book_now')}
                   </button>
                 </div>
-
               </div>
             ))
           ) : (
@@ -136,7 +118,7 @@ export function BookingsScreen() {
               <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mb-4">
                 <Search size={24} className="text-brand/30" />
               </div>
-              <h3 className="text-[16px] font-bold text-brand mb-1">No services found</h3>
+              <h3 className="text-[16px] font-bold text-brand mb-1">{t('no_bookings')}</h3>
               <p className="text-[13px] font-semibold text-brand/60">Try searching for a different keyword.</p>
             </div>
           )}

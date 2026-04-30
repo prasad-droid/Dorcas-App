@@ -9,9 +9,9 @@ import {
   Apple,
   Globe,
 } from "lucide-react";
-import { Logo } from "../ui/Logo";
+import { Logo } from "../../ui/Logo";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 export const LoginScreen = () => {
   const navigate = useNavigate();
@@ -237,11 +237,10 @@ export const LoginScreen = () => {
 
           <button
             type="submit"
-            className={`w-full py-4 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 text-[15px] font-black tracking-normal ${
-              authMode === "technician"
+            className={`w-full py-4 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 text-[15px] font-black tracking-normal ${authMode === "technician"
                 ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110"
                 : "bg-brand shadow-brand/20 text-white hover:shadow-2xl hover:shadow-brand/30 hover:-translate-y-0.5"
-            }`}
+              }`}
           >
             {step === 1
               ? "Send Security Code"
