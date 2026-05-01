@@ -186,8 +186,9 @@ export const RegisterScreen = () => {
 
         const data = await response.json();
         console.log(data);
-        localStorage.setItem("token", data.data.token);
         if (data.status) {
+          localStorage.setItem("token", data.data.token);
+          localStorage.setItem("role", authMode);
           setStep(3);
         } else {
           alert(data.message || "Please Add Correct OTP. Please try again.");
@@ -218,7 +219,6 @@ export const RegisterScreen = () => {
 
           const data = await response.json();
           console.log(data);
-          localStorage.clear();
 
           if (data.status) {
             handleFinalSubmit();

@@ -23,6 +23,10 @@ import { OrderHistoryScreen } from "./components/screens/customer/OrderHistorySc
 
 // Technician Screens
 import { TechHomeScreen } from "./components/screens/technician/TechHomeScreen";
+import { TechServicesScreen } from "./components/screens/technician/TechServicesScreen";
+import { TechJobDetailScreen } from "./components/screens/technician/TechJobDetailScreen";
+import { TechPortfolioScreen } from "./components/screens/technician/TechPortfolioScreen";
+import { TechDashboardScreen } from "./components/screens/technician/TechDashboardScreen";
 import { TechEarningsScreen } from "./components/screens/technician/TechEarningsScreen";
 
 // Shared Screens
@@ -44,12 +48,8 @@ export default function App() {
   const navigate = useNavigate();
   
   // Initialize state from localStorage
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return !!localStorage.getItem("token");
-  });
-  const [authMode, setAuthMode] = useState(() => {
-    return localStorage.getItem("role") || "customer";
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
+  const [authMode, setAuthMode] = useState(() => localStorage.getItem("role") || "customer");
   
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(false); 
@@ -67,16 +67,6 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [isAuthenticated]);
   
-  // Sync auth state with localStorage
-  useEffect(() => {
-    if (isAuthenticated) {
-      const savedRole = localStorage.getItem("role");
-      if (savedRole && savedRole !== authMode) {
-        setAuthMode(savedRole);
-      }
-    }
-  }, [isAuthenticated]);
-
   // Logout function
   const logout = () => {
     localStorage.removeItem("token");
@@ -87,15 +77,23 @@ export default function App() {
 
   // Redirect logic
   useEffect(() => {
+    if (isAppLoading || showSplash) return;
+
     const publicRoutes = ["/login", "/register"];
     const isOnPublicRoute = publicRoutes.includes(location.pathname);
 
-    if (!isAppLoading && !showSplash) {
-      if (!isAuthenticated && !isOnPublicRoute) {
+    if (!isAuthenticated) {
+      if (!isOnPublicRoute) {
         navigate("/login");
-      } else if (isAuthenticated && isOnPublicRoute) {
-        // Already logged in, redirect to respective home
+      }
+    } else {
+      // Authenticated logic
+      if (isOnPublicRoute) {
         navigate(authMode === "technician" ? "/tech" : "/");
+      } else if (authMode === "technician" && location.pathname === "/") {
+        navigate("/tech");
+      } else if (authMode === "customer" && location.pathname === "/tech") {
+        navigate("/");
       }
     }
   }, [isAuthenticated, location.pathname, isAppLoading, showSplash, navigate, authMode]);
@@ -172,7 +170,12 @@ export default function App() {
                   {authMode === "technician" ? (
                     <>
                       <Route path="/tech" element={<TechHomeScreen />} />
+                      <Route path="/tech/services" element={<TechServicesScreen />} />
+                      <Route path="/tech/job/:jobId" element={<TechJobDetailScreen />} />
+                      <Route path="/tech/dashboard" element={<TechDashboardScreen />} />
                       <Route path="/tech/earnings" element={<TechEarningsScreen />} />
+                      <Route path="/tech/portfolio" element={<TechPortfolioScreen />} />
+                      <Route path="/notifications" element={<NotificationScreen />} />
                       <Route path="/profile" element={<ProfileScreen />} />
                       <Route path="/support" element={<SupportScreen />} />
                       <Route path="/terms-policy" element={<TermsPolicyScreen />} />

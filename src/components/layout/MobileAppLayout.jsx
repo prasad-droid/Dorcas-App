@@ -19,9 +19,10 @@ export function MobileAppLayout({ children }) {
   ];
 
   const techNavItems = [
-    { path: "/tech", icon: Briefcase, label: t('jobs') },
-    { path: "/tech/earnings", icon: IndianRupee, label: t('earnings') },
-    { path: "/tech/profile", icon: User, label: t('profile') },
+    { path: "/tech", icon: Home, label: "Home" },
+    { path: "/tech/services", icon: Briefcase, label: "Services" },
+    { path: "/tech/earnings", icon: IndianRupee, label: "Earnings" },
+    { path: "/tech/portfolio", icon: User, label: "Portfolio" },
   ];
 
   const navItems = isTechMode ? techNavItems : customerNavItems;
@@ -37,9 +38,11 @@ export function MobileAppLayout({ children }) {
       {!["/login", "/register"].includes(location.pathname) && 
        !location.pathname.startsWith("/book/") && 
        !["/settings", "/support", "/terms-policy"].includes(location.pathname) && (
-        <nav className="absolute sm:absolute bottom-0 w-full bg-base/70 backdrop-blur-2xl border-t-[0.5px] border-black/10 pt-2 pb-8 sm:pb-6 flex justify-around items-center z-[100]">
+        <nav className="absolute sm:absolute bottom-0 w-full bg-white border-t-[0.5px] border-black/5 pt-2 pb-8 sm:pb-6 flex justify-around items-center z-[100] shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
           {navItems.map((item) => {
-            const isReallyActive = item.path === "/tech" ? location.pathname === "/tech" : (location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path)));
+            const isReallyActive = item.path === "/tech" 
+              ? location.pathname === "/tech" 
+              : (location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path)) || (item.path === "/tech/services" && location.pathname.startsWith("/tech/job/")));
 
             const Icon = item.icon;
             return (
