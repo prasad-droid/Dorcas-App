@@ -14,27 +14,52 @@ export function TechDashboardScreen() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { isAuthenticated } = useAuth();
+  const [stats, setStats] = useState({
+    totalJobs: "0",
+    monthlyGrowth: "+0%",
+    todayRevenue: "₹0",
+    rating: "0.0",
+    acceptanceRate: "0%",
+    activeJobs: "0",
+    completedJobs: "0",
+    reviewsCount: "0",
+    servicesOffered: "0",
+    missedJobs: "0"
+  });
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock Expertise Services
   const expertServices = [
-    { id: 1, name: "Kitchen Deep Cleaning", category: "Cleaning", rating: 4.9, icon: "✨" },
-    { id: 2, name: "Bathroom Leakage Repair", category: "Plumbing", rating: 4.8, icon: "🔧" },
-    { id: 3, name: "Full Home Painting", category: "Painting", rating: 5.0, icon: "🎨" },
+    { id: 1, name: "Home Cleaning", category: "Cleaning", rating: "4.9", icon: "🧹" },
+    { id: 2, name: "Deep Sanitization", category: "Cleaning", rating: "4.8", icon: "✨" }
   ];
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
-        const response = await fetch(`${API_BASE}/profile/get_profile.php`, {
-          headers: { "Authorization": `Bearer ${token}`, "Role": role }
-        });
+        const headers = { "Authorization": `Bearer ${token}`, "Role": role };
+        
+        const response = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
         const data = await response.json();
+        
         if (data.status) {
           setProfileData(data.data);
+          if (data.data.stats) {
+            setStats({
+              totalJobs: data.data.stats.total_jobs || "0",
+              monthlyGrowth: data.data.stats.growth || "+0%",
+              todayRevenue: `₹${data.data.stats.today_earnings || "0"}`,
+              rating: data.data.stats.rating || "0.0",
+              acceptanceRate: data.data.stats.acceptance_rate || "0%",
+              activeJobs: data.data.stats.active_jobs || "0",
+              completedJobs: data.data.stats.completed_jobs || "0",
+              reviewsCount: data.data.stats.reviews_count || "0",
+              servicesOffered: data.data.stats.services_count || "0",
+              missedJobs: data.data.stats.missed_jobs || "0"
+            });
+          }
         }
       } catch (error) {
         console.error("Dashboard Detail Fetch Error:", error);
@@ -43,7 +68,7 @@ export function TechDashboardScreen() {
       }
     };
 
-    if (isAuthenticated) fetchProfile();
+    if (isAuthenticated) fetchDashboardData();
   }, [isAuthenticated]);
 
   if (isLoading) {
@@ -81,15 +106,15 @@ export function TechDashboardScreen() {
         <div className="bg-white shadow-[0_15px_35px_rgba(13,110,253,0.12)] border border-brand/5 rounded-[2rem] p-6 flex gap-4">
           <div className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10">
             <span className="text-[10px] font-black text-brand/40 uppercase tracking-widest mb-1">Total Jobs</span>
-            <span className="text-3xl font-black text-brand tracking-tighter">124</span>
+            <span className="text-3xl font-black text-brand tracking-tighter">{stats.totalJobs}</span>
           </div>
           <div className="flex-[1.5] bg-gradient-to-br from-brand to-brand/80 rounded-2xl p-4 flex flex-col justify-center text-base shadow-inner overflow-hidden relative">
             <div className="absolute top-2 right-2 opacity-20"><TrendingUp size={48} /></div>
             <div className="relative z-10">
               <span className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1 block">Monthly Growth</span>
-              <span className="text-3xl font-black text-white">+24%</span>
+              <span className="text-3xl font-black text-white">{stats.monthlyGrowth}</span>
               <div className="mt-2 flex items-center gap-1 bg-white/20 w-max px-2 py-0.5 rounded-full text-[10px] font-black text-white uppercase tracking-wider">
-                Top 5% Partner
+                {parseFloat(stats.rating) >= 4.5 ? "Top 5% Partner" : "Active Partner"}
               </div>
             </div>
           </div>
@@ -103,14 +128,14 @@ export function TechDashboardScreen() {
           <SectionHeader title="Live Performance Metrics" />
           <div className="grid grid-cols-2 gap-3">
              {[
-               { label: "Today's Revenue", value: "₹2,450", icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
-               { label: "Partner Rating", value: "4.9", icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
-               { label: "Acceptance Rate", value: "98%", icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
-               { label: "Active Jobs", value: "03", icon: Clock, color: "text-blue-500", bg: "bg-blue-50" },
-               { label: "Completed Jobs", value: "118", icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
-               { label: "Customer Reviews", value: "128", icon: Users, color: "text-amber-600", bg: "bg-amber-50" },
-               { label: "Services Offered", value: "08", icon: Briefcase, color: "text-brand", bg: "bg-brand/5" },
-               { label: "Missed / Declined", value: "02", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
+               { label: "Today's Revenue", value: stats.todayRevenue, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
+               { label: "Partner Rating", value: stats.rating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
+               { label: "Acceptance Rate", value: stats.acceptanceRate, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
+               { label: "Active Jobs", value: stats.activeJobs, icon: Clock, color: "text-blue-500", bg: "bg-blue-50" },
+               { label: "Completed Jobs", value: stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
+               { label: "Customer Reviews", value: stats.reviewsCount, icon: Users, color: "text-amber-600", bg: "bg-amber-50" },
+               { label: "Services Offered", value: stats.servicesOffered, icon: Briefcase, color: "text-brand", bg: "bg-brand/5" },
+               { label: "Missed / Declined", value: stats.missedJobs, icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
              ].map((stat, i) => (
                <div key={i} className="bg-white rounded-2xl p-4 border border-brand/5 shadow-sm flex items-center gap-3">
                  <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} shrink-0`}>

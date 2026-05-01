@@ -5,10 +5,12 @@ import { ChevronLeft, Gift, Users, Share2, Copy, Sparkles } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function DealsScreen() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,7 +27,7 @@ export function DealsScreen() {
           setProfileData(data.data);
         }
       } catch (error) {
-        console.error("Profile fetch error:", error);
+        // console.error("Profile fetch error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -42,10 +44,10 @@ export function DealsScreen() {
         title: 'Join Dorcasaid',
         text: `Hey! Join me on Dorcasaid and get professional home services. Use my referral code ${refCode} to earn points!`,
         url: shareUrl
-      }).catch(console.error);
+      }).catch(() => {});
     } else {
       navigator.clipboard.writeText(shareUrl);
-      alert("Referral link copied to clipboard!");
+      showToast("Referral link copied to clipboard!", "success");
     }
   };
 
@@ -110,7 +112,7 @@ export function DealsScreen() {
                 <button 
                   onClick={() => {
                     navigator.clipboard.writeText(profileData?.referral_code || "");
-                    alert("Code copied!");
+                    showToast("Code copied!", "success");
                   }}
                   className="w-14 h-14 bg-brand text-base rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"
                 >

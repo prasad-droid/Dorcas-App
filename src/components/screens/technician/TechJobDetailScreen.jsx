@@ -7,10 +7,12 @@ import {
   CheckCircle2, Briefcase, Info, MessageSquare
 } from "lucide-react";
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function TechJobDetailScreen() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [jobData, setJobData] = useState(null);
   const [showKycAlert, setShowKycAlert] = useState(false);
@@ -19,53 +21,49 @@ export function TechJobDetailScreen() {
   const isKycComplete = false;
 
   useEffect(() => {
-    // Mock fetching job details
-    const mockJobs = [
-      {
-        id: 1,
-        title: "Kitchen Deep Cleaning",
-        category: "Cleaning",
-        location: "Andheri West, Mumbai",
-        price: "₹1,499",
-        time: "Today, 02:00 PM",
-        customer: "Rakesh Kumar",
-        address: "Flat 402, Sunshine Apartments, Bandra West, Mumbai - 400050",
-        contact: "+91 98765 43210",
-        notes: "Please bring your own cleaning kit. The service is needed for a 2BHK apartment. Reach 10 mins early if possible.",
-        paymentMode: "Pay After Service (Cash/Online)",
-        image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
-        coords: "19.0760,72.8777"
-      },
-      {
-        id: 2,
-        title: "Bathroom Leakage Repair",
-        category: "Plumbing",
-        location: "Bandra East, Mumbai",
-        price: "₹450",
-        time: "Today, 04:30 PM",
-        customer: "Amit Shah",
-        address: "House No 12, Rose Villa, Bandra East, Mumbai - 400051",
-        contact: "+91 91234 56789",
-        notes: "There is a severe leak in the kitchen sink as well. Please check that too.",
-        paymentMode: "Pay After Service (Cash/Online)",
-        image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
-        coords: "19.0596,72.8295"
-      }
-    ];
+    const fetchJobDetails = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        const headers = { "Authorization": `Bearer ${token}`, "Role": role };
 
-    const job = mockJobs.find(j => j.id.toString() === jobId) || mockJobs[0];
-    
-    setTimeout(() => {
-      setJobData(job);
-      setIsLoading(false);
-    }, 600);
+        const response = await fetch(`${API_BASE}/bookings/get_job_details.php?id=${jobId}`, { headers });
+        const data = await response.json();
+        
+        if (data.status) {
+          const job = data.data;
+          setJobData({
+            id: job.id,
+            title: job.service_name || job.category_name || "Home Service",
+            category: job.category_name || "General",
+            location: job.city || "Nearby",
+            price: `₹${job.price || job.amount || "0"}`,
+            time: job.service_date ? `${job.service_date}, ${job.service_time || ""}` : "Flexible",
+            customer: job.customer_name || job.name || "Client",
+            address: job.address || "No address provided",
+            contact: job.phone || "No contact",
+            notes: job.notes || "No additional notes provided.",
+            paymentMode: job.payment_method || "Pay After Service",
+            image: job.image || "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
+            coords: job.coords || "19.0760,72.8777"
+          });
+        }
+      } catch (error) {
+        // console.error("Fetch Job Details Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (jobId) fetchJobDetails();
   }, [jobId]);
 
   const handleAcceptJob = () => {
     if (!isKycComplete) {
       setShowKycAlert(true);
     } else {
-      alert(`Job "${jobData.title}" accepted!`);
+      showToast(`Job "${jobData.title}" accepted!`, "success");
       navigate("/tech");
     }
   };

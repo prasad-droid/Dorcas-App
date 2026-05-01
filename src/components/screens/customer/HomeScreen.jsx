@@ -51,7 +51,7 @@ export function HomeScreen() {
           const area = data.address.suburb || data.address.neighbourhood || "";
           setLocationName(area ? `${area}, ${city}` : city);
         } catch (error) {
-          console.error("Location error:", error);
+          // console.error("Location error:", error);
         }
       });
     }
@@ -92,7 +92,7 @@ export function HomeScreen() {
             ]);
           }
         } catch (e) {
-          console.warn("Offers fetch failed, using fallback");
+          // console.warn("Offers fetch failed, using fallback");
           setOffers([
             { title: "Scratch & Win", desc: "Get a scratch card on every completed booking - redeem after 3!", image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=800&auto=format&fit=crop" },
             { title: "Referral Bonus", desc: "Earn 100 points when anyone joins via your link - you win!", image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" },
@@ -141,7 +141,7 @@ export function HomeScreen() {
           setCategoryDetails(fallbackDetails);
         }
       } catch (error) {
-        console.error("API Error:", error);
+        // console.error("API Error:", error);
         setCategories(fallbackCategories);
         setCategoryDetails(fallbackDetails);
       } finally {

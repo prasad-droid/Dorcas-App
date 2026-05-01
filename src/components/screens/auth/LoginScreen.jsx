@@ -13,10 +13,12 @@ import { Logo } from "../../ui/Logo";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export const LoginScreen = () => {
   const navigate = useNavigate();
   const { setIsAuthenticated, authMode, setAuthMode } = useAuth();
+  const { showToast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1); // 1: Phone, 2: OTP
@@ -34,7 +36,7 @@ export const LoginScreen = () => {
     // STEP 1 → SEND OTP
     if (step === 1) {
       if (!phoneNumber.trim()) {
-        alert("Please enter phone number");
+        showToast("Please enter phone number", "error");
         return;
       }
 
@@ -54,23 +56,24 @@ export const LoginScreen = () => {
         );
 
         const data = await response.json();
-        console.log("Send OTP:", data);
+        // console.log("Send OTP:", data);
 
         if (data.status) {
+          showToast("OTP sent successfully!", "success");
           setStep(2);
         } else {
-          alert(data.message || "Failed to send OTP");
+          showToast(data.message || "Failed to send OTP", "error");
         }
       } catch (error) {
-        console.error("Send OTP Error:", error);
-        alert("Something went wrong");
+        // console.error("Send OTP Error:", error);
+        showToast("Something went wrong", "error");
       }
     }
 
     // STEP 2 → VERIFY OTP
     else {
       if (!otp.trim()) {
-        alert("Please enter OTP");
+        showToast("Please enter OTP", "error");
         return;
       }
 
@@ -91,7 +94,7 @@ export const LoginScreen = () => {
         );
 
         const data = await response.json();
-        console.log("Verify OTP:", data);
+        // console.log("Verify OTP:", data);
 
         if (data.status) {
           // ✅ Save token
@@ -99,6 +102,7 @@ export const LoginScreen = () => {
           localStorage.setItem("role", authMode);
 
           setIsAuthenticated(true);
+          showToast("Logged in successfully!", "success");
 
           // Redirect
           if (authMode === "technician") {
@@ -107,11 +111,11 @@ export const LoginScreen = () => {
             navigate("/");
           }
         } else {
-          alert(data.message || "Invalid OTP");
+          showToast(data.message || "Invalid OTP", "error");
         }
       } catch (error) {
-        console.error("Verify OTP Error:", error);
-        alert("Something went wrong");
+        // console.error("Verify OTP Error:", error);
+        showToast("Something went wrong", "error");
       }
     }
   };

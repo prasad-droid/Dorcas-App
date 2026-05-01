@@ -18,7 +18,7 @@ import { RewardsScreen } from "./components/screens/customer/RewardsScreen";
 import { CategoryScreen } from "./components/screens/customer/CategoryScreen";
 import { ServiceProvidersScreen } from "./components/screens/customer/ServiceProvidersScreen";
 import { BookingFormScreen } from "./components/screens/customer/BookingFormScreen";
-import { DashboardScreen } from "./components/screens/customer/DashboardScreen"; 
+import { DashboardScreen } from "./components/screens/customer/DashboardScreen";
 import { OrderHistoryScreen } from "./components/screens/customer/OrderHistoryScreen";
 
 // Technician Screens
@@ -28,6 +28,7 @@ import { TechJobDetailScreen } from "./components/screens/technician/TechJobDeta
 import { TechPortfolioScreen } from "./components/screens/technician/TechPortfolioScreen";
 import { TechDashboardScreen } from "./components/screens/technician/TechDashboardScreen";
 import { TechEarningsScreen } from "./components/screens/technician/TechEarningsScreen";
+import { TechVerificationScreen } from "./components/screens/technician/TechVerificationScreen";
 
 // Shared Screens
 import { ProfileScreen } from "./components/screens/shared/ProfileScreen";
@@ -42,18 +43,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Shield, Zap } from "lucide-react";
 
 import { AuthContext } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Initialize state from localStorage
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
   const [authMode, setAuthMode] = useState(() => localStorage.getItem("role") || "customer");
-  
+
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const [showSplash, setShowSplash] = useState(false); 
-  const [myBookings, setMyBookings] = useState([]); 
+  const [showSplash, setShowSplash] = useState(false);
+  const [myBookings, setMyBookings] = useState([]);
 
   // Splash Screen Timer
   useEffect(() => {
@@ -61,12 +63,12 @@ export default function App() {
       setIsAppLoading(false);
       // Only show onboarding if not authenticated
       if (!isAuthenticated) {
-        setShowSplash(true); 
+        setShowSplash(true);
       }
-    }, 1500); 
+    }, 1500);
     return () => clearTimeout(timer);
   }, [isAuthenticated]);
-  
+
   // Logout function
   const logout = () => {
     localStorage.removeItem("token");
@@ -100,9 +102,10 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, authMode, setAuthMode, myBookings, setMyBookings, logout }}>
-      <div className="min-h-[100dvh] h-[100dvh] sm:min-h-screen bg-brand flex items-center justify-center sm:p-4 overflow-hidden font-sans tracking-normal">
+      <ToastProvider>
+        <div className="min-h-[100dvh] h-[100dvh] sm:min-h-screen bg-brand flex items-center justify-center sm:p-4 overflow-hidden font-sans tracking-normal">
         <div className="w-full h-[100dvh] sm:h-[844px] sm:w-[390px] sm:max-h-[95vh] sm:rounded-[2.5rem] sm:border-[14px] sm:border-black sm:overflow-hidden bg-base relative flex flex-col items-center shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
-          
+
           <div className="hidden sm:block absolute top-[10px] left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-full z-[999] shadow-inner"></div>
 
           {/* Loading Screen Overlay */}
@@ -125,16 +128,16 @@ export default function App() {
                     <Logo className="w-full h-full text-brand" />
                   </div>
                   <h1 className="text-4xl font-extrabold text-white tracking-tight mb-8">Dorcasaid</h1>
-                  
+
                   <div className="flex gap-2">
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
                         className="w-2.5 h-2.5 bg-white rounded-full"
                         animate={{ y: [0, -10, 0] }}
-                        transition={{ 
-                          duration: 0.8, 
-                          repeat: Infinity, 
+                        transition={{
+                          duration: 0.8,
+                          repeat: Infinity,
                           delay: i * 0.2,
                           ease: "easeInOut"
                         }}
@@ -173,6 +176,7 @@ export default function App() {
                       <Route path="/tech/services" element={<TechServicesScreen />} />
                       <Route path="/tech/job/:jobId" element={<TechJobDetailScreen />} />
                       <Route path="/tech/dashboard" element={<TechDashboardScreen />} />
+                      <Route path="/tech/verification" element={<TechVerificationScreen />} />
                       <Route path="/tech/earnings" element={<TechEarningsScreen />} />
                       <Route path="/tech/portfolio" element={<TechPortfolioScreen />} />
                       <Route path="/notifications" element={<NotificationScreen />} />
@@ -207,6 +211,7 @@ export default function App() {
           </MobileAppLayout>
         </div>
       </div>
+      </ToastProvider>
     </AuthContext.Provider>
   );
 }

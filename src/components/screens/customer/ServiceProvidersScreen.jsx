@@ -24,7 +24,7 @@ export function ServiceProvidersScreen() {
     const fetchProviders = async () => {
       try {
         setIsLoading(true);
-        console.log(serviceId);
+        // console.log(serviceId);
         // If serviceId is a number, fetch from API
         if (!isNaN(serviceId)) {
           const res = await fetch(`${API_BASE}/vendors/get_vendors_by_service.php?service_id=${serviceId}`);
@@ -49,7 +49,7 @@ export function ServiceProvidersScreen() {
           setProviders([]);
         }
       } catch (error) {
-        console.error("Fetch Error:", error);
+        // console.error("Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }

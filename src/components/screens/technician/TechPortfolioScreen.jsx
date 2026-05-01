@@ -50,19 +50,13 @@ export function TechPortfolioScreen() {
       icon: Shield, 
       label: "ID Verification", 
       desc: "KYC & Professional credentials", 
-      action: () => navigate("/profile") 
+      action: () => navigate("/tech/verification") 
     },
     { 
       icon: CreditCard, 
       label: "Banking & Payouts", 
       desc: "Settlement accounts & history", 
       action: () => navigate("/tech/earnings") 
-    },
-    { 
-      icon: Award, 
-      label: "Reviews & Feedback", 
-      desc: "What customers say about you", 
-      action: () => {} 
     },
     { 
       icon: HelpCircle, 
@@ -133,18 +127,18 @@ export function TechPortfolioScreen() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-brand/30 mb-1">Rating</p>
             <div className="flex items-center justify-center gap-1">
               <Star size={16} className="fill-amber-400 text-amber-400" />
-              <p className="text-lg font-black text-brand">4.9</p>
+              <p className="text-lg font-black text-brand">{profileData?.stats?.rating || "0.0"}</p>
             </div>
           </div>
           <div className="w-[1px] h-10 bg-brand/5 mx-2" />
           <div className="flex-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-brand/30 mb-1">Jobs Done</p>
-            <p className="text-lg font-black text-brand">142</p>
+            <p className="text-lg font-black text-brand">{profileData?.stats?.total_jobs || "0"}</p>
           </div>
           <div className="w-[1px] h-10 bg-brand/5 mx-2" />
           <div className="flex-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-brand/30 mb-1">Earnings</p>
-            <p className="text-lg font-black text-emerald-600">₹85.4k</p>
+            <p className="text-lg font-black text-emerald-600">₹{profileData?.stats?.total_earnings || "0"}</p>
           </div>
         </div>
       </div>

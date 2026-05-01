@@ -16,10 +16,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { mainCategories } from "../../../data/services";
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
   const { setIsAuthenticated, authMode, setAuthMode } = useAuth();
+  const { showToast } = useToast();
   const [loadingLocation, setLoadingLocation] = useState("");
   const [categories, setCategories] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
@@ -77,7 +79,7 @@ export const RegisterScreen = () => {
 
   const getLocation = () => {
     if (!navigator.geolocation) {
-      alert("Location not supported");
+      showToast("Location not supported", "error");
       return;
     }
 
@@ -107,14 +109,14 @@ export const RegisterScreen = () => {
             address: data.display_name || "",
           }));
         } catch (err) {
-          console.error(err);
-          alert("Failed to fetch location details");
+          // console.error(err);
+          showToast("Failed to fetch location details", "error");
         }
 
         setLoadingLocation(false);
       },
       () => {
-        alert("Permission denied. Please enter manually.");
+        showToast("Permission denied. Please enter manually.", "error");
         setLoadingLocation(false);
       },
     );
@@ -126,14 +128,14 @@ export const RegisterScreen = () => {
     if (step === 1) {
       // Validate phone number and send OTP
       if (!formData.phoneNumber.trim()) {
-        alert("Please enter a phone number");
+        showToast("Please enter a phone number", "error");
         return;
       }
       
       // Validate Indian phone number (10 digits, starts with 6-9)
       const phoneRegex = /^[6-9]\d{9}$/;
       if (!phoneRegex.test(formData.phoneNumber.replace(/\D/g, ''))) {
-        alert("Please enter a valid Indian phone number (10 digits starting with 6-9)");
+        showToast("Please enter a valid Indian phone number", "error");
         return;
       }
       
@@ -154,16 +156,17 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
 
         if (data.status) {
+          showToast("OTP sent successfully!", "success");
           setStep(2);
         } else {
-          alert(data.message || "Failed to send OTP. Please try again.");
+          showToast(data.message || "Failed to send OTP", "error");
         }
       } catch (error) {
-        console.error("Error sending OTP:", error);
-        alert("Error sending OTP. Please try again.");
+        // console.error("Error sending OTP:", error);
+        showToast("Error sending OTP. Please try again.", "error");
       }
     }
     // Step 2 Verify OTP
@@ -185,17 +188,18 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         if (data.status) {
           localStorage.setItem("token", data.data.token);
           localStorage.setItem("role", authMode);
+          showToast("Phone verified successfully!", "success");
           setStep(3);
         } else {
-          alert(data.message || "Please Add Correct OTP. Please try again.");
+          showToast(data.message || "Invalid OTP", "error");
         }
       } catch (error) {
-        console.error("Error sending OTP:", error);
-        alert("Error sending OTP. Please try again.");
+        // console.error("Error sending OTP:", error);
+        showToast("Error verifying OTP. Please try again.", "error");
       }
     }
     // Additional Details
@@ -218,15 +222,16 @@ export const RegisterScreen = () => {
           );
 
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
 
           if (data.status) {
             handleFinalSubmit();
           } else {
-            alert(data.message || "  try again.");
+            showToast(data.message || "Registration failed", "error");
           }
         } catch (error) {
-          console.error("Error : ", error.toString());
+          // console.error("Error : ", error.toString());
+          showToast("Something went wrong", "error");
         }
       }
     } else if (step === 4) {
@@ -248,16 +253,16 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        console.log("Step 4 Response:", data);
+        // console.log("Step 4 Response:", data);
 
         if (data.status) {
           handleFinalSubmit();
         } else {
-          alert(data.message || "Failed to complete profile");
+          showToast(data.message || "Failed to complete profile", "error");
         }
       } catch (error) {
-        console.error("Step 4 Error:", error);
-        alert("Something went wrong");
+        // console.error("Step 4 Error:", error);
+        showToast("Something went wrong", "error");
       }
     }
   };

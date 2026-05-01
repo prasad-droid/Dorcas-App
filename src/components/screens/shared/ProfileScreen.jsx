@@ -50,6 +50,7 @@ export function ProfileScreen() {
   ];
 
   const techMenuItems = [
+    { icon: LayoutDashboard, label: "Performance Dashboard", desc: "View detailed performance metrics", action: () => navigate("/tech/dashboard") },
     { icon: Briefcase, label: t('jobs'), desc: "Manage your assigned tasks", action: () => navigate("/tech") },
     { icon: CreditCard, label: t('earnings'), desc: "Track your revenue and payouts", action: () => navigate("/tech/earnings") },
     { icon: HelpCircle, label: t('help_support'), desc: "Get help with your account", action: () => navigate("/support") },
@@ -102,16 +103,28 @@ export function ProfileScreen() {
       <div className="relative z-20 px-6 -mt-8 mb-4">
         <div className="bg-base shadow-[0_8px_20px_rgba(13,110,253,0.08)] border border-brand/5 rounded-2xl p-4 flex justify-between items-center text-center divide-x divide-brand/10">
           <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">{profileData?.stats?.label1 || (isTech ? t('jobs') : t('bookings'))}</p>
-            <p className="text-xl font-black text-brand">{profileData?.stats?.value1 || "0"}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">
+              {isTech ? "Jobs Done" : (profileData?.stats?.label1 || t('bookings'))}
+            </p>
+            <p className="text-xl font-black text-brand">
+              {isTech ? (profileData?.stats?.total_jobs || "0") : (profileData?.stats?.value1 || "0")}
+            </p>
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">{profileData?.stats?.label2 || (isTech ? t('earnings') : t('rewards'))}</p>
-            <p className="text-xl font-black text-[#ffb800]">{profileData?.stats?.value2 || "0"}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">
+              {isTech ? "Earnings" : (profileData?.stats?.label2 || t('rewards'))}
+            </p>
+            <p className="text-xl font-black text-[#ffb800]">
+              {isTech ? `₹${profileData?.stats?.total_earnings || "0"}` : (profileData?.stats?.value2 || "0")}
+            </p>
           </div>
           <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">Wallet</p>
-            <p className="text-sm font-black text-brand mt-1">{profileData?.stats?.value3 || "REGULAR"}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">
+              {isTech ? "Rating" : "Status"}
+            </p>
+            <p className="text-sm font-black text-brand mt-1">
+              {isTech ? (profileData?.stats?.rating || "0.0") : (profileData?.stats?.value3 || "REGULAR")}
+            </p>
           </div>
         </div>
       </div>

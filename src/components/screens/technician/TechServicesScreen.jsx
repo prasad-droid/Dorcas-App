@@ -7,83 +7,105 @@ import {
   Shield, User, Calendar, AlertCircle, Phone
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useToast } from "../../../context/ToastContext";
 import { API_BASE } from "../../../config";
 
 export function TechServicesScreen() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [availableJobs, setAvailableJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [showKycAlert, setShowKycAlert] = useState(false);
+  const [profileData, setProfileData] = useState(null);
   
-  // Mock KYC status
-  const isKycComplete = false;
+  // Real KYC status from profile
+  const isKycComplete = profileData?.is_approved || false;
 
-  const handleAcceptJob = (job) => {
+  const handleAcceptJob = async (job) => {
     if (!isKycComplete) {
       setShowKycAlert(true);
-    } else {
-      alert(`Job "${job.title}" accepted!`);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const response = await fetch(`${API_BASE}/bookings/accept_job.php`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Role": role,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ job_id: job.id })
+      });
+      const data = await response.json();
+      
+      if (data.status) {
+        showToast(data.message, "success");
+        // Refresh jobs list
+        setAvailableJobs(prev => prev.filter(j => j.id !== job.id));
+        navigate("/tech"); // Redirect to home to see ongoing job
+      } else {
+        showToast(data.message, "error");
+      }
+    } catch (error) {
+      // console.error("Accept Job Error:", error);
+      showToast("Something went wrong. Please try again.", "error");
     }
   };
 
   useEffect(() => {
-    // Mock data for available jobs/requests
-    const mockJobs = [
-      {
-        id: 1,
-        title: "Kitchen Deep Cleaning",
-        category: "Cleaning",
-        location: "Andheri West, Mumbai",
-        distance: "1.2 km",
-        price: "₹1,499",
-        time: "Today, 02:00 PM",
-        customerRating: "4.8",
-        urgency: "high"
-      },
-      {
-        id: 2,
-        title: "Bathroom Leakage Repair",
-        category: "Plumbing",
-        location: "Bandra East, Mumbai",
-        distance: "3.5 km",
-        price: "₹450",
-        time: "Today, 04:30 PM",
-        customerRating: "4.5",
-        urgency: "medium"
-      },
-      {
-        id: 3,
-        title: "AC Gas Refilling",
-        category: "AC Service",
-        location: "Juhu, Mumbai",
-        distance: "2.1 km",
-        price: "₹2,500",
-        time: "Tomorrow, 10:00 AM",
-        customerRating: "5.0",
-        urgency: "low"
-      },
-      {
-        id: 4,
-        title: "Sofa Dry Cleaning",
-        category: "Cleaning",
-        location: "Goregaon, Mumbai",
-        distance: "5.0 km",
-        price: "₹800",
-        time: "Today, 06:00 PM",
-        customerRating: "4.2",
-        urgency: "high"
-      }
-    ];
-    
-    setTimeout(() => {
-      setAvailableJobs(mockJobs);
-      setIsLoading(false);
-    }, 800);
-  }, []);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        const headers = { 
+          "Authorization": `Bearer ${token}`, 
+          "Role": role,
+          "Content-Type": "application/json"
+        };
 
-  const categories = ["All", "Cleaning", "Plumbing", "AC Service", "Electrical"];
+        // 1. Fetch Profile for KYC status
+        const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
+        const profileJson = await profileRes.json();
+        if (profileJson.status) {
+          setProfileData(profileJson.data);
+        }
+
+        // 2. Fetch Available Jobs
+        const response = await fetch(`${API_BASE}/bookings/get_available_jobs.php`, { headers });
+        const data = await response.json();
+        
+        if (data.status) {
+          const mappedJobs = data.data.map(job => ({
+            id: job.id,
+            title: job.service_name || job.category_name || "Home Service",
+            category: job.category_name || "General",
+            location: job.address || "Nearby",
+            city: job.city || "",
+            distance: job.distance || "Nearby",
+            price: `₹${job.price || job.amount || "0"}`,
+            time: job.service_date ? `${job.service_date}, ${job.service_time || ""}` : "Flexible",
+            customerRating: job.rating || "4.8",
+            urgency: job.urgency || "medium",
+            image: job.image || "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop"
+          }));
+          setAvailableJobs(mappedJobs);
+        }
+      } catch (error) {
+        // console.error("Fetch Data Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isAuthenticated) fetchData();
+  }, [isAuthenticated]);
+
 
   if (isLoading) {
     return (
@@ -120,22 +142,6 @@ export function TechServicesScreen() {
           </button>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2 remove-scrollbar">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-tight whitespace-nowrap transition-all border ${
-                activeCategory === cat 
-                ? "bg-brand text-white border-brand shadow-md shadow-brand/20" 
-                : "bg-white text-brand/40 border-black/[0.03] shadow-sm"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
         <div className="px-0 flex flex-col gap-4">
           <AnimatePresence>
             {availableJobs
@@ -149,7 +155,7 @@ export function TechServicesScreen() {
                 >
                   <div className="flex gap-3 items-start">
                     <img
-                      src={`https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop`}
+                      src={job.image}
                       alt="job"
                       className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5"
                     />

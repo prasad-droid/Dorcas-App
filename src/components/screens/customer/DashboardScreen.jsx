@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function DashboardScreen() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,7 +28,7 @@ export function DashboardScreen() {
           setProfileData(data.data);
         }
       } catch (error) {
-        console.error("Dashboard Fetch Error:", error);
+        // console.error("Dashboard Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -38,7 +40,7 @@ export function DashboardScreen() {
   const copyReferral = () => {
     const link = `https://dorcas.app/ref/${profileData?.referral_code || "REF"}`;
     navigator.clipboard.writeText(link);
-    alert("Referral link copied!");
+    showToast("Referral link copied!", "success");
   };
 
   if (isLoading) {

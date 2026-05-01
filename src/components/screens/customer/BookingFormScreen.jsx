@@ -8,6 +8,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function BookingFormScreen() {
   const { serviceId, providerId } = useParams();
@@ -15,6 +16,7 @@ export function BookingFormScreen() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const { setMyBookings, isAuthenticated } = useAuth();
+  const { showToast } = useToast();
 
   const [step, setStep] = useState("form"); // "form" or "success"
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +71,7 @@ export function BookingFormScreen() {
           setProviderDetails(vendorData.data);
         }
       } catch (error) {
-        console.error("Fetch Error:", error);
+        // console.error("Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -127,13 +129,14 @@ export function BookingFormScreen() {
         };
 
         setMyBookings(prev => [newBooking, ...prev]);
+        showToast("Booking created successfully!", "success");
         setStep("success");
       } else {
-        alert(data.message || "Failed to create booking");
+        showToast(data.message || "Failed to create booking", "error");
       }
     } catch (error) {
-      console.error("Booking Error:", error);
-      alert("Something went wrong while creating your booking.");
+      // console.error("Booking Error:", error);
+      showToast("Something went wrong while creating your booking.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -361,7 +364,7 @@ function BookingSuccessView({ details, onClose, card }) {
         setRewardClaimed(true);
       }
     } catch (error) {
-      console.error("Scratch reward error:", error);
+      // console.error("Scratch reward error:", error);
     }
   };
 

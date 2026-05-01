@@ -49,7 +49,7 @@ export function OrderHistoryScreen() {
         setBookings(mappedBookings);
       }
     } catch (error) {
-      console.error("Fetch Error:", error);
+      // console.error("Fetch Error:", error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);

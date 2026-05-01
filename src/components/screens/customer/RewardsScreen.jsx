@@ -5,14 +5,15 @@ import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function RewardsScreen() {
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [scratchCards, setScratchCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCard, setActiveCard] = useState(null);
-  const [showCopyToast, setShowCopyToast] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +37,7 @@ export function RewardsScreen() {
         if (cardsData.status) setScratchCards(cardsData.data);
 
       } catch (error) {
-        console.error("Rewards Fetch Error:", error);
+        // console.error("Rewards Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -72,7 +73,7 @@ export function RewardsScreen() {
         }));
       }
     } catch (error) {
-      console.error("Scratch error:", error);
+      // console.error("Scratch error:", error);
     }
   };
 
@@ -80,7 +81,7 @@ export function RewardsScreen() {
   const handleRedeem = async () => {
     const points = Number(profileData?.stats?.value2) || 0;
     if (points < 100) {
-      alert("Minimum 100 points required to redeem!");
+      showToast("Minimum 100 points required to redeem!", "error");
       return;
     }
 
@@ -108,12 +109,13 @@ export function RewardsScreen() {
             value2: 0 // All points redeemed
           }
         }));
-        alert(data.message);
+        showToast(data.message, "success");
       } else {
-        alert(data.message);
+        showToast(data.message, "error");
       }
     } catch (error) {
-      console.error("Redeem error:", error);
+      // console.error("Redeem error:", error);
+      showToast("Failed to redeem points. Please try again.", "error");
     } finally {
       setIsRedeeming(false);
     }
@@ -122,8 +124,7 @@ export function RewardsScreen() {
   const copyReferral = () => {
     const link = `https://dorcasaid.app/invite/${profileData?.referral_code || "REF"}`;
     navigator.clipboard.writeText(link);
-    setShowCopyToast(true);
-    setTimeout(() => setShowCopyToast(false), 2000);
+    showToast("Referral code copied!", "success");
   };
 
   const shareWhatsApp = () => {
@@ -301,20 +302,6 @@ export function RewardsScreen() {
         )}
       </AnimatePresence>
 
-      {/* Copy Toast */}
-      <AnimatePresence>
-        {showCopyToast && (
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 50, opacity: 0 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[2000] bg-brand text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-2xl font-bold text-sm"
-          >
-            <CheckCircle2 size={18} />
-            Referral code copied!
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
