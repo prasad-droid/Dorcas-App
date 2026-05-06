@@ -112,9 +112,14 @@ export function NotificationScreen() {
             );
           })
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-            <Bell size={48} className="mb-4" />
-            <p className="font-bold">No new notifications</p>
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-20 h-20 bg-brand/5 rounded-full flex items-center justify-center text-brand/20 mb-6">
+              <Bell size={40} />
+            </div>
+            <h3 className="text-lg font-black text-brand tracking-tight">No notifications yet</h3>
+            <p className="text-[11px] font-bold text-brand/40 uppercase tracking-widest mt-1 px-10 leading-relaxed">
+              We'll notify you when there's an update on your bookings or special offers.
+            </p>
           </div>
         )}
       </div>

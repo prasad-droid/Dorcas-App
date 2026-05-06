@@ -24,7 +24,7 @@ export function ServiceProvidersScreen() {
     const fetchProviders = async () => {
       try {
         setIsLoading(true);
-        // console.log(serviceId);
+        console.log(serviceId);
         // If serviceId is a number, fetch from API
         if (!isNaN(serviceId)) {
           const res = await fetch(`${API_BASE}/vendors/get_vendors_by_service.php?service_id=${serviceId}`);
@@ -231,8 +231,8 @@ export function ServiceProvidersScreen() {
                       setIsSortOpen(false);
                     }}
                     className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${sortBy === option.value
-                        ? "border-brand bg-brand/5 shadow-sm"
-                        : "border-brand/10 bg-base hover:bg-brand/5"
+                      ? "border-brand bg-brand/5 shadow-sm"
+                      : "border-brand/10 bg-base hover:bg-brand/5"
                       }`}
                   >
                     <span className={`text-[14px] font-bold ${sortBy === option.value ? 'text-brand' : 'text-brand/80'}`}>

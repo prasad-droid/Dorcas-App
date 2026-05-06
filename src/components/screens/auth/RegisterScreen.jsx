@@ -12,14 +12,15 @@ import {
   Search,
 } from "lucide-react";
 import { Logo } from "../../ui/Logo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { mainCategories } from "../../../data/services";
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralParam = searchParams.get("refer");
   const { setIsAuthenticated, authMode, setAuthMode } = useAuth();
   const { showToast } = useToast();
   const [loadingLocation, setLoadingLocation] = useState("");
@@ -38,16 +39,39 @@ export const RegisterScreen = () => {
     pincode: "",
     city: "",
     state: "",
-    area: "", // ✅ NEW
+    area: "", 
     address: "",
-    landmark: "", // optional (good UX)
-    referralCode: "",
+    landmark: "", 
+    referralCode: referralParam || "",
     latitude: "",
     longitude: "",
     selectedServices: [],
+    agreedToTerms: false,
   });
 
-  // Clear state when switching roles
+  useEffect(() => {
+    if (referralParam) {
+      setFormData(prev => ({ ...prev, referralCode: referralParam }));
+    }
+  }, [referralParam]);
+
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Auto-check location on mount
+  useEffect(() => {
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then(result => {
+        if (result.state === 'prompt') {
+          setShowLocationModal(true);
+        } else if (result.state === 'granted') {
+          getLocation();
+        }
+      });
+    } else {
+      setShowLocationModal(true);
+    }
+  }, []);
   useEffect(() => {
     setFormData({
       phoneNumber: "",
@@ -64,6 +88,7 @@ export const RegisterScreen = () => {
       latitude: "",
       longitude: "",
       selectedServices: [],
+      agreedToTerms: false,
     });
   }, [authMode]);
 
@@ -75,6 +100,11 @@ export const RegisterScreen = () => {
           setCategories(data.data);
         }
       });
+  }, []);
+
+  // Auto-fetch location on mount
+  useEffect(() => {
+    getLocation();
   }, []);
 
   const getLocation = () => {
@@ -131,14 +161,19 @@ export const RegisterScreen = () => {
         showToast("Please enter a phone number", "error");
         return;
       }
-      
+
       // Validate Indian phone number (10 digits, starts with 6-9)
       const phoneRegex = /^[6-9]\d{9}$/;
       if (!phoneRegex.test(formData.phoneNumber.replace(/\D/g, ''))) {
         showToast("Please enter a valid Indian phone number", "error");
         return;
       }
-      
+
+      if (!formData.agreedToTerms) {
+        showToast("Please agree to the Terms and Conditions", "error");
+        return;
+      }
+
       try {
         const response = await fetch(
           `${API_BASE}/auth/send_otp.php`,
@@ -156,16 +191,17 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        // console.log(data);
+        console.log(data);
 
         if (data.status) {
           showToast("OTP sent successfully!", "success");
           setStep(2);
         } else {
+          
           showToast(data.message || "Failed to send OTP", "error");
         }
       } catch (error) {
-        // console.error("Error sending OTP:", error);
+        console.error("Error sending OTP:", error);
         showToast("Error sending OTP. Please try again.", "error");
       }
     }
@@ -188,7 +224,7 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        // console.log(data);
+        console.log(data);
         if (data.status) {
           localStorage.setItem("token", data.data.token);
           localStorage.setItem("role", authMode);
@@ -222,7 +258,7 @@ export const RegisterScreen = () => {
           );
 
           const data = await response.json();
-          // console.log(data);
+          console.log(data);
 
           if (data.status) {
             handleFinalSubmit();
@@ -253,7 +289,7 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        // console.log("Step 4 Response:", data);
+        console.log("Step 4 Response:", data);
 
         if (data.status) {
           handleFinalSubmit();
@@ -268,10 +304,10 @@ export const RegisterScreen = () => {
   };
 
   const handleFinalSubmit = () => {
-    setIsAuthenticated(true);
     if (authMode === "technician") {
-      navigate("/tech");
+      setShowSuccessModal(true);
     } else {
+      setIsAuthenticated(true);
       navigate("/");
     }
   };
@@ -334,6 +370,20 @@ export const RegisterScreen = () => {
                   required
                 />
               </div>
+            </div>
+
+            {/* Terms and Conditions Checkbox */}
+            <div className="flex items-start gap-3 px-1 pt-2">
+              <input
+                type="checkbox"
+                id="reg-terms"
+                checked={formData.agreedToTerms}
+                onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
+                className="mt-1 w-4 h-4 rounded border-brand/20 text-brand focus:ring-brand/20"
+              />
+              <label htmlFor="reg-terms" className="text-[12px] font-medium text-brand/60 leading-snug">
+                I agree to the <button type="button" className="text-brand font-bold hover:underline">Terms of Service</button> and <button type="button" className="text-brand font-bold hover:underline">Privacy Policy</button>
+              </label>
             </div>
           </motion.div>
         );
@@ -442,13 +492,12 @@ export const RegisterScreen = () => {
                 </div>
               </div>
             )}
-            <button
-              type="button"
-              onClick={getLocation}
-              className="w-full py-3 bg-blue-50 text-blue-600 rounded-xl font-bold"
-            >
-              {loadingLocation ? "Fetching location..." : "📍 Use My Location"}
-            </button>
+            {loadingLocation && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-brand/5 rounded-xl border border-brand/10">
+                <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                <span className="text-[10px] font-bold text-brand/60 tracking-wider uppercase">Detecting Location...</span>
+              </div>
+            )}
             <div>
               <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
                 Full Address
@@ -541,59 +590,113 @@ export const RegisterScreen = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <div className="flex items-center justify-between px-1">
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em]">
-                Select Your Services
-              </label>
-              <span className="text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full">
-                {formData.selectedServices.length} Selected
-              </span>
+            <div className="bg-brand/5 rounded-3xl p-6 border border-brand/10">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[11px] font-black text-brand uppercase tracking-[0.1em]">
+                  Available Services
+                </label>
+                <span className="text-[10px] font-black text-white bg-brand px-3 py-1 rounded-full shadow-lg shadow-brand/20">
+                  {formData.selectedServices.length} Selected
+                </span>
+              </div>
+              <p className="text-[12px] font-medium text-brand/60 leading-snug">
+                Choose the categories and specific services you are qualified to provide.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 pb-20">
-              {categories.map((category) => (
-                <div key={category.id} className="mb-4">
-                  {/* Category Card */}
-                  <button
-                  type="button"
-                    onClick={() =>
-                      setOpenCategory(
-                        openCategory === category.id ? null : category.id,
-                      )
-                    }
-                    className="w-full p-4 bg-white rounded-2xl shadow-sm flex justify-between items-center"
-                  >
-                    <span className="font-bold">{category.category_name}</span>
-                    <span>{openCategory === category.id ? "▲" : "▼"}</span>
-                  </button>
+            <div className="space-y-4 pb-12">
+              {categories.map((category) => {
+                const isOpen = openCategory === category.id;
+                const selectedCount = category.services.filter(s => formData.selectedServices.includes(s.id)).length;
+                
+                return (
+                  <div key={category.id} className="group">
+                    {/* Category Header */}
+                    <button
+                      type="button"
+                      onClick={() => setOpenCategory(isOpen ? null : category.id)}
+                      className={`w-full p-5 rounded-2xl flex justify-between items-center transition-all border ${
+                        isOpen 
+                          ? "bg-white border-brand shadow-xl shadow-brand/5 ring-4 ring-brand/5" 
+                          : "bg-white border-brand/10 hover:border-brand/30"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                          isOpen ? "bg-brand text-white" : "bg-brand/5 text-brand"
+                        }`}>
+                          <img src={category.category_img} alt="" />
+                        </div>
+                        <div className="text-left">
+                          <span className={`block font-black text-sm tracking-tight transition-colors ${
+                            isOpen ? "text-brand" : "text-brand/80"
+                          }`}>
+                            {category.category_name}
+                          </span>
+                          {selectedCount > 0 && (
+                            <span className="text-[10px] font-bold text-emerald-600 block">
+                              {selectedCount} services selected
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${
+                        isOpen ? "bg-brand/10 text-brand rotate-180" : "bg-brand/5 text-brand/40"
+                      }`}>
+                        <ChevronLeft size={16} className="-rotate-90" />
+                      </div>
+                    </button>
 
-                  {/* Services */}
-                  {openCategory === category.id && (
-                    <div className="grid grid-cols-2 gap-3 mt-3">
-                      {category.services.map((service) => {
-                        const isSelected = formData.selectedServices.includes(
-                          service.id,
-                        );
+                    {/* Services Grid (Accordion) */}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="grid grid-cols-2 gap-3 px-1">
+                            {category.services.map((service) => {
+                              const isSelected = formData.selectedServices.includes(service.id);
 
-                        return (
-                          <button
-                          type="button"
-                            key={service.id}
-                            onClick={() => toggleService(service.id)}
-                            className={`p-3 rounded-xl border ${
-                              isSelected ? "bg-brand text-white" : "bg-white"
-                            }`}
-                          >
-                            {service.service_name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
+                              return (
+                                <motion.button
+                                  whileTap={{ scale: 0.97 }}
+                                  type="button"
+                                  key={service.id}
+                                  onClick={() => toggleService(service.id)}
+                                  className={`p-4 rounded-xl border text-xs font-bold transition-all flex flex-col gap-3 relative overflow-hidden text-left ${
+                                    isSelected 
+                                      ? "bg-brand border-brand text-white shadow-lg shadow-brand/20" 
+                                      : "bg-white border-brand/5 text-brand/60 hover:border-brand/20"
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    <motion.div 
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-bl-xl flex items-center justify-center"
+                                    >
+                                      <Check size={12} className="text-brand" strokeWidth={4} />
+                                    </motion.div>
+                                  )}
+                                  <span className="relative z-10">{service.service_name}</span>
+                                  <span className={`text-[10px] font-medium opacity-60 ${isSelected ? "text-white" : "text-brand/40"}`}>
+                                    Professional Service
+                                  </span>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         );
@@ -659,11 +762,10 @@ export const RegisterScreen = () => {
             <button
               type="submit"
               disabled={step === 4 && formData.selectedServices.length === 0}
-              className={`w-full py-4 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 text-[15px] font-black tracking-normal ${
-                authMode === "technician"
+              className={`w-full py-4 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 text-[15px] font-black tracking-normal ${authMode === "technician"
                   ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
                   : "bg-brand shadow-brand/20 text-white hover:shadow-2xl hover:shadow-brand/30 hover:-translate-y-0.5"
-              }`}
+                }`}
             >
               {step === 1
                 ? "Send Verification"
@@ -693,6 +795,98 @@ export const RegisterScreen = () => {
           </p>
         </div>
       </div>
+      {/* Location Permission Modal */}
+      <AnimatePresence>
+        {showLocationModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-brand/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white w-full max-sm rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-full -mr-16 -mt-16" />
+              
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-brand rounded-3xl flex items-center justify-center text-white mb-6 shadow-xl shadow-brand/20">
+                  <MapPin size={40} />
+                </div>
+                
+                <h3 className="text-2xl font-black text-brand tracking-tight mb-3">Location Access</h3>
+                <p className="text-sm font-medium text-brand/60 leading-relaxed mb-8">
+                  To provide you with the best experience and find nearby services, we need access to your location.
+                </p>
+                
+                <button
+                  onClick={() => {
+                    getLocation();
+                    setShowLocationModal(false);
+                  }}
+                  className="w-full bg-brand text-white py-4 rounded-2xl font-black text-[15px] shadow-lg shadow-brand/20 active:scale-95 transition-transform"
+                >
+                  Allow Access
+                </button>
+                
+                <button
+                  onClick={() => setShowLocationModal(false)}
+                  className="mt-4 text-[11px] font-black text-brand/30 uppercase tracking-[0.1em] hover:text-brand transition-colors"
+                >
+                  I'll do it later
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Technician Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 bg-brand/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="relative bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500" />
+              
+              <div className="flex flex-col items-center text-center">
+                <div className="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center text-emerald-500 mb-8">
+                  <Check size={48} strokeWidth={3} />
+                </div>
+                
+                <h3 className="text-2xl font-black text-brand tracking-tight mb-4">Registration Successful!</h3>
+                <p className="text-sm font-medium text-brand/60 leading-relaxed mb-8">
+                  Welcome to the partner community. To start receiving bookings, you must now complete your <span className="text-brand font-black">KYC verification</span>.
+                </p>
+                
+                <div className="w-full space-y-4">
+                  <button
+                    onClick={() => {
+                      setIsAuthenticated(true);
+                      navigate("/tech");
+                    }}
+                    className="w-full bg-brand text-white py-4 rounded-2xl font-black text-[15px] shadow-xl shadow-brand/20 active:scale-95 transition-transform"
+                  >
+                    Go to Dashboard
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

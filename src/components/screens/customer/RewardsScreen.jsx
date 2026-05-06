@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Gift, Copy, Share2, Sparkles, X, Trophy, CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
+import { useLanguage } from "../../../context/LanguageContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
 import { API_BASE } from "../../../config";
@@ -81,7 +82,7 @@ export function RewardsScreen() {
   const handleRedeem = async () => {
     const points = Number(profileData?.stats?.value2) || 0;
     if (points < 100) {
-      showToast("Minimum 100 points required to redeem!", "error");
+      showToast(t('min_points_error'), "error");
       return;
     }
 
@@ -124,7 +125,7 @@ export function RewardsScreen() {
   const copyReferral = () => {
     const link = `https://dorcasaid.app/invite/${profileData?.referral_code || "REF"}`;
     navigator.clipboard.writeText(link);
-    showToast("Referral code copied!", "success");
+    showToast(t('referral_copied'), "success");
   };
 
   const shareWhatsApp = () => {
@@ -148,10 +149,10 @@ export function RewardsScreen() {
       className="flex flex-col w-full h-full bg-base pt-12 sm:pt-6 px-5"
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-black text-brand tracking-tight">My Rewards</h2>
+        <h2 className="text-2xl font-black text-brand tracking-tight">{t('my_rewards')}</h2>
         <div className="flex items-center gap-1.5 bg-brand/10 px-4 py-2 rounded-2xl border border-brand/5">
           <Sparkles size={16} className="text-brand" />
-          <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} Points</span>
+          <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} {t('points')}</span>
         </div>
       </div>
 
@@ -160,14 +161,14 @@ export function RewardsScreen() {
         <div className="bg-gradient-to-br from-brand to-brand/80 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="relative z-10">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">Available for redemption</p>
-            <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">Value</span></h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">{t('available_redemption')}</p>
+            <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">{t('value')}</span></h3>
             <button
               onClick={handleRedeem}
               disabled={isRedeeming}
               className="bg-white text-brand px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-black/10 active:scale-95 transition-transform disabled:opacity-50"
             >
-              {isRedeeming ? "Redeeming..." : "Redeem to Wallet"}
+              {isRedeeming ? t('loading') : t('redeem_wallet')}
             </button>
           </div>
         </div>
@@ -175,8 +176,8 @@ export function RewardsScreen() {
         {/* Scratch Cards Section */}
         <section>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-[15px] font-black text-brand tracking-tight">Your Scratch Cards</h3>
-            <span className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{scratchCards.filter(c => !c.is_scratched).length} Pending</span>
+            <h3 className="text-[15px] font-black text-brand tracking-tight">{t('scratch_cards')}</h3>
+            <span className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{scratchCards.filter(c => !c.is_scratched).length} {t('pending')}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -196,7 +197,7 @@ export function RewardsScreen() {
                       <Trophy size={24} className="text-emerald-600" />
                     </div>
                     <span className="text-emerald-700 font-black text-lg">₹{card.reward_amount}</span>
-                    <span className="text-emerald-600/60 text-[10px] font-bold mt-1">Claimed</span>
+                    <span className="text-emerald-600/60 text-[10px] font-bold mt-1">{t('claimed')}</span>
                   </>
                 ) : (
                   <>
@@ -215,7 +216,7 @@ export function RewardsScreen() {
             {scratchCards.length === 0 && (
               <div className="col-span-2 py-10 bg-brand/5 border-2 border-dashed border-brand/10 rounded-3xl flex flex-col items-center">
                 <Gift size={32} className="text-brand/20 mb-3" />
-                <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">Book services to get cards</p>
+                <p className="text-xs font-bold text-brand/40 uppercase tracking-widest">{t('book_to_get_cards')}</p>
               </div>
             )}
           </div>
@@ -232,8 +233,8 @@ export function RewardsScreen() {
               <Share2 size={24} className="text-brand" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-brand tracking-tight">Refer & Earn</h3>
-              <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">Invite friends, get points</p>
+              <h3 className="text-lg font-black text-brand tracking-tight">{t('refer_earn')}</h3>
+              <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{t('invite_friends')}</p>
             </div>
           </div>
 
@@ -257,7 +258,7 @@ export function RewardsScreen() {
               onClick={shareWhatsApp}
               className="w-full bg-emerald-600 text-white font-black py-4.5 rounded-[2rem] shadow-xl shadow-emerald-600/20 mt-2 flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
             >
-              Share via WhatsApp
+              {t('share_whatsapp')}
               <Share2 size={18} />
             </button>
           </div>
@@ -287,8 +288,8 @@ export function RewardsScreen() {
               </button>
 
               <div className="text-center mb-10">
-                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Lucky Reward!</h2>
-                <p className="text-white/60 font-bold uppercase tracking-widest text-xs">Scratch the card to reveal your prize</p>
+                <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{t('lucky_reward')}!</h2>
+                <p className="text-white/60 font-bold uppercase tracking-widest text-xs">{t('scratch_to_reveal')}</p>
               </div>
 
               <ScratchCard

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, SlidersHorizontal, Star, Eye, CalendarCheck, X } from "lucide-react";
-import { categoryDetails } from "../../../data/services";
+import { Search, SlidersHorizontal, Star, Eye, CalendarCheck, X, LayoutGrid } from "lucide-react";
+import { API_BASE, UPLOAD_BASE } from "../../../config";
 import { useLanguage } from "../../../context/LanguageContext";
 
 export function BookingsScreen() {
@@ -14,18 +14,50 @@ export function BookingsScreen() {
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [sortBy, setSortBy] = useState("Popularity");
   const [showFilters, setShowFilters] = useState(false);
+  const [allServices, setAllServices] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`${API_BASE}/categories/get_categories_with_services.php`);
+        const data = await res.json();
+        
+        if (data.status) {
+          const apiCategories = ["All", ...data.data.map(cat => cat.category_name)];
+          setCategories(apiCategories);
+
+          const services = [];
+          data.data.forEach(cat => {
+            cat.services.forEach(s => {
+              services.push({
+                id: s.id,
+                name: s.service_name,
+                price: `₹${parseFloat(s.amount).toFixed(0)}`,
+                desc: s.description || "Professional service at your doorstep",
+                image: s.image ? (s.image.startsWith('http') ? s.image : `${UPLOAD_BASE}/services/${s.image}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop",
+                categoryName: cat.category_name
+              });
+            });
+          });
+          setAllServices(services);
+        }
+      } catch (error) {
+        console.error("Fetch Error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q");
     if (q) setSearchQuery(q);
   }, [location.search]);
-
-  const categories = ["All", ...Object.keys(categoryDetails)];
-
-  const allServices = Object.entries(categoryDetails).flatMap(([cat, svcs]) =>
-    svcs.map(svc => ({ ...svc, categoryName: cat }))
-  );
 
   const filteredServices = allServices.filter((svc) => {
     const price = parseInt(svc.price.replace(/[^0-9]/g, "")) || 0;
@@ -53,7 +85,7 @@ export function BookingsScreen() {
     >
       {/* Header */}
       <div className="px-5 pt-12 pb-4 bg-base sticky top-0 z-20">
-        <h2 className="text-2xl font-bold text-brand tracking-tight">Explore Services</h2>
+        <h2 className="text-2xl font-bold text-brand tracking-tight">{t('explore_services')}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto w-full remove-scrollbar pb-28 pt-2">
@@ -96,7 +128,7 @@ export function BookingsScreen() {
                     : 'bg-base text-brand border border-brand/5 hover:bg-brand/5'
                 }`}
               >
-                {cat === 'All' ? 'All' : cat}
+                {cat === 'All' ? t('all') : cat}
               </button>
             ))}
           </div>
@@ -104,7 +136,12 @@ export function BookingsScreen() {
 
         {/* Service Cards */}
         <div className="px-5 flex flex-col gap-4">
-          {filteredServices.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
+              <p className="text-brand/50 font-bold text-sm">{t('finding_services')}</p>
+            </div>
+          ) : filteredServices.length > 0 ? (
             filteredServices.map((svc) => (
               <div key={svc.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
                 
@@ -128,7 +165,7 @@ export function BookingsScreen() {
 
                 {/* Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button onClick={() => navigate(`/book/${encodeURIComponent(svc.name)}/1`)} className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
+                  <button onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
                     <CalendarCheck size={16} />
                     {t('book_now')}
                   </button>
@@ -165,8 +202,10 @@ export function BookingsScreen() {
               className="bg-white w-full rounded-t-[3rem] p-8 pb-10 shadow-2xl space-y-8 relative z-[201]"
               onClick={e => e.stopPropagation()}
             >
+            >
+              <div className="w-12 h-1.5 bg-brand/10 rounded-full mx-auto mb-8"></div>
               <div className="flex justify-between items-center">
-                <h3 className="text-xl font-black text-brand">Filter & Sort</h3>
+                <h3 className="text-xl font-black text-brand">{t('filter_sort')}</h3>
                 <button onClick={() => setShowFilters(false)} className="w-10 h-10 bg-brand/5 rounded-full flex items-center justify-center text-brand">
                    <X size={20} />
                 </button>
@@ -207,7 +246,7 @@ export function BookingsScreen() {
                 onClick={() => setShowFilters(false)}
                 className="w-full bg-brand text-white py-4 rounded-[1.5rem] font-black text-sm shadow-xl shadow-brand/20 active:scale-[0.98] transition-transform"
               >
-                Apply Filters
+                {t('apply_filters')}
               </button>
             </motion.div>
           </motion.div>

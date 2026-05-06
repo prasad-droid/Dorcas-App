@@ -11,6 +11,24 @@ import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE } from "../../../config";
 
+const ProfileMenuItem = ({ icon: Icon, label, desc, action }) => (
+  <div 
+    onClick={action}
+    className="bg-brand/5 p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-[0_2px_10px_rgba(13,110,253,0.03)] border border-brand/5 hover:bg-brand/10"
+  >
+    <div className="w-12 h-12 bg-base shadow-sm rounded-xl flex items-center justify-center border border-brand/5">
+      <Icon size={20} className="text-brand" />
+    </div>
+    <div className="flex-1">
+      <h4 className="text-[14px] font-bold text-brand">{label}</h4>
+      <p className="text-[12px] font-semibold text-brand/50 mt-0.5 leading-snug">{desc}</p>
+    </div>
+    <div className="w-8 h-8 bg-base shadow-sm rounded-full flex items-center justify-center">
+      <ChevronRight size={16} className="text-brand/40" />
+    </div>
+  </div>
+);
+
 export function ProfileScreen() {
   const { isAuthenticated, authMode, logout } = useAuth();
   const { t } = useLanguage();
@@ -27,7 +45,11 @@ export function ProfileScreen() {
         const role = localStorage.getItem("role");
         
         const response = await fetch(`${API_BASE}/profile/get_profile.php`, {
-          headers: { "Authorization": `Bearer ${token}`, "Role": role }
+          headers: { 
+            "Authorization": `Bearer ${token}`, 
+            "Role": role,
+            "Content-Type": "application/json"
+          }
         });
 
         const data = await response.json();
@@ -39,7 +61,10 @@ export function ProfileScreen() {
       }
     };
 
-    if (isAuthenticated) fetchProfile();
+    if (isAuthenticated) {
+      console.log("Current Auth State:", { authMode, role: localStorage.getItem("role") });
+      fetchProfile();
+    }
   }, [isAuthenticated, authMode]);
 
   const customerMenuItems = [
@@ -51,8 +76,9 @@ export function ProfileScreen() {
 
   const techMenuItems = [
     { icon: LayoutDashboard, label: "Performance Dashboard", desc: "View detailed performance metrics", action: () => navigate("/tech/dashboard") },
-    { icon: Briefcase, label: t('jobs'), desc: "Manage your assigned tasks", action: () => navigate("/tech") },
+    { icon: Briefcase, label: "Update Services", desc: "Modify your service offerings", action: () => navigate("/tech/manage-services") },
     { icon: CreditCard, label: t('earnings'), desc: "Track your revenue and payouts", action: () => navigate("/tech/earnings") },
+    { icon: User, label: "Referral & Earn", desc: "Get 100 Points per partner refer", action: () => navigate("/tech/referral") },
     { icon: HelpCircle, label: t('help_support'), desc: "Get help with your account", action: () => navigate("/support") },
     { icon: FileText, label: t('terms_policies'), desc: "Service partner guidelines", action: () => navigate("/terms-policy") },
   ];
@@ -130,29 +156,39 @@ export function ProfileScreen() {
       </div>
 
       <div className="flex-1 px-5 pt-2 pb-20 space-y-3 overflow-y-auto">
-        <h3 className="text-[13px] font-bold text-brand uppercase tracking-wider mb-3 px-1 mt-2 border-b border-brand/10 pb-2">{t('account_dashboard')}</h3>
-        
-        {mainMenuItems.map((item, idx) => {
-          const Icon = item.icon;
-          return (
-            <div 
-              key={idx} 
-              onClick={item.action}
-              className="bg-brand/5 p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-[0_2px_10px_rgba(13,110,253,0.03)] border border-brand/5 hover:bg-brand/10"
-            >
-              <div className="w-12 h-12 bg-base shadow-sm rounded-xl flex items-center justify-center border border-brand/5">
-                <Icon size={20} className="text-brand" />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-[14px] font-bold text-brand">{item.label}</h4>
-                <p className="text-[12px] font-semibold text-brand/50 mt-0.5 leading-snug">{item.desc}</p>
-              </div>
-              <div className="w-8 h-8 bg-base shadow-sm rounded-full flex items-center justify-center">
-                <ChevronRight size={16} className="text-brand/40" />
-              </div>
+        {/* Menu Items */}
+        <div className="space-y-6">
+          {isTech && (
+            <div className="space-y-3">
+              <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">Business Settings</h3>
+              <ProfileMenuItem 
+                icon={Briefcase} 
+                label="Update Services" 
+                desc="Add or remove your service offerings"
+                action={() => navigate("/tech/manage-services")}
+              />
+              <ProfileMenuItem 
+                icon={User} 
+                label="Referral & Earn" 
+                desc="Invite partners and earn 100 points"
+                action={() => navigate("/tech/referral")}
+              />
             </div>
-          );
-        })}
+          )}
+
+          <div className="space-y-3">
+            <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">Account & Support</h3>
+            {mainMenuItems.filter(item => !['Update Services', 'Referral & Earn'].includes(item.label)).map((item, idx) => (
+              <ProfileMenuItem 
+                key={idx}
+                icon={item.icon} 
+                label={item.label} 
+                desc={item.desc}
+                action={item.action}
+              />
+            ))}
+          </div>
+        </div>
 
         <button 
           onClick={logout}

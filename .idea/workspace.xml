@@ -5,7 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8234e2db-8425-4a45-9913-a139b96d999b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/components/screens/BookingFormScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/BookingFormScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/auth/LoginScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/auth/LoginScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/auth/RegisterScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/auth/RegisterScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/customer/BookingFormScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/customer/BookingFormScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/customer/ServiceProvidersScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/customer/ServiceProvidersScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/technician/TechHomeScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/technician/TechHomeScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/technician/TechJobDetailScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/technician/TechJobDetailScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/technician/TechServicesScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/technician/TechServicesScreen.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/screens/technician/TechVerificationScreen.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/screens/technician/TechVerificationScreen.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,21 +26,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Mannyyy-15"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Mannyyy-15&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/prasad-droid/Dorcas-App.git",
-    "accountId": "954d3ac1-bd2a-4c3e-a6d8-3651404e3683"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/prasad-droid/Dorcas-App.git&quot;,
+    &quot;accountId&quot;: &quot;954d3ac1-bd2a-4c3e-a6d8-3651404e3683&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="3CwDV6yIVZJPswRG9gdJRNo21Oh" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -51,10 +59,11 @@
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Manthan/Personal/Dorcas-App",
+    "last_opened_file_path": "C:/Users/Jay/Desktop/DorcasApp",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="8234e2db-8425-4a45-9913-a139b96d999b" name="Changes" comment="" />

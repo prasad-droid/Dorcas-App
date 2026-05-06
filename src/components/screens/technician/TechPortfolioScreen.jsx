@@ -53,6 +53,18 @@ export function TechPortfolioScreen() {
       action: () => navigate("/tech/verification") 
     },
     { 
+      icon: Briefcase, 
+      label: "Update Services", 
+      desc: "Modify your service offerings", 
+      action: () => navigate("/tech/manage-services") 
+    },
+    { 
+      icon: Award, 
+      label: "Referral & Earn", 
+      desc: "Get 100 Points per partner refer", 
+      action: () => navigate("/tech/referral") 
+    },
+    { 
       icon: CreditCard, 
       label: "Banking & Payouts", 
       desc: "Settlement accounts & history", 
@@ -80,7 +92,7 @@ export function TechPortfolioScreen() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col w-full h-full bg-base relative overflow-y-auto pb-24 remove-scrollbar"
+      className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Header Section */}
       <div className="relative bg-brand pt-14 pb-14 px-5 rounded-b-[2rem] shadow-sm text-base flex flex-col items-center">

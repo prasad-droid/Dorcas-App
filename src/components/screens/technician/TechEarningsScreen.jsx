@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { 
   IndianRupee, ArrowUpRight, Briefcase, 
-  TrendingUp, ChevronRight, Filter 
+  TrendingUp, ChevronRight, Wallet 
 } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
 import { API_BASE } from "../../../config";
 
 export function TechEarningsScreen() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("Weekly");
   const [isLoading, setIsLoading] = useState(true);
   const [earningsData, setEarningsData] = useState({
@@ -104,12 +106,26 @@ export function TechEarningsScreen() {
                  <span className="text-xl font-black">₹</span>
                  <span className="text-4xl font-black tracking-tighter">{earningsData.pendingPayout}</span>
               </div>
-              
-              <button className="bg-white text-brand px-5 py-3 rounded-2xl flex items-center gap-3 active:scale-95 transition-all shadow-sm group">
-                 <span className="text-xs font-bold uppercase tracking-wider">Withdraw to Bank</span>
-                 <ArrowUpRight size={14} strokeWidth={3} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </button>
            </div>
+        </div>
+
+        {/* Pending Commissions Card (New) */}
+        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+           <div className="flex items-center gap-4">
+              <div className="w-11 h-11 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600">
+                 <Wallet size={20} />
+              </div>
+              <div>
+                 <p className="text-[10px] font-bold text-amber-900/40 uppercase tracking-widest mb-0.5">Commission Dues</p>
+                 <p className="text-lg font-black text-amber-900 tracking-tight">₹{(earningsData.transactions.length * 49.9).toFixed(2)}</p>
+              </div>
+           </div>
+           <button 
+             onClick={() => navigate("/tech/commissions")}
+             className="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 active:scale-95 transition-transform"
+           >
+              Pay Now
+           </button>
         </div>
 
         {/* Stats Grid */}

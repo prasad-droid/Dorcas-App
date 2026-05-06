@@ -33,7 +33,9 @@ export function BookingFormScreen() {
     date: "",
     time: "",
     instructions: "",
-    paymentType: "Pay After Service"
+    paymentType: "Pay After Service",
+    latitude: "",
+    longitude: ""
   });
 
   const serviceName = queryParams.get("name") || "Home Cleaning";
@@ -64,14 +66,17 @@ export function BookingFormScreen() {
           }));
         }
 
-        // 2. Fetch Provider Details
-        const vendorRes = await fetch(`${API_BASE}/vendors/get_vendor_details.php?vendor_id=${providerId}`);
-        const vendorData = await vendorRes.json();
-        if (vendorData.status) {
-          setProviderDetails(vendorData.data);
+        // 2. Fetch Provider Details (if one was chosen)
+        if (providerId !== "0") {
+          const vendorRes = await fetch(`${API_BASE}/vendors/get_vendor_details.php?vendor_id=${providerId}`);
+          const vendorData = await vendorRes.json();
+          if (vendorData.status) {
+            setProviderDetails(vendorData.data);
+          }
         }
       } catch (error) {
-        // console.error("Fetch Error:", error);
+
+        console.error("Fetch Error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -79,6 +84,47 @@ export function BookingFormScreen() {
 
     fetchData();
   }, [providerId]);
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      showToast("Location not supported", "error");
+      return;
+    }
+
+    showToast("Detecting location...", "info");
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+          );
+
+          const data = await res.json();
+          const addr = data.address || {};
+
+          setFormData((prev) => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            city: addr.city || addr.town || addr.village || prev.city,
+            pincode: addr.postcode || prev.pincode,
+            address: data.display_name || prev.address,
+          }));
+          showToast("Location updated!", "success");
+        } catch (err) {
+          setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+          showToast("Location detected, but address details failed.", "warning");
+        }
+      },
+      () => {
+        showToast("Permission denied. Please enter manually.", "error");
+      },
+    );
+  };
 
   const handleConfirm = async (e) => {
     e.preventDefault();
@@ -110,11 +156,15 @@ export function BookingFormScreen() {
           service_date: formData.date,
           service_time: formData.time,
           notes: formData.instructions,
-          payment_mode: "cash"
+          payment_mode: "cash",
+          latitude: formData.latitude,
+          longitude: formData.longitude
         })
       });
 
       const data = await response.json();
+      console.log("Response Data:", data);
+      
       if (data.status) {
         setGeneratedCard(data.data.scratch_card);
         const newBooking = {
@@ -135,7 +185,7 @@ export function BookingFormScreen() {
         showToast(data.message || "Failed to create booking", "error");
       }
     } catch (error) {
-      // console.error("Booking Error:", error);
+      console.error("Booking Error:", error);
       showToast("Something went wrong while creating your booking.", "error");
     } finally {
       setIsSubmitting(false);
@@ -205,7 +255,23 @@ export function BookingFormScreen() {
               <FormInput icon={Phone} placeholder="Mobile Number" type="tel" value={formData.phoneNumber} onChange={(val) => setFormData({ ...formData, phoneNumber: val })} />
             </div>
 
-            <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1 mt-6">Service Location</h3>
+            <div className="flex items-center justify-between mt-6 px-1">
+              <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px]">Service Location</h3>
+              <button
+                type="button"
+                onClick={getLocation}
+                className="text-[10px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10 flex items-center gap-1.5 active:scale-95 transition-transform"
+              >
+                <MapPin size={12} className="text-brand" />
+                Use Current Location
+              </button>
+            </div>
+            {formData.latitude && (
+              <div className="flex items-center gap-2 px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100 w-fit ml-1 -mt-2 mb-2">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-[9px] font-bold text-emerald-700">Location Captured: {parseFloat(formData.latitude).toFixed(4)}, {parseFloat(formData.longitude).toFixed(4)}</span>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-4">
               <div className="relative group">
                 <div className="absolute left-5 top-6 text-brand/20 group-focus-within:text-brand transition-colors">
@@ -294,9 +360,11 @@ export function BookingFormScreen() {
                 <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">Service Amount</span>
                 <span className="text-2xl font-black text-brand tracking-tighter">₹{providerDetails?.price || "499"}</span>
               </div>
-              <button type="button" className="flex items-center gap-1.5 text-[11px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10">
-                <Star size={12} className="fill-brand" /> {providerDetails?.rating || "5.0"} Rating
-              </button>
+              {providerDetails?.rating && (
+                <button type="button" className="flex items-center gap-1.5 text-[11px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10">
+                  <Star size={12} className="fill-brand" /> {providerDetails.rating} Rating
+                </button>
+              )}
             </div>
 
             <motion.button

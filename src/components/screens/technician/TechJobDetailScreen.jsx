@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronLeft, Shield, MapPin, User, Phone, 
   Calendar, Clock, IndianRupee, AlertCircle, 
-  CheckCircle2, Briefcase, Info, MessageSquare
+  CheckCircle2, Briefcase, Info, MessageSquare, ArrowRight
 } from "lucide-react";
-import { API_BASE } from "../../../config";
+import { API_BASE, UPLOAD_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 
 export function TechJobDetailScreen() {
@@ -17,8 +17,32 @@ export function TechJobDetailScreen() {
   const [jobData, setJobData] = useState(null);
   const [showKycAlert, setShowKycAlert] = useState(false);
   
-  // Mock KYC status
-  const isKycComplete = false;
+  const [isKycComplete, setIsKycComplete] = useState(false);
+  const [isKycLoading, setIsKycLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchKycStatus = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        const headers = { "Authorization": `Bearer ${token}`, "Role": role };
+
+        const response = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
+        const data = await response.json();
+        
+        if (data.status) {
+          // Use is_approved which we updated in the backend
+          setIsKycComplete(data.data.is_approved);
+        }
+      } catch (error) {
+        console.error("KYC Fetch Error:", error);
+      } finally {
+        setIsKycLoading(false);
+      }
+    };
+
+    fetchKycStatus();
+  }, []);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -31,22 +55,26 @@ export function TechJobDetailScreen() {
         const response = await fetch(`${API_BASE}/bookings/get_job_details.php?id=${jobId}`, { headers });
         const data = await response.json();
         
+        console.log(data);
         if (data.status) {
+          
           const job = data.data;
           setJobData({
             id: job.id,
             title: job.service_name || job.category_name || "Home Service",
             category: job.category_name || "General",
             location: job.city || "Nearby",
-            price: `₹${job.price || job.amount || "0"}`,
+            price: `₹${job.service_price || job.price || job.amount || "0"}`,
             time: job.service_date ? `${job.service_date}, ${job.service_time || ""}` : "Flexible",
             customer: job.customer_name || job.name || "Client",
             address: job.address || "No address provided",
             contact: job.phone || "No contact",
             notes: job.notes || "No additional notes provided.",
             paymentMode: job.payment_method || "Pay After Service",
-            image: job.image || "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
-            coords: job.coords || "19.0760,72.8777"
+            image: job.image ? (job.image.startsWith('http') ? job.image : `${UPLOAD_BASE}/${job.image}`) : "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
+            coords: job.coords || (job.latitude && job.longitude ? `${job.latitude},${job.longitude}` : "19.0760,72.8777"),
+            status: job.status,
+            vendor_id: job.vendor_id
           });
         }
       } catch (error) {
@@ -59,12 +87,87 @@ export function TechJobDetailScreen() {
     if (jobId) fetchJobDetails();
   }, [jobId]);
 
-  const handleAcceptJob = () => {
+  const handleCompleteJob = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const response = await fetch(`${API_BASE}/bookings/complete_job.php`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Role": role,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ job_id: jobData.id })
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        showToast(data.message || "Job completed successfully!", "success");
+        navigate("/tech");
+      } else {
+        showToast(data.message || "Failed to complete job", "error");
+      }
+    } catch (error) {
+      console.error("Complete Job Error:", error);
+      showToast("Something went wrong. Please try again.", "error");
+    }
+  };
+
+  const handleAcceptJob = async () => {
     if (!isKycComplete) {
       setShowKycAlert(true);
-    } else {
-      showToast(`Job "${jobData.title}" accepted!`, "success");
-      navigate("/tech");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const response = await fetch(`${API_BASE}/bookings/accept_job.php`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Role": role,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ job_id: jobData.id })
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        showToast(data.message || `Job accepted! Notification sent to customer.`, "success");
+        navigate("/tech");
+      } else {
+        showToast(data.message || "Failed to accept job", "error");
+      }
+    } catch (error) {
+      showToast("Something went wrong", "error");
+    }
+  };
+
+  const handleRejectJob = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const response = await fetch(`${API_BASE}/bookings/reject_job.php`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Role": role,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ job_id: jobData.id })
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        showToast("Job rejected. Customer will be notified.", "info");
+        navigate("/tech");
+      } else {
+        showToast(data.message || "Failed to reject job", "error");
+      }
+    } catch (error) {
+      showToast("Something went wrong", "error");
     }
   };
 
@@ -132,7 +235,7 @@ export function TechJobDetailScreen() {
               <div className="text-right">
                  <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest mb-1">Payout</p>
                  <div className="flex items-center justify-end gap-1 text-brand">
-                    <IndianRupee size={20} strokeWidth={3} />
+                  <IndianRupee size={20} strokeWidth={3} />
                     <span className="text-3xl font-black tracking-tighter">{jobData.price.replace('₹', '')}</span>
                  </div>
               </div>
@@ -194,21 +297,52 @@ export function TechJobDetailScreen() {
 
         {/* Action Buttons - Now Inline */}
         <div className="pt-10 flex gap-3">
-           <motion.button
-             whileTap={{ scale: 0.98 }}
-             onClick={() => navigate(-1)}
-             className="flex-1 bg-white border border-brand/5 text-brand py-5 rounded-[2rem] text-[15px] font-black active:scale-95 transition-all shadow-sm"
-           >
-             Reject Job
-           </motion.button>
-           <motion.button
-             whileTap={{ scale: 0.98 }}
-             onClick={handleAcceptJob}
-             className="flex-[2] bg-brand text-white py-5 rounded-[2rem] text-[15px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all"
-           >
-             Accept Job
-             <Briefcase size={18} />
-           </motion.button>
+           {jobData.status === 'pending' || !jobData.vendor_id ? (
+             <>
+               <motion.button
+                 whileTap={{ scale: 0.98 }}
+                 onClick={handleRejectJob}
+                 className="flex-1 bg-white border border-brand/5 text-brand py-5 rounded-[2rem] text-[15px] font-black active:scale-95 transition-all shadow-sm"
+               >
+                 Reject Job
+               </motion.button>
+               <motion.button
+                 whileTap={{ scale: 0.98 }}
+                 onClick={handleAcceptJob}
+                 className="flex-[2] bg-brand text-white py-5 rounded-[2rem] text-[15px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all"
+               >
+                 Accept Job
+                 <Briefcase size={18} />
+               </motion.button>
+             </>
+           ) : jobData.status === 'ongoing' ? (
+             <motion.button
+               whileTap={{ scale: 0.98 }}
+               onClick={handleCompleteJob}
+               className="w-full bg-emerald-600 text-white py-5 rounded-[2rem] text-[15px] font-black shadow-[0_15px_35px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all"
+             >
+               Mark as Completed
+               <CheckCircle2 size={18} />
+             </motion.button>
+           ) : jobData.status === 'completed' ? (
+             <div className="w-full space-y-3">
+               <div className="w-full bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] text-[15px] font-black flex items-center justify-center gap-2 border border-emerald-100">
+                 Job Completed <CheckCircle2 size={18} />
+               </div>
+               <motion.button
+                 whileTap={{ scale: 0.98 }}
+                 onClick={() => navigate("/tech/commissions")}
+                 className="w-full bg-brand text-white py-5 rounded-[2rem] text-[15px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all"
+               >
+                 Pay Commission (10%)
+                 <ArrowRight size={18} />
+               </motion.button>
+             </div>
+           ) : (
+             <div className="w-full bg-brand/5 text-brand/40 py-5 rounded-[2rem] text-[15px] font-black flex items-center justify-center gap-2 border border-dashed border-brand/10">
+               Job Processing <Clock size={18} />
+             </div>
+           )}
         </div>
         
         <p className="text-center text-[10px] font-bold text-brand/30 uppercase tracking-[2px] mt-8 mb-10">
@@ -239,7 +373,7 @@ export function TechJobDetailScreen() {
               <h2 className="text-2xl font-black text-brand tracking-tighter mb-2">KYC Incomplete!</h2>
               <p className="text-sm font-medium text-brand/50 leading-relaxed mb-8 px-2">Your profile is not yet verified. Please complete your KYC process to start accepting jobs.</p>
               <div className="flex flex-col gap-3">
-                <button onClick={() => navigate("/profile")} className="w-full py-4.5 bg-brand text-white font-black text-sm rounded-2xl shadow-lg shadow-brand/20">Complete KYC Now</button>
+                <button onClick={() => navigate("/tech/verification")} className="w-full py-4.5 bg-brand text-white font-black text-sm rounded-2xl shadow-lg shadow-brand/20">Complete KYC Now</button>
                 <button onClick={() => setShowKycAlert(false)} className="w-full py-4.5 bg-gray-50 text-brand font-black text-sm rounded-2xl">Maybe Later</button>
               </div>
             </motion.div>

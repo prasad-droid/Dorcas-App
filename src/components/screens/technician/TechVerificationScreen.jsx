@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { 
-  ChevronLeft, Shield, Upload, CheckCircle2, Clock, 
+import {
+  ChevronLeft, Shield, Upload, CheckCircle2, Clock,
   AlertCircle, Camera, FileText, ArrowRight,
   Info
 } from "lucide-react";
@@ -14,7 +14,7 @@ export function TechVerificationScreen() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
-  const [kycStatus, setKycStatus] = useState("pending"); // pending, approved, rejected, not_submitted
+  const [kycStatus, setKycStatus] = useState("pending"); // pending, verified, rejected, not_submitted
   const [docType, setDocType] = useState("aadhar"); // aadhar, pan
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -30,12 +30,13 @@ export function TechVerificationScreen() {
           headers: { "Authorization": `Bearer ${token}`, "Role": role }
         });
         const data = await response.json();
+        console.log(data);
         if (data.status) {
           const status = data.data.kyc_status || "not_submitted";
           setKycStatus(status);
         }
       } catch (error) {
-        // console.error("KYC status fetch error:", error);
+        console.error("KYC status fetch error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -74,6 +75,8 @@ export function TechVerificationScreen() {
       });
 
       const data = await response.json();
+      console.log(data);
+
       if (data.status) {
         setKycStatus("pending");
         showToast("Documents uploaded successfully! We will review them shortly.", "success");
@@ -81,7 +84,7 @@ export function TechVerificationScreen() {
         showToast(data.message || "Upload failed", "error");
       }
     } catch (error) {
-      // console.error("Upload error:", error);
+      console.error("Upload error:", error);
       showToast("Something went wrong. Please try again.", "error");
     } finally {
       setIsUploading(false);
@@ -124,36 +127,36 @@ export function TechVerificationScreen() {
         {/* Status Card */}
         <div className="bg-white rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-brand/5 mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'approved' ? 'bg-emerald-50 text-emerald-500' :
-                kycStatus === 'pending' ? 'bg-amber-50 text-amber-500' :
-                  kycStatus === 'rejected' ? 'bg-red-50 text-red-500' :
-                    'bg-brand/5 text-brand'
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-500' :
+              kycStatus === 'pending' ? 'bg-amber-50 text-amber-500' :
+                kycStatus === 'rejected' ? 'bg-red-50 text-red-500' :
+                  'bg-brand/5 text-brand'
               }`}>
-              {kycStatus === 'approved' ? <CheckCircle2 size={24} /> :
+              {kycStatus === 'verified' ? <CheckCircle2 size={24} /> :
                 kycStatus === 'pending' ? <Clock size={24} /> :
                   kycStatus === 'rejected' ? <AlertCircle size={24} /> :
                     <Shield size={24} />}
             </div>
             <div>
               <h3 className="font-black text-brand text-base leading-none mb-1.5">Verification Status</h3>
-              <p className={`text-[11px] font-bold uppercase tracking-wider ${kycStatus === 'approved' ? 'text-emerald-600' :
-                  kycStatus === 'pending' ? 'text-amber-600' :
-                    kycStatus === 'rejected' ? 'text-red-600' :
-                      'text-brand/40'
+              <p className={`text-[11px] font-bold uppercase tracking-wider ${kycStatus === 'verified' ? 'text-emerald-600' :
+                kycStatus === 'pending' ? 'text-amber-600' :
+                  kycStatus === 'rejected' ? 'text-red-600' :
+                    'text-brand/40'
                 }`}>
                 {kycStatus.replace('_', ' ')}
               </p>
             </div>
           </div>
           <p className="text-xs text-brand/50 font-medium leading-relaxed italic">
-            {kycStatus === 'approved' ? "Your account is fully verified. You have unlimited access to jobs." :
+            {kycStatus === 'verified' ? "Your account is fully verified. You have unlimited access to jobs." :
               kycStatus === 'pending' ? "We are currently reviewing your documents. This usually takes 24-48 hours." :
                 kycStatus === 'rejected' ? "Your documents were rejected. Please upload clear images of valid IDs." :
                   "Please upload a valid government ID to verify your identity and start accepting jobs."}
           </p>
         </div>
 
-        {kycStatus !== 'approved' && kycStatus !== 'pending' && (
+        {kycStatus !== 'verified' && kycStatus !== 'pending' && (
           <div className="space-y-6">
             {/* Doc Type Selection */}
             <div className="space-y-3">
