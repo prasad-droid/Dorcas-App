@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.manthan.dorcasapp"
+    namespace = "com.psmcodes.dorcasaid"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.manthan.dorcasapp"
+        applicationId "com.psmcodes.dorcasaid"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -40,6 +40,17 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+}
+
+configurations.all {
+    resolutionStrategy {
+        capabilitiesResolution.withCapability("org.jetbrains.kotlin:kotlin-stdlib-jdk7") {
+            select("org.jetbrains.kotlin:kotlin-stdlib:0")
+        }
+        capabilitiesResolution.withCapability("org.jetbrains.kotlin:kotlin-stdlib-jdk8") {
+            select("org.jetbrains.kotlin:kotlin-stdlib:0")
+        }
+    }
 }
 
 apply from: 'capacitor.build.gradle'

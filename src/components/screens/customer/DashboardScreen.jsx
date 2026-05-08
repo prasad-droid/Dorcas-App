@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 
-import { API_BASE } from "../../../config";
+import { API_BASE, APP_DOMAIN } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 
 export function DashboardScreen() {
@@ -41,7 +41,7 @@ export function DashboardScreen() {
 
   const copyReferral = () => {
     const code = profileData?.referral_code || "REF";
-    const link = `${window.location.origin}/register?ref=${code}`;
+    const link = `${APP_DOMAIN}/register?ref=${code}`;
     navigator.clipboard.writeText(link);
     showToast("Referral link copied!", "success");
   };
@@ -160,7 +160,7 @@ export function DashboardScreen() {
 
           <div className="flex gap-2 relative z-10">
             <div className="flex-1 bg-white border border-brand/20 rounded-xl px-4 py-3 flex items-center shadow-inner overflow-hidden">
-              <span className="text-[13px] font-mono text-brand/80 truncate font-semibold">{window.location.origin}/register?ref={profileData?.referral_code || "D9X2Q"}</span>
+              <span className="text-[13px] font-mono text-brand/80 truncate font-semibold">{APP_DOMAIN}/register?ref={profileData?.referral_code || "D9X2Q"}</span>
             </div>
             <button
               onClick={copyReferral}

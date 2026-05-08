@@ -297,7 +297,7 @@ export function TechJobDetailScreen() {
 
         {/* Action Buttons - Now Inline */}
         <div className="pt-10 flex gap-3">
-           {jobData.status === 'pending' || !jobData.vendor_id ? (
+           {jobData.status?.toLowerCase() === 'pending' || !jobData.vendor_id ? (
              <>
                <motion.button
                  whileTap={{ scale: 0.98 }}
@@ -315,7 +315,7 @@ export function TechJobDetailScreen() {
                  <Briefcase size={18} />
                </motion.button>
              </>
-           ) : jobData.status === 'ongoing' ? (
+           ) : jobData.status?.toLowerCase() === 'ongoing' ? (
              <motion.button
                whileTap={{ scale: 0.98 }}
                onClick={handleCompleteJob}
@@ -324,7 +324,7 @@ export function TechJobDetailScreen() {
                Mark as Completed
                <CheckCircle2 size={18} />
              </motion.button>
-           ) : jobData.status === 'completed' ? (
+           ) : jobData.status?.toLowerCase() === 'completed' ? (
              <div className="w-full space-y-3">
                <div className="w-full bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] text-[15px] font-black flex items-center justify-center gap-2 border border-emerald-100">
                  Job Completed <CheckCircle2 size={18} />

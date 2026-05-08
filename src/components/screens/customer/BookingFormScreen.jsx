@@ -7,6 +7,8 @@ import {
 import { useLanguage } from "../../../context/LanguageContext";
 import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
@@ -88,45 +90,50 @@ export function BookingFormScreen() {
     getLocation(true); // Auto-capture on mount (silent mode)
   }, [providerId]);
 
-  const getLocation = (silent = false) => {
-    if (!navigator.geolocation) {
-      if (!silent) showToast("Location not supported", "error");
-      return;
-    }
+  const getLocation = async (silent = false) => {
+    try {
+      if (!silent) showToast("Detecting location...", "info");
 
-    if (!silent) showToast("Detecting location...", "info");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
-          );
-
-          const data = await res.json();
-          const addr = data.address || {};
-
-          setFormData((prev) => ({
-            ...prev,
-            latitude: lat,
-            longitude: lng,
-            city: addr.city || addr.town || addr.village || prev.city,
-            pincode: addr.postcode || prev.pincode,
-            address: data.display_name || prev.address,
-          }));
-          showToast("Location updated!", "success");
-        } catch (err) {
-          setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
-          showToast("Location detected, but address details failed.", "warning");
+      let coordinates;
+      if (Capacitor.isNativePlatform()) {
+        const perm = await Geolocation.checkPermissions();
+        if (perm.location === 'prompt') {
+          await Geolocation.requestPermissions();
         }
-      },
-      () => {
-        if (!silent) showToast("Permission denied. Please enter manually.", "error");
-      },
-    );
+        coordinates = await Geolocation.getCurrentPosition();
+      } else {
+        // Web fallback
+        if (!navigator.geolocation) {
+          if (!silent) showToast("Location not supported", "error");
+          return;
+        }
+        coordinates = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+      }
+
+      const lat = coordinates.coords.latitude;
+      const lng = coordinates.coords.longitude;
+
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+      );
+
+      const data = await res.json();
+      const addr = data.address || {};
+
+      setFormData((prev) => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+        city: addr.city || addr.town || addr.village || prev.city,
+        pincode: addr.postcode || prev.pincode,
+        address: data.display_name || prev.address,
+      }));
+      if (!silent) showToast("Location updated!", "success");
+    } catch (error) {
+      if (!silent) showToast("Permission denied or location failed. Please enter manually.", "error");
+    }
   };
 
   const handleConfirm = async (e) => {

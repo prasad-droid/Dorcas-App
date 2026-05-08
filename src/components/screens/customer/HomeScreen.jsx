@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { mainCategories as fallbackCategories, categoryDetails as fallbackDetails } from "../../../data/services";
 import { useLanguage } from "../../../context/LanguageContext";
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 import { API_BASE, UPLOAD_BASE } from "../../../config";
 
@@ -42,20 +44,37 @@ export function HomeScreen() {
 
   useEffect(() => {
     // Auto Location
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
+    const requestLocation = async () => {
+      try {
+        let coordinates;
+        if (Capacitor.isNativePlatform()) {
+          const perm = await Geolocation.checkPermissions();
+          if (perm.location !== 'granted') {
+            const req = await Geolocation.requestPermissions();
+            if (req.location !== 'granted') return;
+          }
+          coordinates = await Geolocation.getCurrentPosition();
+        } else {
+          // Web fallback
+          coordinates = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+        }
+
+        if (coordinates) {
+          const { latitude, longitude } = coordinates.coords;
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
           const data = await res.json();
           const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Mumbai";
           const area = data.address.suburb || data.address.neighbourhood || "";
           setLocationName(area ? `${area}, ${city}` : city);
-        } catch (error) {
-          // console.error("Location error:", error);
         }
-      });
-    }
+      } catch (error) {
+        // console.error("Location error:", error);
+      }
+    };
+
+    requestLocation();
 
     const fetchData = async () => {
       try {
@@ -78,7 +97,8 @@ export function HomeScreen() {
         // Fetch Services (instead of subcategories to avoid ID mismatch)
         const subRes = await fetch(`${API_BASE}/services/get_services.php`);
         const subData = await subRes.json();
-
+        console.log(subData);
+        
         // Fetch Offers
         try {
           const offerRes = await fetch(`${API_BASE}/categories/get_offers.php`);
@@ -123,7 +143,7 @@ export function HomeScreen() {
               name: srv.service_name,
               price: srv.service_price ? `₹${srv.service_price}` : "₹299",
               desc: srv.service_desc || "Expert service at your doorstep",
-              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `${UPLOAD_BASE}/services/${srv.service_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
+              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `https://dorcasaid.com/${srv.service_img}`) : "services/cleaning.png"
             }));
           });
           setCategoryDetails(grouped);
@@ -140,7 +160,7 @@ export function HomeScreen() {
               name: srv.service_name,
               rating: (4 + Math.random()).toFixed(1),
               reviews: `${Math.floor(Math.random() * 5000)} reviews`,
-              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `${UPLOAD_BASE}/services/${srv.service_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
+              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `https://dorcasaid.com/${srv.service_img}`) : "services/cleaning.png"
             }));
           setTrendingServices(trending);
         } else {
@@ -276,7 +296,7 @@ export function HomeScreen() {
         <section className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-lg border-4 border-base">
           <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[2px] bg-base">
             <div className="relative overflow-hidden bg-brand/10">
-              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop" alt="Cleaning" className="w-full h-full object-cover animate-[pulse_4s_ease-in-out_infinite]" />
+              <img src="services/cleaning.png" alt="Cleaning" className="w-full h-full object-cover animate-[pulse_4s_ease-in-out_infinite]" />
             </div>
             <div className="relative overflow-hidden bg-brand/10">
               <img src="/services/ac_unit.png" alt="AC" className="w-full h-full object-cover animate-[pulse_5s_ease-in-out_infinite_reverse]" />

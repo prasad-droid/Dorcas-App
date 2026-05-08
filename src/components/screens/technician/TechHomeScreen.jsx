@@ -9,6 +9,8 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
@@ -46,16 +48,26 @@ export function TechHomeScreen() {
   const [pendingCommissions, setPendingCommissions] = useState([]);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      }, (err) => {
+    const fetchLocation = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const perm = await Geolocation.checkPermissions();
+          if (perm.location !== 'granted') {
+            const req = await Geolocation.requestPermissions();
+            if (req.location !== 'granted') return;
+          }
+          const position = await Geolocation.getCurrentPosition();
+          setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        } else if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+          });
+        }
+      } catch (err) {
         console.warn("Location error:", err);
-      });
-    }
+      }
+    };
+    fetchLocation();
   }, []);
 
   useEffect(() => {
@@ -98,13 +110,13 @@ export function TechHomeScreen() {
 
         if (activeJson.status && activeJson.data.length > 0) {
           // Filter for pending or ongoing jobs assigned to me
-          const ongoing = activeJson.data.filter(j => j.status === 'ongoing' || j.status === 'pending');
+          const ongoing = activeJson.data.filter(j => j.status?.toLowerCase() === 'ongoing' || j.status?.toLowerCase() === 'pending');
           if (ongoing.length > 0) {
             setActiveJob(ongoing[0]);
           }
           
           // Check for pending commissions
-          const pending = activeJson.data.filter(j => j.status === 'completed' && j.commission_status === 'pending');
+          const pending = activeJson.data.filter(j => j.status?.toLowerCase() === 'completed' && j.commission_status?.toLowerCase() === 'pending');
           setPendingCommissions(pending);
         }
 

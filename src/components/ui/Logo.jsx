@@ -1,7 +1,9 @@
+import logo from "../../../public/assets/dorcas-logo.jpeg";
+
 export function Logo({ className = "" }) {
   return (
     <img 
-      src="/assets/dorcas-logo.jpeg" 
+      src={logo} 
       alt="Dorcasaid Logo" 
       className={`object-contain ${className}`}
     />

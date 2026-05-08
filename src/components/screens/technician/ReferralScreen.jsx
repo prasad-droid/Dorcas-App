@@ -6,7 +6,7 @@ import {
   Gift, Wallet, ArrowRight, Zap,
   CheckCircle2, Info
 } from "lucide-react";
-import { API_BASE } from "../../../config";
+import { API_BASE, APP_DOMAIN } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 
 export function ReferralScreen() {
@@ -47,16 +47,16 @@ export function ReferralScreen() {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.origin+"?refer="+refData.referral_code);
-    showToast("Code copied to clipboard!", "success");
+    navigator.clipboard.writeText(APP_DOMAIN + "/register?ref=" + refData.referral_code);
+    showToast("Link copied to clipboard!", "success");
   };
 
   const shareCode = () => {
     if (navigator.share) {
       navigator.share({
         title: 'Join Dorcas Partner',
-        text: `Hey! Use my referral code ${refData.referral_code} to join as a Dorcas Partner and start earning!`,
-        url: window.location.origin+"?refer="+refData.referral_code,
+        text: `Hey! Use my referral link to join as a Dorcas Partner and start earning!`,
+        url: APP_DOMAIN + "/register?ref=" + refData.referral_code,
       });
     } else {
       copyToClipboard();

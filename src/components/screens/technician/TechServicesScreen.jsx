@@ -9,6 +9,8 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../context/ToastContext";
 import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
@@ -70,14 +72,26 @@ export function TechServicesScreen() {
   };
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      }, null);
-    }
+    const fetchLocation = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const perm = await Geolocation.checkPermissions();
+          if (perm.location !== 'granted') {
+            const req = await Geolocation.requestPermissions();
+            if (req.location !== 'granted') return;
+          }
+          const position = await Geolocation.getCurrentPosition();
+          setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        } else if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition((position) => {
+            setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+          });
+        }
+      } catch (err) {
+        console.warn("Location error:", err);
+      }
+    };
+    fetchLocation();
   }, []);
 
   useEffect(() => {
@@ -119,10 +133,10 @@ export function TechServicesScreen() {
           const response = await fetch(`${API_BASE}/bookings/get_technician_bookings.php`, { headers });
           const data = await response.json();
           if (data.status) {
-            setOngoingJobs(data.data.filter(j => j.status === 'ongoing' || j.status === 'pending').map(job => ({
+            setOngoingJobs(data.data.filter(j => j.status?.toLowerCase() === 'ongoing' || j.status?.toLowerCase() === 'pending').map(job => ({
               id: job.id,
               title: job.service_name || job.subcategory_name || "Home Service",
-              category: job.subcategory_name || (job.status === 'pending' ? "Assigned" : "Ongoing"),
+              category: job.subcategory_name || (job.status?.toLowerCase() === 'pending' ? "Assigned" : "Ongoing"),
               location: job.address || "Mumbai",
               price: `₹${job.amount || "0"}`,
               time: `${job.service_date}, ${job.service_time}`,

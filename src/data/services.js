@@ -20,31 +20,31 @@ export const mainCategories = [
 
 export const categoryDetails = {
   "Appliance": [
-    { id: 101, name: "Refrigerator Repair", price: "₹299", desc: "Expert check-up for cooling issues. 10% off on spares.", image: "/services/refrigerator.png", icon: Tv },
-    { id: 102, name: "Washing Machine", price: "₹299", desc: "Front load & top load service. Fast repair.", image: "/services/washing_machine.png", icon: Tv },
-    { id: 103, name: "TV Mounting", price: "₹499", desc: "Professional wall bracket installation for all sizes.", image: "/services/tv_mounting.png", icon: Tv },
+    { id: 101, name: "Refrigerator Repair", price: "₹299", desc: "Expert check-up for cooling issues. 10% off on spares.", image: "services/refrigerator.png", icon: Tv },
+    { id: 102, name: "Washing Machine", price: "₹299", desc: "Front load & top load service. Fast repair.", image: "services/washing_machine.png", icon: Tv },
+    { id: 103, name: "TV Mounting", price: "₹499", desc: "Professional wall bracket installation for all sizes.", image: "services/tv_mounting.png", icon: Tv },
     { id: 104, name: "Microwave Service", price: "₹249", desc: "Fix heating and panel issues quickly.", image: "https://plus.unsplash.com/premium_photo-1663047695260-98cde4d6bbc7?q=80&w=1170&auto=format&fit=crop", icon: Tv }
   ],
   "AC Services": [
-    { id: 201, name: "AC Check-up & Clean", price: "₹399", desc: "Deep filter cleaning & cooling coil check.", image: "/services/ac_unit.png", icon: Wind },
-    { id: 202, name: "Split AC Gas Refill", price: "₹1,499", desc: "Improve cooling instantly. Includes leak testing.", image: "https://plus.unsplash.com/premium_photo-1661775434014-9c0e8d71de03?q=80&w=400&auto=format&fit=crop", icon: Wind },
-    { id: 203, name: "AC Installation", price: "₹999", desc: "Drilling, wiring, and standard window/split mounting.", image: "https://plus.unsplash.com/premium_photo-1683134512538-7b390d0adc9e?q=80&w=1171&auto=format&fit=crop", icon: Wind }
+    { id: 201, name: "AC Check-up & Clean", price: "₹399", desc: "Deep filter cleaning & cooling coil check.", image: "services/ac_unit.png", icon: Wind },
+    { id: 202, name: "Split AC Gas Refill", price: "₹1,499", desc: "Improve cooling instantly. Includes leak testing.", image: "services/ac_repair.png", icon: Wind },
+    { id: 203, name: "AC Installation", price: "₹999", desc: "Drilling, wiring, and standard window/split mounting.", image: "services/ac_unit.png", icon: Wind }
   ],
   "Salon": [
-    { id: 301, name: "Men's Haircut", price: "₹199", desc: "Premium styling & beard trim at your convenience.", image: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=400&auto=format&fit=crop", icon: Scissors },
+    { id: 301, name: "Men's Haircut", price: "₹199", desc: "Premium styling & beard trim at your convenience.", image: "services/haircut.png", icon: Scissors },
     { id: 302, name: "Spa & Massage", price: "₹999", desc: "Relaxing deep tissue therapy. 20% off today!", image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=400&auto=format&fit=crop", icon: Sparkles },
     { id: 303, name: "Pedicure & Manicure", price: "₹499", desc: "Complete nail care and cleansing package.", image: "https://plus.unsplash.com/premium_photo-1661499249417-c20d6b668469?q=80&w=687&auto=format&fit=crop", icon: Sparkles }
   ],
   "Cleaning": [
-    { id: 401, name: "Home Deep Cleaning", price: "₹2,499", desc: "Get 20% Off Our Best Services Today", image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop", icon: Sparkles },
-    { id: 402, name: "Bathroom Cleaning", price: "₹399", desc: "Sparkling bathrooms, enjoy 20% off today!", image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400&auto=format&fit=crop", icon: Sparkles },
+    { id: 401, name: "Home Deep Cleaning", price: "₹2,499", desc: "Get 20% Off Our Best Services Today", image: "services/cleaning.png", icon: Sparkles },
+    { id: 402, name: "Bathroom Cleaning", price: "₹399", desc: "Sparkling bathrooms, enjoy 20% off today!", image: "services/bathroom.png", icon: Sparkles },
     { id: 403, name: "Sofa & Carpet Clean", price: "₹499", desc: "Fresh sofas, carpets — get 15% off!", image: "https://images.unsplash.com/photo-1686178827149-6d55c72d81df?q=80&w=1170&auto=format&fit=crop", icon: Sparkles },
     { id: 404, name: "Kitchen Cleaning", price: "₹899", desc: "Stain-free counters and chimneys, heavy grease removal.", image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=400&auto=format&fit=crop", icon: Sparkles }
   ],
   "Home Repair": [
-    { id: 501, name: "Electrician Visit", price: "₹149", desc: "Fix switches, sockets, and complex house wiring.", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=400&auto=format&fit=crop", icon: Wrench },
+    { id: 501, name: "Electrician Visit", price: "₹149", desc: "Fix switches, sockets, and complex house wiring.", image: "services/electrician.png", icon: Wrench },
     { id: 502, name: "Plumbing Troubleshoot", price: "₹149", desc: "Leak fixes, tap repair, and pipe unclogging.", image: "https://plus.unsplash.com/premium_photo-1663045495725-89f23b57cfc5?q=80&w=1170&auto=format&fit=crop", icon: Wrench },
-    { id: 503, name: "Carpenter Work", price: "₹199", desc: "Cabinet hinges, door lock fixing, and woodwork.", image: "https://plus.unsplash.com/premium_photo-1664302179163-4f37a6b67e54?q=80&w=687&auto=format&fit=crop", icon: Wrench }
+    { id: 503, name: "Carpenter Work", price: "₹199", desc: "Cabinet hinges, door lock fixing, and woodwork.", image: "services/painting.png", icon: Wrench }
   ],
   "Packing & Movers": [
     { id: 601, name: "1 BHK Shifting", price: "₹3,999", desc: "Complete home packing and safe transport.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=400&auto=format&fit=crop", icon: Package },

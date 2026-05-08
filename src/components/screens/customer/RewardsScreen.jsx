@@ -5,7 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
-import { API_BASE } from "../../../config";
+import { API_BASE, APP_DOMAIN } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 
 export function RewardsScreen() {
@@ -135,16 +135,14 @@ export function RewardsScreen() {
 
   const copyReferral = () => {
     const code = profileData?.referral_code || "REF";
-    const domain = window.location.origin;
-    const link = `${domain}/register?ref=${code}`;
+    const link = `${APP_DOMAIN}/register?ref=${code}`;
     navigator.clipboard.writeText(link);
     showToast(t('referral_copied'), "success");
   };
 
   const shareWhatsApp = () => {
     const code = profileData?.referral_code || "REF";
-    const domain = window.location.origin;
-    const link = `${domain}/register?ref=${code}`;
+    const link = `${APP_DOMAIN}/register?ref=${code}`;
     const text = `Hey! Join Dorcasaid for reliable home services. Use my link to sign up and we both get rewards: ${link}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
@@ -302,7 +300,7 @@ export function RewardsScreen() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-white border border-brand/10 rounded-2xl px-5 py-4 text-sm font-bold text-brand/60 truncate shadow-inner">
-                {`${window.location.origin}/register?ref=${profileData?.referral_code || "REF"}`}
+                {`${APP_DOMAIN}/register?ref=${profileData?.referral_code || "REF"}`}
               </div>
               <button
                 onClick={copyReferral}

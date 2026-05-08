@@ -9,6 +9,7 @@ import { MobileAppLayout } from "./components/layout/MobileAppLayout";
 // Capacitor & Notifications
 import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import { NotificationService } from "./services/NotificationService";
 
 // Auth Screens
@@ -97,7 +98,11 @@ function AppContent() {
         }
         
         if (permStatus.receive === 'granted') {
-          await PushNotifications.register();
+          try {
+            await PushNotifications.register();
+          } catch (err) {
+            console.error("Push registration failed", err);
+          }
           
           PushNotifications.addListener('registration', (token) => {
             NotificationService.registerDevice(token.value, null, authMode);
@@ -116,6 +121,21 @@ function AppContent() {
       initPush();
     }
   }, [isAuthenticated, authMode]);
+
+  // Back Button Handling
+  useEffect(() => {
+    const backButtonListener = CapApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        CapApp.exitApp();
+      }
+    });
+
+    return () => {
+      backButtonListener.then(l => l.remove());
+    };
+  }, []);
 
   // Splash Screen Timer
   useEffect(() => {

@@ -39,10 +39,12 @@ export function CategoryScreen() {
               image: srv.service_img
                 ? srv.service_img.startsWith("http")
                   ? srv.service_img
-                  : `${UPLOAD_BASE}/services/${srv.service_img}`
-                : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop",
+                  : `https://dorcasaid.com/${srv.service_img}`
+                : "services/cleaning.png",
               icon: LayoutGrid,
             }));
+            console.log(apiServices);
+
             setServices(apiServices);
           } else {
             setServices(fallbackDetails[categoryName] || []);
