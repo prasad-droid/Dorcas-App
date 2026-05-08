@@ -7,9 +7,11 @@ import {
 } from "lucide-react";
 
 import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { useLanguage } from "../../../context/LanguageContext";
 
 export function ServiceProvidersScreen() {
   const { serviceId } = useParams();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -86,7 +88,7 @@ export function ServiceProvidersScreen() {
           <ChevronLeft size={20} className="text-brand pr-0.5" />
         </button>
         <h2 className="text-base font-bold text-brand tracking-tight flex-1 text-center truncate px-2">
-          Search Service
+          {serviceName}
         </h2>
         <button className="w-[42px] h-[42px] bg-base rounded-[14px] shadow-[0_2px_10px_rgba(13,110,253,0.08)] flex items-center justify-center border border-brand/5 transition-colors hover:bg-brand/5">
           <MoreVertical size={18} className="text-brand" />
@@ -105,7 +107,7 @@ export function ServiceProvidersScreen() {
               <input
                 type="text"
                 className="w-full bg-base border border-brand/10 text-brand rounded-2xl py-3.5 pl-11 pr-4 text-[13px] font-semibold focus:outline-none focus:ring-1 focus:ring-brand shadow-[0_2px_12px_rgba(13,110,253,0.04)] placeholder:text-brand/40"
-                placeholder={`Search in ${serviceName}...`}
+                placeholder={`${t('search_in')} ${serviceName}...`}
               />
             </div>
             <button
@@ -125,13 +127,13 @@ export function ServiceProvidersScreen() {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
-              <p className="text-brand/50 font-bold text-sm">Finding experts...</p>
+              <p className="text-brand/50 font-bold text-sm">{t('finding_experts')}</p>
             </div>
           ) : sortedProviders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-50 text-center">
               <LayoutGrid size={48} className="text-brand mb-2" />
-              <p className="text-brand font-bold text-sm">No providers found for this service</p>
-              <p className="text-[11px] text-brand/60 px-10">We're expanding! Check back soon for professionals in your area.</p>
+              <p className="text-brand font-bold text-sm">{t('no_providers_found')}</p>
+              <p className="text-[11px] text-brand/60 px-10">{t('no_providers_desc')}</p>
             </div>
           ) : (
             sortedProviders.map((p) => (
@@ -175,7 +177,7 @@ export function ServiceProvidersScreen() {
                     className="flex items-center justify-center gap-2 bg-brand text-base py-[14px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity"
                   >
                     <CalendarCheck size={16} />
-                    Book Now
+                    {t('book_now')}
                   </button>
                 </div>
 
@@ -207,7 +209,7 @@ export function ServiceProvidersScreen() {
               <div className="w-12 h-1.5 bg-brand/10 rounded-full mx-auto mb-6"></div>
 
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-[18px] font-bold text-brand">Sort & Filter</h3>
+                <h3 className="text-[18px] font-bold text-brand">{t('sort_filter')}</h3>
                 <button
                   onClick={() => setIsSortOpen(false)}
                   className="w-8 h-8 flex items-center justify-center bg-brand/5 rounded-full text-brand/70 hover:text-brand transition-colors"
@@ -218,11 +220,11 @@ export function ServiceProvidersScreen() {
 
               <div className="space-y-3">
                 {[
-                  { value: "recommended", label: "Recommended First" },
-                  { value: "price_low", label: "Price - Low to High" },
-                  { value: "price_high", label: "Price - High to Low" },
-                  { value: "rating", label: "Highest Rated" },
-                  { value: "reviews", label: "Most Reviewed" },
+                  { value: "recommended", label: t('recommended') },
+                  { value: "price_low", label: t('price_low') },
+                  { value: "price_high", label: t('price_high') },
+                  { value: "rating", label: t('highest_rated') },
+                  { value: "reviews", label: t('most_reviewed') },
                 ].map((option) => (
                   <button
                     key={option.value}

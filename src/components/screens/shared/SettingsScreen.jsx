@@ -17,6 +17,7 @@ export function SettingsScreen() {
   const { language, setLanguage, t } = useLanguage();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [localImage, setLocalImage] = useState(null);
   
   // App states
   const [notifSettings, setNotifSettings] = useState({
@@ -46,6 +47,66 @@ export function SettingsScreen() {
     };
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (profileData?.id) {
+      const role = localStorage.getItem("role");
+      const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
+      if (savedImage) setLocalImage(savedImage);
+    }
+  }, [profileData]);
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 200;
+          const MAX_HEIGHT = 200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          
+          try {
+            setLocalImage(compressedBase64);
+            const role = localStorage.getItem("role");
+            localStorage.setItem(`profile_image_${role}_${profileData.id}`, compressedBase64);
+          } catch (err) {
+            console.error("Storage error:", err);
+            alert("Storage limit reached. Try a smaller image.");
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const SettingItem = ({ icon: Icon, label, value, onClick, type = "link", color = "brand" }) => (
     <button 
@@ -97,16 +158,27 @@ export function SettingsScreen() {
            <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
            <div className="relative z-10 flex items-center gap-5">
               <div className="relative">
-                 <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md p-1 border-2 border-white/30">
-                    <img 
-                      src={profileData?.profile_img || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"} 
-                      alt="Profile" 
-                      className="w-full h-full rounded-full object-cover"
-                    />
+                 <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md p-1 border-2 border-white/30 flex items-center justify-center overflow-hidden">
+                    {localImage || profileData?.profile_img ? (
+                      <img 
+                        src={localImage || profileData?.profile_img} 
+                        alt="Profile" 
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-2xl font-black text-white">{getInitials(profileData?.name)}</span>
+                    )}
                  </div>
-                 <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-white text-brand rounded-full flex items-center justify-center shadow-lg border-2 border-brand">
+                 <label htmlFor="profile-upload" className="absolute -bottom-1 -right-1 w-8 h-8 bg-white text-brand rounded-full flex items-center justify-center shadow-lg border-2 border-brand cursor-pointer hover:bg-slate-50 transition-colors">
                     <Camera size={14} />
-                 </button>
+                    <input 
+                      id="profile-upload" 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={handleImageUpload} 
+                    />
+                 </label>
               </div>
               <div className="flex-1">
                  <h3 className="text-xl font-black leading-tight">{profileData?.name || "Guest User"}</h3>
@@ -197,6 +269,34 @@ export function SettingsScreen() {
                {activeModal === 'profile' && (
                  <div className="space-y-6">
                     <h3 className="text-xl font-black text-brand">{t('edit_profile')}</h3>
+                    
+                    <div className="flex flex-col items-center gap-4 py-4">
+                       <div className="relative">
+                          <div className="w-24 h-24 rounded-3xl bg-brand/5 border-2 border-brand/10 p-1 flex items-center justify-center overflow-hidden">
+                             {localImage || profileData?.profile_img ? (
+                               <img 
+                                 src={localImage || profileData?.profile_img} 
+                                 alt="Profile" 
+                                 className="w-full h-full rounded-[1.25rem] object-cover"
+                               />
+                             ) : (
+                               <span className="text-3xl font-black text-brand/30">{getInitials(profileData?.name)}</span>
+                             )}
+                          </div>
+                          <label htmlFor="profile-upload-modal" className="absolute -bottom-2 -right-2 w-9 h-9 bg-brand text-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-white cursor-pointer">
+                             <Camera size={16} />
+                             <input 
+                               id="profile-upload-modal" 
+                               type="file" 
+                               accept="image/*" 
+                               className="hidden" 
+                               onChange={handleImageUpload} 
+                             />
+                          </label>
+                       </div>
+                       <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest">Tap to change photo</p>
+                    </div>
+
                     <div className="space-y-4">
                        <div className="space-y-1">
                           <label className="text-[10px] font-black text-brand/40 uppercase px-1">Full Name</label>

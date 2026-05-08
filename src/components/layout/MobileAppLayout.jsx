@@ -13,7 +13,7 @@ export function MobileAppLayout({ children }) {
 
   const customerNavItems = [
     { path: "/", icon: Home, label: t('home') },
-    { path: "/bookings", icon: Calendar, label: t('bookings') },
+    { path: "/order-history", icon: Calendar, label: t('bookings') },
     { path: "/rewards", icon: Gift, label: t('rewards') },
     { path: "/profile", icon: User, label: t('profile') },
   ];

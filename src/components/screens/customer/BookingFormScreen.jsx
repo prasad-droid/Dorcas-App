@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   ChevronLeft, Bell, MapPin, Star, MessageSquare, Phone, User, Calendar, Clock, Map, AlignLeft, Info, Check, Shield, Wallet, Gift, Trophy
 } from "lucide-react";
+import { useLanguage } from "../../../context/LanguageContext";
 import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 
@@ -16,6 +17,7 @@ export function BookingFormScreen() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const { setMyBookings, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const { showToast } = useToast();
 
   const [step, setStep] = useState("form"); // "form" or "success"
@@ -83,15 +85,16 @@ export function BookingFormScreen() {
     };
 
     fetchData();
+    getLocation(true); // Auto-capture on mount (silent mode)
   }, [providerId]);
 
-  const getLocation = () => {
+  const getLocation = (silent = false) => {
     if (!navigator.geolocation) {
-      showToast("Location not supported", "error");
+      if (!silent) showToast("Location not supported", "error");
       return;
     }
 
-    showToast("Detecting location...", "info");
+    if (!silent) showToast("Detecting location...", "info");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -121,7 +124,7 @@ export function BookingFormScreen() {
         }
       },
       () => {
-        showToast("Permission denied. Please enter manually.", "error");
+        if (!silent) showToast("Permission denied. Please enter manually.", "error");
       },
     );
   };
@@ -166,7 +169,7 @@ export function BookingFormScreen() {
       console.log("Response Data:", data);
       
       if (data.status) {
-        setGeneratedCard(data.data.scratch_card);
+        setGeneratedCard({ ...data.data.scratch_card, booking_id: data.data.booking_id });
         const newBooking = {
           id: `B-${data.data.booking_id}`,
           service: serviceName,
@@ -196,6 +199,7 @@ export function BookingFormScreen() {
     return (
       <div className="flex-1 flex items-center justify-center bg-base">
         <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+        <p className="ml-3 font-bold text-brand">{t('loading')}</p>
       </div>
     );
   }
@@ -227,7 +231,7 @@ export function BookingFormScreen() {
         >
           <ChevronLeft size={22} />
         </button>
-        <h1 className="text-lg font-black text-brand">Booking Details</h1>
+        <h1 className="text-lg font-black text-brand">{t('booking') + ' ' + t('view_details')}</h1>
         <div className="w-11" />
       </div>
 
@@ -248,22 +252,22 @@ export function BookingFormScreen() {
         {/* Form Inputs */}
         <form onSubmit={handleConfirm} className="space-y-6">
           <div className="space-y-4">
-            <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1">Personal & Contact Info</h3>
+            <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1">{t('personal_info')}</h3>
 
             <div className="grid grid-cols-1 gap-4">
-              <FormInput icon={User} placeholder="Full Name" value={formData.fullName} onChange={(val) => setFormData({ ...formData, fullName: val })} />
-              <FormInput icon={Phone} placeholder="Mobile Number" type="tel" value={formData.phoneNumber} onChange={(val) => setFormData({ ...formData, phoneNumber: val })} />
+              <FormInput icon={User} placeholder={t('full_name')} value={formData.fullName} onChange={(val) => setFormData({ ...formData, fullName: val })} />
+              <FormInput icon={Phone} placeholder={t('mobile_number')} type="tel" value={formData.phoneNumber} onChange={(val) => setFormData({ ...formData, phoneNumber: val })} />
             </div>
 
             <div className="flex items-center justify-between mt-6 px-1">
-              <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px]">Service Location</h3>
+              <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px]">{t('service_location')}</h3>
               <button
                 type="button"
-                onClick={getLocation}
+                onClick={() => getLocation(false)}
                 className="text-[10px] font-black text-brand bg-brand/5 px-3 py-1.5 rounded-xl border border-brand/10 flex items-center gap-1.5 active:scale-95 transition-transform"
               >
                 <MapPin size={12} className="text-brand" />
-                Use Current Location
+                {t('use_current_location')}
               </button>
             </div>
             {formData.latitude && (
@@ -287,15 +291,15 @@ export function BookingFormScreen() {
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <FormInput icon={MapPin} placeholder="City" value={formData.city} onChange={(val) => setFormData({ ...formData, city: val })} />
-                <FormInput icon={MapPin} placeholder="Pincode" maxLength={6} value={formData.pincode} onChange={(val) => setFormData({ ...formData, pincode: val })} />
+                <FormInput icon={MapPin} placeholder={t('city')} value={formData.city} onChange={(val) => setFormData({ ...formData, city: val })} />
+                <FormInput icon={MapPin} placeholder={t('pincode')} maxLength={6} value={formData.pincode} onChange={(val) => setFormData({ ...formData, pincode: val })} />
               </div>
             </div>
 
             <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1 mt-6">Schedule Preference</h3>
             <div className="grid grid-cols-2 gap-4">
-              <FormInput icon={Calendar} placeholder="Service Date" type="date" value={formData.date} onChange={(val) => setFormData({ ...formData, date: val })} />
-              <FormInput icon={Clock} placeholder="Preferred Time" type="time" value={formData.time} onChange={(val) => setFormData({ ...formData, time: val })} />
+              <FormInput icon={Calendar} placeholder={t('service_date')} type="date" value={formData.date} onChange={(val) => setFormData({ ...formData, date: val })} />
+              <FormInput icon={Clock} placeholder={t('preferred_time')} type="time" value={formData.time} onChange={(val) => setFormData({ ...formData, time: val })} />
             </div>
 
             <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1 mt-6">Additional Info</h3>
@@ -305,7 +309,7 @@ export function BookingFormScreen() {
               </div>
               <input
                 type="text"
-                placeholder="Special Instructions"
+                placeholder={t('special_instructions')}
                 value={formData.instructions}
                 onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
                 className="w-full bg-white border border-brand/5 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
@@ -319,11 +323,11 @@ export function BookingFormScreen() {
               <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-brand font-black">
                 <Wallet size={20} />
               </div>
-              <h4 className="text-sm font-black text-brand">Payment Mode</h4>
+              <h4 className="text-sm font-black text-brand">{t('payment_mode')}</h4>
             </div>
 
             <div className="bg-white border-2 border-brand rounded-2xl p-4 flex items-center justify-between mb-4">
-              <span className="font-bold text-brand">Pay After Service</span>
+              <span className="font-bold text-brand">{t('pay_after_service')}</span>
               <div className="w-5 h-5 bg-brand rounded-full flex items-center justify-center">
                 <Check size={12} className="text-white" strokeWidth={4} />
               </div>
@@ -357,7 +361,7 @@ export function BookingFormScreen() {
           <div className="mt-8 pt-8 border-t border-brand/5 space-y-6">
             <div className="flex items-center justify-between px-1">
               <div>
-                <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">Service Amount</span>
+                <span className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] block mb-1">{t('total_amount')}</span>
                 <span className="text-2xl font-black text-brand tracking-tighter">₹{providerDetails?.price || "499"}</span>
               </div>
               {providerDetails?.rating && (
@@ -373,7 +377,7 @@ export function BookingFormScreen() {
               disabled={isSubmitting}
               className={`w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
             >
-              {isSubmitting ? "Processing..." : "Confirm Booking"}
+              {isSubmitting ? t('loading') : t('confirm_booking')}
               {!isSubmitting && <Shield size={20} />}
             </motion.button>
           </div>
@@ -408,6 +412,7 @@ function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, ma
 
 // Inside BookingSuccessView
 function BookingSuccessView({ details, onClose, card }) {
+  const { t } = useLanguage();
   const [rewardClaimed, setRewardClaimed] = useState(false);
 
   const handleScratch = async () => {
@@ -446,20 +451,20 @@ function BookingSuccessView({ details, onClose, card }) {
         <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/20">
           <Check size={40} className="text-white" strokeWidth={4} />
         </div>
-        <h2 className="text-3xl font-black text-brand tracking-tighter">Booking Confirmed!</h2>
-        <p className="text-brand/50 font-bold mt-1 uppercase text-[10px] tracking-widest">Job ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+        <h2 className="text-3xl font-black text-brand tracking-tighter">{t('booking_confirmed')}</h2>
+        <p className="text-brand/50 font-bold mt-1 uppercase text-[10px] tracking-widest">Job ID: {card?.booking_id || "PENDING"}</p>
       </div>
 
       <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-brand/5 mb-8">
-        <h3 className="text-sm font-black text-brand/30 uppercase tracking-widest mb-6">Booking Details</h3>
+        <h3 className="text-sm font-black text-brand/30 uppercase tracking-widest mb-6">{t('view_details')}</h3>
         <div className="space-y-4">
-          <DetailRow label="Service" value={details.service} />
-          <DetailRow label="Date" value={details.date || "Tomorrow"} />
-          <DetailRow label="Time" value={details.time || "10:00 AM"} />
-          <DetailRow label="Address" value={`${details.address}, ${details.city}`} />
-          <DetailRow label="Payment" value={details.paymentType} />
+          <DetailRow label={t('home')} value={details.service} />
+          <DetailRow label={t('date')} value={details.date || "Tomorrow"} />
+          <DetailRow label={t('time')} value={details.time || "10:00 AM"} />
+          <DetailRow label={t('service_location')} value={`${details.address}, ${details.city}`} />
+          <DetailRow label={t('payment_mode')} value={details.paymentType} />
           <div className="pt-4 border-t border-brand/5 flex items-center justify-between">
-            <span className="font-black text-brand text-lg">Total Amount</span>
+            <span className="font-black text-brand text-lg">{t('total_amount')}</span>
             <span className="font-black text-brand text-xl">{details.price}</span>
           </div>
         </div>

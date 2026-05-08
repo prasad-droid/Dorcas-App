@@ -34,6 +34,7 @@ export function ProfileScreen() {
   const { t } = useLanguage();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [localImage, setLocalImage] = useState(null);
   const navigate = useNavigate();
 
   const isTech = authMode === "technician";
@@ -67,6 +68,14 @@ export function ProfileScreen() {
     }
   }, [isAuthenticated, authMode]);
 
+  useEffect(() => {
+    if (profileData?.id) {
+      const role = localStorage.getItem("role");
+      const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
+      if (savedImage) setLocalImage(savedImage);
+    }
+  }, [profileData]);
+
   const customerMenuItems = [
     { icon: LayoutDashboard, label: t('home'), desc: "Overview and insights", action: () => navigate("/") },
     { icon: Calendar, label: t('bookings'), desc: "View past and upcoming services", action: () => navigate("/order-history") },
@@ -84,6 +93,11 @@ export function ProfileScreen() {
   ];
 
   const mainMenuItems = isTech ? techMenuItems : customerMenuItems;
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   if (isLoading && isAuthenticated) {
     return (
@@ -118,8 +132,12 @@ export function ProfileScreen() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center">
-          <div className="w-24 h-24 bg-base rounded-full flex items-center justify-center p-1 mb-3 shadow-[0_8px_16px_rgba(0,0,0,0.15)] border border-brand shadow-brand/30">
-            <img src={profileData?.profile_img || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"} alt="Profile" className="w-full h-full rounded-full object-cover" />
+          <div className="w-24 h-24 bg-base rounded-full flex items-center justify-center p-1 mb-3 shadow-[0_8px_16px_rgba(0,0,0,0.15)] border border-brand shadow-brand/30 overflow-hidden">
+            {localImage || profileData?.profile_img ? (
+              <img src={localImage || profileData?.profile_img} alt="Profile" className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <span className="text-3xl font-black text-brand">{getInitials(profileData?.name)}</span>
+            )}
           </div>
           <h2 className="text-[22px] font-extrabold tracking-tight drop-shadow-md">{profileData?.name || "Guest User"}</h2>
           <p className="text-base/80 text-[13px] font-semibold mt-0.5 bg-base/10 px-3 py-1 rounded-full backdrop-blur-sm shadow-inner">{profileData?.phone || "No phone"}</p>

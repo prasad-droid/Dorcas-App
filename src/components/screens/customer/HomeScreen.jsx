@@ -37,6 +37,7 @@ export function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [offers, setOffers] = useState([]);
   const [profileData, setProfileData] = useState(null);
+  const [localImage, setLocalImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,8 +75,8 @@ export function HomeScreen() {
         const catRes = await fetch(`${API_BASE}/categories/get_categories.php`);
         const catData = await catRes.json();
 
-        // Fetch Subcategories
-        const subRes = await fetch(`${API_BASE}/categories/get_subcategories.php`);
+        // Fetch Services (instead of subcategories to avoid ID mismatch)
+        const subRes = await fetch(`${API_BASE}/services/get_services.php`);
         const subData = await subRes.json();
 
         // Fetch Offers
@@ -113,27 +114,33 @@ export function HomeScreen() {
 
           const grouped = {};
           catData.data.forEach(cat => {
-            grouped[cat.category_name] = subData.data
-              .filter(sub => parseInt(sub.category_id) === parseInt(cat.id))
-              .map(sub => ({
-                id: sub.id,
-                name: sub.subcategory_name,
-                price: "₹299",
-                desc: sub.meta_description || "Expert service at your doorstep",
-                image: sub.subcategory_img ? (sub.subcategory_img.startsWith('http') ? sub.subcategory_img : `${IMAGE_BASE}${sub.subcategory_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
-              }));
+            // Find services in this category from the grouped get_services.php response
+            const categoryWithServices = subData.data.find(c => parseInt(c.id) === parseInt(cat.id));
+            const categoryServices = categoryWithServices ? categoryWithServices.services : [];
+
+            grouped[cat.category_name] = categoryServices.map(srv => ({
+              id: srv.id,
+              name: srv.service_name,
+              price: srv.service_price ? `₹${srv.service_price}` : "₹299",
+              desc: srv.service_desc || "Expert service at your doorstep",
+              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `${UPLOAD_BASE}/services/${srv.service_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
+            }));
           });
           setCategoryDetails(grouped);
 
-          const trending = subData.data
+          // Use all available services for trending instead of subcategories
+          const allServices = [];
+          subData.data.forEach(c => allServices.push(...c.services));
+
+          const trending = allServices
             .sort(() => 0.5 - Math.random())
             .slice(0, 4)
-            .map(sub => ({
-              id: sub.id,
-              name: sub.subcategory_name,
+            .map(srv => ({
+              id: srv.id,
+              name: srv.service_name,
               rating: (4 + Math.random()).toFixed(1),
               reviews: `${Math.floor(Math.random() * 5000)} reviews`,
-              image: sub.subcategory_img ? (sub.subcategory_img.startsWith('http') ? sub.subcategory_img : `${IMAGE_BASE}${sub.subcategory_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
+              image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `${UPLOAD_BASE}/services/${srv.service_img}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop"
             }));
           setTrendingServices(trending);
         } else {
@@ -151,6 +158,19 @@ export function HomeScreen() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (profileData?.id) {
+      const role = localStorage.getItem("role");
+      const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
+      if (savedImage) setLocalImage(savedImage);
+    }
+  }, [profileData]);
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   if (isLoading) {
     return (
@@ -191,11 +211,18 @@ export function HomeScreen() {
               <span className="text-xs font-bold">{profileData?.stats?.value2 || 0}</span>
             </button>
             <button
-              onClick={() => navigate("/notifications")}
-              className="bg-base/20 p-2 rounded-full relative"
+              onClick={() => navigate("/profile")}
+              className="w-10 h-10 rounded-full border-2 border-base/20 p-0.5 overflow-hidden active:scale-95 transition-transform flex items-center justify-center bg-base/10 shadow-sm"
             >
-              <Bell size={20} className="text-base" />
-              <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-base"></span>
+              {localImage || profileData?.profile_img ? (
+                <img 
+                  src={localImage || profileData?.profile_img} 
+                  alt="Avatar" 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-[14px] font-black text-white">{getInitials(profileData?.name)}</span>
+              )}
             </button>
           </div>
         </div>

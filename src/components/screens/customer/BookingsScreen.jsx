@@ -202,7 +202,7 @@ export function BookingsScreen() {
               className="bg-white w-full rounded-t-[3rem] p-8 pb-10 shadow-2xl space-y-8 relative z-[201]"
               onClick={e => e.stopPropagation()}
             >
-            >
+            
               <div className="w-12 h-1.5 bg-brand/10 rounded-full mx-auto mb-8"></div>
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-black text-brand">{t('filter_sort')}</h3>

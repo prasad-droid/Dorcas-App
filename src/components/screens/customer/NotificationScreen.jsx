@@ -80,7 +80,7 @@ export function NotificationScreen() {
         >
           <ChevronLeft size={20} />
         </button>
-        <h2 className="text-xl font-bold">Notifications</h2>
+        <h2 className="text-xl font-bold">{t('notifications')}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4">

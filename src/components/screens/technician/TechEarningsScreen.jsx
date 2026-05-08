@@ -7,9 +7,11 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
 
 export function TechEarningsScreen() {
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("Weekly");
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +22,8 @@ export function TechEarningsScreen() {
     thisMonth: "0",
     transactions: []
   });
+  const [upiId, setUpiId] = useState("");
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
   useEffect(() => {
     const fetchEarnings = async () => {
@@ -57,8 +61,9 @@ export function TechEarningsScreen() {
             transactions: txJson.data.map(tx => ({
               id: `TX-${tx.id}`,
               service: tx.service_name || tx.subcategory_name || "Home Service",
+              customer: tx.customer_name || "Guest Client",
               date: tx.service_date || "Recent",
-              amount: `₹${tx.amount || tx.price || "0"}`,
+              amount: `₹${tx.amount && tx.amount !== "0" ? tx.amount : (tx.service_price || "0")}`,
               status: tx.status || "completed",
               type: "credit"
             }))
@@ -73,6 +78,42 @@ export function TechEarningsScreen() {
 
     fetchEarnings();
   }, []);
+
+  const handleRequestPayout = async () => {
+    if (!upiId.trim()) {
+      showToast(t('upi_required') || "Please enter UPI ID", "error");
+      return;
+    }
+
+    try {
+      setIsRedeeming(true);
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+
+      const response = await fetch(`${API_BASE}/rewards/redeem_points.php`, { // Using same endpoint for simplicity or a tech specific one
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": `Bearer ${token}`,
+          "Role": role
+        },
+        body: `points=${earningsData.pendingPayout}&upi_id=${encodeURIComponent(upiId)}&type=tech_payout`
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        setEarningsData(prev => ({ ...prev, pendingPayout: "0" }));
+        setUpiId("");
+        showToast(t('payout_requested') || "Payout request sent to admin!", "success");
+      } else {
+        showToast(data.message, "error");
+      }
+    } catch (error) {
+      showToast("Failed to send payout request", "error");
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
 
   return (
     <motion.div
@@ -106,6 +147,28 @@ export function TechEarningsScreen() {
                  <span className="text-xl font-black">₹</span>
                  <span className="text-4xl font-black tracking-tighter">{earningsData.pendingPayout}</span>
               </div>
+
+              {Number(earningsData.pendingPayout) > 0 && (
+                <div className="space-y-4 pt-4 border-t border-white/10 mt-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-white/60 uppercase tracking-widest px-1">UPI ID for Payment</label>
+                    <input 
+                      type="text" 
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      placeholder="example@upi"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl py-3 px-4 text-sm font-bold text-white placeholder:text-white/30 focus:ring-2 focus:ring-white/30 outline-none transition-all"
+                    />
+                  </div>
+                  <button
+                    onClick={handleRequestPayout}
+                    disabled={isRedeeming}
+                    className="w-full bg-white text-brand py-3.5 rounded-2xl text-[13px] font-black shadow-xl shadow-black/10 active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isRedeeming ? "Processing..." : "Request Payout Now"}
+                  </button>
+                </div>
+              )}
            </div>
         </div>
 
@@ -146,7 +209,10 @@ export function TechEarningsScreen() {
         <div className="space-y-4">
            <div className="flex justify-between items-center px-1">
               <h3 className="text-[11px] font-bold text-brand/30 uppercase tracking-[2px]">Recent Transactions</h3>
-              <button className="text-[10px] font-bold text-brand uppercase tracking-widest flex items-center gap-1">
+              <button 
+                onClick={() => navigate("/tech/dashboard")}
+                className="text-[10px] font-bold text-brand uppercase tracking-widest flex items-center gap-1"
+              >
                  View All <ChevronRight size={12} />
               </button>
            </div>
@@ -160,8 +226,10 @@ export function TechEarningsScreen() {
                           <Briefcase size={20} />
                         </div>
                         <div>
-                          <h4 className="text-[14px] font-bold text-brand">{tx.service}</h4>
-                          <p className="text-[10px] text-brand/30 font-bold uppercase tracking-wider">{tx.date}</p>
+                          <h4 className="text-[14px] font-bold text-brand leading-none mb-1">{tx.service}</h4>
+                          <p className="text-[10px] text-brand/30 font-bold uppercase tracking-wider">
+                            {tx.customer} • {tx.date}
+                          </p>
                         </div>
                     </div>
                     <div className="text-right">

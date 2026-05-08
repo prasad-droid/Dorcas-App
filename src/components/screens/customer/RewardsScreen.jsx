@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Copy, Share2, Sparkles, X, Trophy, CheckCircle2 } from "lucide-react";
+import { Gift, Copy, Share2, Sparkles, X, Trophy, CheckCircle2, RefreshCw } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import { ScratchCard } from "../../ui/ScratchCard";
@@ -10,42 +10,44 @@ import { useToast } from "../../../context/ToastContext";
 
 export function RewardsScreen() {
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [scratchCards, setScratchCards] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCard, setActiveCard] = useState(null);
+  const [upiId, setUpiId] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-
-        // Fetch Profile for points and referral code
-        const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, {
-          headers: { "Authorization": `Bearer ${token}`, "Role": role }
-        });
-        const profileData = await profileRes.json();
-        if (profileData.status) setProfileData(profileData.data);
-
-        // Fetch Scratch Cards
-        const cardsRes = await fetch(`${API_BASE}/rewards/get_scratch_cards.php`, {
-          headers: { "Authorization": `Bearer ${token}`, "Role": role }
-        });
-        const cardsData = await cardsRes.json();
-        if (cardsData.status) setScratchCards(cardsData.data);
-
-      } catch (error) {
-        // console.error("Rewards Fetch Error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (isAuthenticated) fetchData();
   }, [isAuthenticated]);
+
+   const fetchData = async (showLoading = true) => {
+     try {
+       if (showLoading) setIsLoading(true);
+       const token = localStorage.getItem("token");
+       const role = localStorage.getItem("role");
+
+       // Fetch Profile for points and referral code
+       const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, {
+         headers: { "Authorization": `Bearer ${token}`, "Role": role }
+       });
+       const profileData = await profileRes.json();
+       if (profileData.status) setProfileData(profileData.data);
+
+       // Fetch Scratch Cards
+       const cardsRes = await fetch(`${API_BASE}/rewards/get_scratch_cards.php`, {
+         headers: { "Authorization": `Bearer ${token}`, "Role": role }
+       });
+       const cardsData = await cardsRes.json();
+       if (cardsData.status) setScratchCards(cardsData.data);
+
+     } catch (error) {
+       // console.error("Rewards Fetch Error:", error);
+     } finally {
+       setIsLoading(false);
+     }
+   };
 
   const handleScratchComplete = async (cardId) => {
     try {
@@ -65,13 +67,8 @@ export function RewardsScreen() {
       const data = await response.json();
       if (data.status) {
         setScratchCards(prev => prev.map(c => c.id === cardId ? { ...c, is_scratched: 1 } : c));
-        setProfileData(prev => ({
-          ...prev,
-          stats: {
-            ...prev.stats,
-            value2: (Number(prev.stats.value2) || 0) + Number(data.data.reward)
-          }
-        }));
+        // Re-fetch to get updated points and stats from DB
+        fetchData(false);
       }
     } catch (error) {
       // console.error("Scratch error:", error);
@@ -79,10 +76,23 @@ export function RewardsScreen() {
   };
 
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const scratchedCount = scratchCards.filter(c => c.is_scratched).length;
+
   const handleRedeem = async () => {
     const points = Number(profileData?.stats?.value2) || 0;
-    if (points < 100) {
-      showToast(t('min_points_error'), "error");
+    
+    if (scratchedCount < 3) {
+      showToast(t('payout_min_cards'), "error");
+      return;
+    }
+
+    if (!upiId.trim()) {
+      showToast(t('upi_required'), "error");
+      return;
+    }
+
+    if (points <= 0) {
+      showToast("No points available to redeem", "error");
       return;
     }
 
@@ -98,7 +108,7 @@ export function RewardsScreen() {
           "Authorization": `Bearer ${token}`,
           "Role": role
         },
-        body: `points=${points}`
+        body: `points=${points}&upi_id=${encodeURIComponent(upiId)}`
       });
 
       const data = await response.json();
@@ -110,7 +120,8 @@ export function RewardsScreen() {
             value2: 0 // All points redeemed
           }
         }));
-        showToast(data.message, "success");
+        setUpiId("");
+        showToast(t('payout_requested'), "success");
       } else {
         showToast(data.message, "error");
       }
@@ -123,13 +134,18 @@ export function RewardsScreen() {
   };
 
   const copyReferral = () => {
-    const link = `https://dorcasaid.app/invite/${profileData?.referral_code || "REF"}`;
+    const code = profileData?.referral_code || "REF";
+    const domain = window.location.origin;
+    const link = `${domain}/register?ref=${code}`;
     navigator.clipboard.writeText(link);
     showToast(t('referral_copied'), "success");
   };
 
   const shareWhatsApp = () => {
-    const text = `Hey! Join Dorcasaid for reliable home services. Use my link to sign up and we both get rewards: https://dorcasaid.app/invite/${profileData?.referral_code || "REF"}`;
+    const code = profileData?.referral_code || "REF";
+    const domain = window.location.origin;
+    const link = `${domain}/register?ref=${code}`;
+    const text = `Hey! Join Dorcasaid for reliable home services. Use my link to sign up and we both get rewards: ${link}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -150,9 +166,17 @@ export function RewardsScreen() {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-black text-brand tracking-tight">{t('my_rewards')}</h2>
-        <div className="flex items-center gap-1.5 bg-brand/10 px-4 py-2 rounded-2xl border border-brand/5">
-          <Sparkles size={16} className="text-brand" />
-          <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} {t('points')}</span>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => fetchData(true)}
+            className="w-10 h-10 bg-brand/5 rounded-2xl flex items-center justify-center text-brand active:rotate-180 transition-transform"
+          >
+            <RefreshCw size={18} />
+          </button>
+          <div className="flex items-center gap-1.5 bg-brand/10 px-4 py-2 rounded-2xl border border-brand/5">
+            <Sparkles size={16} className="text-brand" />
+            <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} {t('points')}</span>
+          </div>
         </div>
       </div>
 
@@ -163,13 +187,46 @@ export function RewardsScreen() {
           <div className="relative z-10">
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">{t('available_redemption')}</p>
             <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">{t('value')}</span></h3>
-            <button
-              onClick={handleRedeem}
-              disabled={isRedeeming}
-              className="bg-white text-brand px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-black/10 active:scale-95 transition-transform disabled:opacity-50"
-            >
-              {isRedeeming ? t('loading') : t('redeem_wallet')}
-            </button>
+            
+            {scratchedCount < 3 ? (
+              <div className="bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle2 size={14} className="text-white/40" />
+                  <span className="text-[10px] font-black uppercase tracking-wider text-white/40">{t('payout_locked')}</span>
+                </div>
+                <p className="text-[11px] font-bold text-white/70 leading-tight">
+                  {t('payout_locked_desc')} ({scratchedCount}/3)
+                </p>
+                <div className="w-full bg-white/10 h-1.5 rounded-full mt-3 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(scratchedCount / 3) * 100}%` }}
+                    className="h-full bg-white rounded-full"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-white/60 uppercase tracking-widest px-1">{t('enter_upi')}</label>
+                  <input 
+                    type="text" 
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder={t('upi_placeholder')}
+                    className="w-full bg-white/10 border border-white/20 rounded-xl py-3 px-4 text-sm font-bold text-white placeholder:text-white/30 focus:ring-2 focus:ring-white/30 outline-none transition-all"
+                  />
+                </div>
+                <button
+                  onClick={handleRedeem}
+                  disabled={isRedeeming}
+                  className="w-full bg-white text-brand py-3.5 rounded-2xl text-[13px] font-black shadow-xl shadow-black/10 active:scale-[0.98] transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={16} />
+                  {isRedeeming ? t('loading') : t('request_payout')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -245,7 +302,7 @@ export function RewardsScreen() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-white border border-brand/10 rounded-2xl px-5 py-4 text-sm font-bold text-brand/60 truncate shadow-inner">
-                {profileData?.referral_code || "REF6X9Q"}
+                {`${window.location.origin}/register?ref=${profileData?.referral_code || "REF"}`}
               </div>
               <button
                 onClick={copyReferral}

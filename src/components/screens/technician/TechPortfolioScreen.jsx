@@ -15,6 +15,7 @@ export function TechPortfolioScreen() {
   const { t } = useLanguage();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [localImage, setLocalImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,6 +39,19 @@ export function TechPortfolioScreen() {
 
     if (isAuthenticated) fetchProfile();
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (profileData?.id) {
+      const role = localStorage.getItem("role");
+      const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
+      if (savedImage) setLocalImage(savedImage);
+    }
+  }, [profileData]);
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   const portfolioMenuItems = [
     { 
@@ -113,12 +127,16 @@ export function TechPortfolioScreen() {
 
         <div className="relative z-10 flex flex-col items-center">
           <div className="relative">
-            <div className="w-24 h-24 bg-base rounded-full flex items-center justify-center p-1 mb-3 shadow-xl border-2 border-white">
-              <img 
-                src={profileData?.profile_img || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"} 
-                alt="Profile" 
-                className="w-full h-full rounded-full object-cover" 
-              />
+            <div className="w-24 h-24 bg-base rounded-full flex items-center justify-center p-1 mb-3 shadow-xl border-2 border-white overflow-hidden">
+              {localImage || profileData?.profile_img ? (
+                <img 
+                  src={localImage || (profileData?.profile_img?.startsWith('http') ? profileData.profile_img : `${UPLOAD_BASE}/${profileData.profile_img}`)} 
+                  alt="Profile" 
+                  className="w-full h-full rounded-full object-cover" 
+                />
+              ) : (
+                <span className="text-3xl font-black text-brand">{getInitials(profileData?.name)}</span>
+              )}
             </div>
             <div className="absolute bottom-4 right-0 w-7 h-7 bg-emerald-500 rounded-full border-4 border-brand flex items-center justify-center text-white">
               <CheckCircle2 size={12} strokeWidth={4} />

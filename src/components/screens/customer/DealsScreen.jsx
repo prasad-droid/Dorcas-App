@@ -65,7 +65,7 @@ export function DealsScreen() {
         >
           <ChevronLeft size={20} />
         </button>
-        <h2 className="text-xl font-bold">Special Offers</h2>
+        <h2 className="text-xl font-bold">{t('special_offers')}</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-8 space-y-8">
@@ -127,7 +127,7 @@ export function DealsScreen() {
                 className="w-full bg-brand text-base py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-brand/20 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
               >
                 <Share2 size={24} />
-                Invite Friends Now
+                {t('invite_friends')}
               </button>
             </div>
           </>

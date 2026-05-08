@@ -13,12 +13,30 @@ export function TechCommissionScreen() {
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState("pending"); // 'pending' or 'history'
   const [unpaidJobs, setUnpaidJobs] = useState([]);
+  const [paymentHistory, setPaymentHistory] = useState([]);
   const [totalDue, setTotalDue] = useState(0);
 
   useEffect(() => {
     fetchUnpaidCommissions();
+    fetchPaymentHistory();
   }, []);
+
+  const fetchPaymentHistory = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const headers = { "Authorization": `Bearer ${token}`, "Role": role };
+      const response = await fetch(`${API_BASE}/payments/get_payment_history.php`, { headers });
+      const data = await response.json();
+      if (data.status) {
+        setPaymentHistory(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to load history", error);
+    }
+  };
 
   const fetchUnpaidCommissions = async () => {
     try {
@@ -37,14 +55,13 @@ export function TechCommissionScreen() {
       const data = await response.json();
 
       if (data.status) {
-        // Filter jobs where commission_status is not 'paid'
-        // For now, we simulate this by checking a hypothetical field or just showing all completed ones for demo
-        const pending = data.data.filter(job => job.commission_status !== 'paid');
+        // Filter jobs where commission_status is 'pending'
+        const pending = data.data.filter(job => job.commission_status === 'pending');
         setUnpaidJobs(pending);
         
         const total = pending.reduce((sum, job) => {
-          const amount = parseFloat(job.amount || job.price || 0);
-          const commission = amount * 0.10; // Assuming 10% commission
+          // Use commission_amount from DB if available, else fallback to 10%
+          const commission = parseFloat(job.commission_amount || (parseFloat(job.amount_paid || 0) * 0.10));
           return sum + commission;
         }, 0);
         setTotalDue(total);
@@ -141,6 +158,21 @@ export function TechCommissionScreen() {
             </button>
           </div>
         </div>
+        {/* Tabs */}
+        <div className="flex gap-2 mt-8">
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`flex-1 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'pending' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'bg-brand/5 text-brand/40'}`}
+          >
+            Pending Dues
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`flex-1 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'bg-brand/5 text-brand/40'}`}
+          >
+            Paid History
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -149,16 +181,18 @@ export function TechCommissionScreen() {
         </div>
       ) : (
         <div className="px-6 py-8 space-y-6">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-[2px]">Pending Job Commissions</h3>
-            <span className="text-[10px] font-bold text-brand bg-brand/5 px-2 py-1 rounded-lg">{unpaidJobs.length} Jobs</span>
-          </div>
+          {activeTab === 'pending' ? (
+            <>
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-[2px]">Outstanding Commissions</h3>
+                <span className="text-[10px] font-bold text-brand bg-brand/5 px-2 py-1 rounded-lg">{unpaidJobs.length} Jobs</span>
+              </div>
 
           <div className="space-y-4">
             {unpaidJobs.length > 0 ? (
               unpaidJobs.map((job) => {
-                const amount = parseFloat(job.amount || job.price || 0);
-                const commission = amount * 0.10;
+                const amount = parseFloat(job.amount_paid || 0);
+                const commission = parseFloat(job.commission_amount || (amount * 0.10));
                 return (
                   <div key={job.id} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm space-y-4">
                     <div className="flex justify-between items-start">
@@ -168,7 +202,7 @@ export function TechCommissionScreen() {
                         </div>
                         <div>
                           <h4 className="font-black text-brand text-[15px] leading-tight">{job.service_name || "Home Service"}</h4>
-                          <p className="text-[10px] font-bold text-brand/30 uppercase mt-1">{new Date(job.service_date).toLocaleDateString()}</p>
+                          <p className="text-[10px] font-bold text-brand/30 uppercase mt-1">{new Date(job.completed_at || job.service_date).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -183,7 +217,7 @@ export function TechCommissionScreen() {
                           <IndianRupee size={14} />
                         </div>
                         <div>
-                          <p className="text-[9px] font-black text-brand/30 uppercase leading-none mb-1">Commission (10%)</p>
+                          <p className="text-[9px] font-black text-brand/30 uppercase leading-none mb-1">Commission</p>
                           <p className="text-sm font-black text-amber-600">₹{commission.toFixed(2)}</p>
                         </div>
                       </div>
@@ -211,16 +245,56 @@ export function TechCommissionScreen() {
             )}
           </div>
 
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-4">
-            <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
-              <AlertCircle size={20} />
+            </>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between px-1">
+                <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-[2px]">Recent Transactions</h3>
+                <span className="text-[10px] font-bold text-brand bg-brand/5 px-2 py-1 rounded-lg">{paymentHistory.length} Payments</span>
+              </div>
+              
+              {paymentHistory.length > 0 ? (
+                paymentHistory.map((item) => (
+                  <div key={item.order_id} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-4 items-center">
+                        <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
+                          <CheckCircle2 size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-brand text-[14px] leading-tight">Commission Paid</h4>
+                          <p className="text-[9px] font-bold text-brand/30 uppercase mt-1">ID: {item.order_id}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] font-black text-brand/30 uppercase tracking-widest mb-0.5">Amount</p>
+                        <p className="font-black text-emerald-600">₹{parseFloat(item.amount).toFixed(2)}</p>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-dashed border-brand/10 flex justify-between items-center">
+                      <div className="text-[10px] font-bold text-brand/40">
+                        {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full">
+                        <Shield size={10} className="text-emerald-500" />
+                        <span className="text-[9px] font-black text-emerald-600 uppercase">Verified</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-20 text-center space-y-4 bg-white rounded-[2.5rem] border border-dashed border-brand/10">
+                  <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mx-auto text-brand/20">
+                    <Clock size={32} />
+                  </div>
+                  <div>
+                    <p className="font-black text-brand tracking-tight">No history found</p>
+                    <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">Your payment history will appear here</p>
+                  </div>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="text-[11px] font-bold text-amber-900 leading-relaxed">
-                As per policy, commission must be paid within 24 hours of job completion to continue receiving new job requests.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       )}
     </motion.div>

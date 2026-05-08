@@ -29,6 +29,7 @@ export function TechHomeScreen() {
   const { isAuthenticated } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [localImage, setLocalImage] = useState(null);
   const [isOnline, setIsOnline] = useState(true);
   const [activeJob, setActiveJob] = useState(null);
   const [availableRequests, setAvailableRequests] = useState([]);
@@ -42,6 +43,7 @@ export function TechHomeScreen() {
     activeJobs: "0",
     completedJobs: "0"
   });
+  const [pendingCommissions, setPendingCommissions] = useState([]);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -100,6 +102,10 @@ export function TechHomeScreen() {
           if (ongoing.length > 0) {
             setActiveJob(ongoing[0]);
           }
+          
+          // Check for pending commissions
+          const pending = activeJson.data.filter(j => j.status === 'completed' && j.commission_status === 'pending');
+          setPendingCommissions(pending);
         }
 
         // 3. Fetch Available New Requests (matching tech category/location)
@@ -135,6 +141,14 @@ export function TechHomeScreen() {
     fetchData();
   }, [isAuthenticated, userLocation]);
 
+  useEffect(() => {
+    if (profileData?.id) {
+      const role = localStorage.getItem("role");
+      const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
+      if (savedImage) setLocalImage(savedImage);
+    }
+  }, [profileData]);
+
   const [techStats, setTechStats] = useState(null);
 
   useEffect(() => {
@@ -146,10 +160,15 @@ export function TechHomeScreen() {
         const res = await fetch(`${API_BASE}/vendors/get_tech_stats.php`, { headers });
         const data = await res.json();
         if (data.status) setTechStats(data.data);
-      } catch (e) {}
+      } catch (e) { }
     };
     fetchTechStats();
   }, []);
+
+  const getInitials = (name) => {
+    if (!name) return "??";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   if (isLoading) {
     return (
@@ -158,7 +177,6 @@ export function TechHomeScreen() {
       </div>
     );
   }
-
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -182,17 +200,17 @@ export function TechHomeScreen() {
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-amber-500" />
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50" />
-              
+
               <div className="relative z-10 flex flex-col items-center text-center">
                 <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center text-amber-500 mb-6 shadow-xl shadow-amber-500/10">
                   <Shield size={40} strokeWidth={2.5} />
                 </div>
-                
+
                 <h3 className="text-2xl font-black text-brand tracking-tight mb-3">{t('verification_required')}</h3>
                 <p className="text-[13px] font-medium text-brand/60 leading-relaxed mb-8">
                   Your account is currently <span className="text-amber-600 font-bold">{t('pending_approval')}</span>. {t('kyc_desc')}
                 </p>
-                
+
                 <div className="w-full space-y-3">
                   <button
                     onClick={() => navigate("/tech/verification")}
@@ -214,12 +232,16 @@ export function TechHomeScreen() {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl p-0.5 border border-white/30 shadow-inner">
-              <img
-                src={profileData?.profile_img ? (profileData.profile_img.startsWith('http') ? profileData.profile_img : `${UPLOAD_BASE}/${profileData.profile_img}`) : "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?q=80&w=200&auto=format&fit=crop"}
-                className="w-full h-full rounded-xl object-cover"
-                alt="Profile"
-              />
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xl p-0.5 border border-white/30 shadow-inner overflow-hidden cursor-pointer active:scale-95 transition-transform flex items-center justify-center" onClick={() => navigate("/profile")}>
+              {localImage || profileData?.profile_img ? (
+                <img
+                  src={localImage || (profileData.profile_img.startsWith('http') ? profileData.profile_img : `${UPLOAD_BASE}/${profileData.profile_img}`)}
+                  className="w-full h-full rounded-xl object-cover"
+                  alt="Profile"
+                />
+              ) : (
+                <span className="text-xl font-black text-white">{getInitials(profileData?.name)}</span>
+              )}
             </div>
             <div>
               <p className="text-white/60 text-[10px] font-black tracking-widest uppercase mb-0.5">Welcome back,</p>
@@ -341,11 +363,37 @@ export function TechHomeScreen() {
               </motion.div>
             )}
           </AnimatePresence>
+          
+          {/* Commission Due Alert */}
+          <AnimatePresence>
+            {pendingCommissions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-red-50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center"
+              >
+                <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 shrink-0">
+                  <IndianRupee size={24} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-[13px] font-black text-brand leading-tight">Commission Dues Pending</h4>
+                  <p className="text-[10px] font-bold text-red-600/60 uppercase mt-0.5">Please pay to keep receiving jobs</p>
+                </div>
+                <button
+                  onClick={() => navigate("/tech/commissions")}
+                  className="bg-brand text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform"
+                >
+                  Pay Now
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Performance Dashboard with Graphs */}
           <div className="space-y-4">
             <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('performance_overview')}</h3>
-            
+
             {/* Main Graph Card */}
             <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm">
               <div className="flex justify-between items-end mb-8">
@@ -370,12 +418,12 @@ export function TechHomeScreen() {
                 {techStats?.monthly.map((m, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                     <div className="w-full flex justify-center gap-0.5">
-                      <motion.div 
+                      <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${(m.accepted / 20) * 100}%` }}
                         className="w-2 bg-brand rounded-t-full"
                       />
-                      <motion.div 
+                      <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${(m.missed / 20) * 100}%` }}
                         className="w-2 bg-red-400 rounded-t-full"
@@ -390,7 +438,8 @@ export function TechHomeScreen() {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2 bg-brand rounded-[2rem] p-6 shadow-xl shadow-brand/20 relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></di                <div className="relative z-10 flex justify-between items-center text-white">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                <div className="relative z-10 flex justify-between items-center text-white">
                   <div>
                     <p className="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">{t('earnings_today')}</p>
                     <div className="flex items-center gap-1">
@@ -403,80 +452,81 @@ export function TechHomeScreen() {
                   </div>
                 </div>
               </div>
- 
-              {[
+
+              {
+              [
                 { label: t('avg_rating'), value: stats.avgRating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
                 { label: t('completed_jobs'), value: stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
                 { label: t('active_jobs'), value: availableRequests.length, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
                 { label: t('missed_jobs'), value: "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
               ].map((stat, i) => (
- (
-                <div key={i} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm">
-                  <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
-                    <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
+                  <div key={i} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm">
+                    <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
+                      <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
+                    </div>
+                    <p className="text-[10px] font-black text-brand/30 uppercase tracking-tight mb-1">{stat.label}</p>
+                    <span className="text-xl font-black text-brand">{stat.value}</span>
                   </div>
-                  <p className="text-[10px] font-black text-brand/30 uppercase tracking-tight mb-1">{stat.label}</p>
-                  <span className="text-xl font-black text-brand">{stat.value}</span>
-                </div>
-              ))}
+                ))
+              }
             </div>
           </div>
 
-          {/* Top Services & Ratings Section *          <div className="grid grid-cols-1 gap-6">
+          {/* Top Services & Ratings Section */}
+          <div className="grid grid-cols-1 gap-6">
             <div className="space-y-4">
-               <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('top_services')}</h3>
-               <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm space-y-4">
-                  {techStats?.top_services.length > 0 ? techStats.top_services.map((s, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                       <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-brand/5 flex items-center justify-center text-brand font-black text-[10px]">0{i+1}</div>
-                          <span className="text-sm font-bold text-brand">{s.service_name}</span>
-                       </div>
-                       <span className="text-xs font-black text-brand/40">{s.count} {t('jobs')}</span>
+              <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('top_services')}</h3>
+              <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm space-y-4">
+                {techStats?.top_services.length > 0 ? techStats.top_services.map((s, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-brand/5 flex items-center justify-center text-brand font-black text-[10px]">0{i + 1}</div>
+                      <span className="text-sm font-bold text-brand">{s.service_name}</span>
                     </div>
-                  )) : <p className="text-xs text-brand/30 text-center py-4">No data yet</p>}
-               </div>
+                    <span className="text-xs font-black text-brand/40">{s.count} {t('jobs')}</span>
+                  </div>
+                )) : <p className="text-xs text-brand/30 text-center py-4">No data yet</p>}
+              </div>
             </div>
- 
+
             <div className="space-y-4">
               <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('recent_completed')}</h3>
               <div className="space-y-3">
                 {techStats?.recent_completed.length > 0 ? techStats.recent_completed.map((job, i) => (
                   <div key={i} className="bg-white p-4 rounded-2xl border border-brand/5 shadow-sm flex items-center justify-between">
-                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
-                           <CheckCircle2 size={20} />
-                        </div>
-                        <div>
-                           <h4 className="text-[13px] font-black text-brand leading-none mb-1">{job.service_name}</h4>
-                           <p className="text-[10px] font-bold text-brand/40 uppercase">₹{job.amount_paid || 0}</p>
-                        </div>
-                     </div>
-                     <span className="text-[9px] font-black text-brand/20 uppercase">{new Date(job.completed_at).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
+                        <CheckCircle2 size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-[13px] font-black text-brand leading-none mb-1">{job.service_name}</h4>
+                        <p className="text-[10px] font-bold text-brand/40 uppercase">₹{job.amount_paid || 0}</p>
+                      </div>
+                    </div>
+                    <span className="text-[9px] font-black text-brand/20 uppercase">{new Date(job.completed_at).toLocaleDateString()}</span>
                   </div>
                 )) : <div className="py-8 text-center bg-white rounded-[2rem] border border-dashed border-brand/10 text-brand/20 text-[10px] font-black uppercase">No completed jobs</div>}
               </div>
             </div>
- 
+
             <div className="space-y-4">
               <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1 text-red-400">{t('recent_missed')}</h3>
               <div className="space-y-3">
                 {techStats?.recent_missed.length > 0 ? techStats.recent_missed.map((job, i) => (
                   <div key={i} className="bg-white p-4 rounded-2xl border border-red-100 shadow-sm flex items-center justify-between opacity-60">
-                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-400">
-                           <Clock size={20} />
-                        </div>
-                        <div>
-                           <h4 className="text-[13px] font-black text-brand leading-none mb-1">{job.service_name}</h4>
-                           <p className="text-[10px] font-bold text-brand/40 uppercase">{t('missed')}</p>
-                        </div>
-                     </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-400">
+                        <Clock size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-[13px] font-black text-brand leading-none mb-1">{job.service_name}</h4>
+                        <p className="text-[10px] font-bold text-brand/40 uppercase">{t('missed')}</p>
+                      </div>
+                    </div>
                   </div>
                 )) : <div className="py-8 text-center bg-white rounded-[2rem] border border-dashed border-brand/10 text-brand/20 text-[10px] font-black uppercase">No missed requests lately!</div>}
               </div>
             </div>
-div>
           </div>
         </div>
       </div>

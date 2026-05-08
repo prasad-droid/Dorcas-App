@@ -5,11 +5,13 @@ import { ChevronLeft, ShoppingCart, LayoutGrid } from "lucide-react";
 import { categoryDetails as fallbackDetails } from "../../../data/services";
 
 import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { useLanguage } from "../../../context/LanguageContext";
 
 const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
 
 export function CategoryScreen() {
   const { categoryId } = useParams();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -25,23 +27,23 @@ export function CategoryScreen() {
         // If categoryId is a number, it's an API ID
         if (!isNaN(categoryId)) {
           const res = await fetch(
-            `${API_BASE}/categories/get_subcategories.php?category_id=${categoryId}`,
+            `${API_BASE}/services/get_services_by_category.php?category_id=${categoryId}`,
           );
           const data = await res.json();
           if (data.status) {
-            const apiSubs = data.data.map((sub) => ({
-              id: sub.id,
-              name: sub.subcategory_name,
-              price: "₹299", // Placeholder
-              desc: sub.meta_description || "Expert service at your doorstep",
-              image: sub.subcategory_img
-                ? sub.subcategory_img.startsWith("http")
-                  ? sub.subcategory_img
-                  : `${IMAGE_BASE}${sub.subcategory_img}`
+            const apiServices = data.data.map((srv) => ({
+              id: srv.id,
+              name: srv.service_name,
+              price: srv.service_price ? `₹${srv.service_price}` : "₹299",
+              desc: srv.service_desc || "Expert service at your doorstep",
+              image: srv.service_img
+                ? srv.service_img.startsWith("http")
+                  ? srv.service_img
+                  : `${UPLOAD_BASE}/services/${srv.service_img}`
                 : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=800&auto=format&fit=crop",
               icon: LayoutGrid,
             }));
-            setServices(apiSubs);
+            setServices(apiServices);
           } else {
             setServices(fallbackDetails[categoryName] || []);
           }
@@ -97,14 +99,14 @@ export function CategoryScreen() {
           <div className="flex flex-col items-center justify-center h-full gap-4">
             <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
             <p className="text-brand/50 font-bold text-sm">
-              Loading services...
+              {t('loading')}
             </p>
           </div>
         ) : services.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 opacity-50">
             <LayoutGrid size={48} className="text-brand" />
             <p className="text-brand font-bold text-sm">
-              No services found in this category
+              {t('no_bookings')}
             </p>
           </div>
         ) : (
@@ -135,7 +137,7 @@ export function CategoryScreen() {
                     }
                     className="mt-auto bg-brand text-base px-5 py-2.5 rounded-full text-xs font-bold hover:bg-brand/90 transition-colors shadow-sm"
                   >
-                    Book Now
+                    {t('book_now')}
                   </button>
                 </div>
 

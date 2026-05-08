@@ -58,6 +58,12 @@ export function OnboardingScreen({ onComplete }) {
     >
       {/* Image Container with Fade Transition */}
       <div className="relative flex-1 w-full flex justify-center items-end overflow-hidden pt-12">
+        <button 
+          onClick={onComplete}
+          className="absolute top-10 right-6 z-[1600] px-5 py-2 bg-white/40 backdrop-blur-md rounded-full text-xs font-black text-brand uppercase tracking-widest shadow-sm hover:bg-white/60 transition-colors"
+        >
+          Skip
+        </button>
         <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-base via-base/90 to-transparent z-10"></div>
         
         <AnimatePresence mode="wait">

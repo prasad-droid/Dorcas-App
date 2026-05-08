@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, Wallet, CheckCircle, Users, Copy, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
@@ -10,6 +11,7 @@ import { useToast } from "../../../context/ToastContext";
 export function DashboardScreen() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +40,8 @@ export function DashboardScreen() {
   }, [isAuthenticated]);
 
   const copyReferral = () => {
-    const link = `https://dorcas.app/ref/${profileData?.referral_code || "REF"}`;
+    const code = profileData?.referral_code || "REF";
+    const link = `${window.location.origin}/register?ref=${code}`;
     navigator.clipboard.writeText(link);
     showToast("Referral link copied!", "success");
   };
@@ -71,7 +74,7 @@ export function DashboardScreen() {
           >
             <ChevronLeft size={20} />
           </button>
-          <h2 className="text-xl font-bold tracking-tight">My Dashboard</h2>
+          <h2 className="text-xl font-bold tracking-tight">{t('account_dashboard')}</h2>
           <div className="w-10 h-10"></div>
         </div>
       </div>
@@ -80,7 +83,7 @@ export function DashboardScreen() {
       <div className="relative z-20 px-5 -mt-12 mb-6">
         <div className="bg-white shadow-[0_8px_24px_rgba(13,110,253,0.12)] border border-brand/5 rounded-3xl p-5 flex gap-4">
           <div className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10">
-            <span className="text-[11px] font-bold text-brand/60 uppercase tracking-widest mb-1">Bookings</span>
+            <span className="text-[11px] font-bold text-brand/60 uppercase tracking-widest mb-1">{t('bookings')}</span>
             <span className="text-3xl font-black text-brand">{profileData?.stats?.value1 || 0}</span>
           </div>
           <div className="flex-[1.5] bg-gradient-to-br from-brand to-brand/80 rounded-2xl p-4 flex flex-col justify-center text-base shadow-inner overflow-hidden relative">
@@ -92,7 +95,7 @@ export function DashboardScreen() {
                 onClick={() => navigate("/rewards")}
                 className="mt-2 bg-base text-brand text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 transition-transform w-max"
               >
-                Redeem Now
+                {t('redeem_wallet')}
               </button>
             </div>
           </div>
@@ -157,7 +160,7 @@ export function DashboardScreen() {
 
           <div className="flex gap-2 relative z-10">
             <div className="flex-1 bg-white border border-brand/20 rounded-xl px-4 py-3 flex items-center shadow-inner overflow-hidden">
-              <span className="text-[13px] font-mono text-brand/80 truncate font-semibold">https://dorcas.app/ref/{profileData?.referral_code || "D9X2Q"}</span>
+              <span className="text-[13px] font-mono text-brand/80 truncate font-semibold">{window.location.origin}/register?ref={profileData?.referral_code || "D9X2Q"}</span>
             </div>
             <button
               onClick={copyReferral}

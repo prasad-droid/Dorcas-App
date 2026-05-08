@@ -382,7 +382,7 @@ export const RegisterScreen = () => {
                 className="mt-1 w-4 h-4 rounded border-brand/20 text-brand focus:ring-brand/20"
               />
               <label htmlFor="reg-terms" className="text-[12px] font-medium text-brand/60 leading-snug">
-                I agree to the <button type="button" className="text-brand font-bold hover:underline">Terms of Service</button> and <button type="button" className="text-brand font-bold hover:underline">Privacy Policy</button>
+                I agree to the <a href="https://dorcasaid.com/terms-condition.php" className="text-brand font-bold hover:underline">Terms of Service</a> and <a href="https://dorcasaid.com/privacy-policy.php" className="text-brand font-bold hover:underline">Privacy Policy</a>
               </label>
             </div>
           </motion.div>
