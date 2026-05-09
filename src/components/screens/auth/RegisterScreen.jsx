@@ -16,6 +16,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { Geolocation } from '@capacitor/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
@@ -60,17 +62,30 @@ export const RegisterScreen = () => {
 
   // Auto-check location on mount
   useEffect(() => {
-    if (navigator.permissions) {
-      navigator.permissions.query({ name: 'geolocation' }).then(result => {
-        if (result.state === 'prompt') {
-          setShowLocationModal(true);
-        } else if (result.state === 'granted') {
+    const checkLocation = async () => {
+      if (Capacitor.isNativePlatform()) {
+        const perm = await Geolocation.checkPermissions();
+        if (perm.location === 'granted') {
           getLocation();
+        } else if (perm.location === 'prompt') {
+          setShowLocationModal(true);
         }
-      });
-    } else {
-      setShowLocationModal(true);
-    }
+      } else if (navigator.permissions) {
+        try {
+          const result = await navigator.permissions.query({ name: 'geolocation' });
+          if (result.state === 'granted') {
+            getLocation();
+          } else if (result.state === 'prompt') {
+            setShowLocationModal(true);
+          }
+        } catch (e) {
+          setShowLocationModal(true);
+        }
+      } else {
+        setShowLocationModal(true);
+      }
+    };
+    checkLocation();
   }, []);
   useEffect(() => {
     setFormData({
@@ -107,49 +122,56 @@ export const RegisterScreen = () => {
     getLocation();
   }, []);
 
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      showToast("Location not supported", "error");
-      return;
-    }
-
+  const getLocation = async () => {
     setLoadingLocation(true);
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
-          );
-
-          const data = await res.json();
-          const addr = data.address || {};
-
-          setFormData((prev) => ({
-            ...prev,
-            latitude: lat,
-            longitude: lng,
-            city: addr.city || addr.town || addr.village || "",
-            state: addr.state || "",
-            pincode: addr.postcode || "",
-            area: addr.suburb || addr.neighbourhood || addr.city_district || "",
-            address: data.display_name || "",
-          }));
-        } catch (err) {
-          // console.error(err);
-          showToast("Failed to fetch location details", "error");
+    try {
+      let coordinates;
+      if (Capacitor.isNativePlatform()) {
+        const perm = await Geolocation.checkPermissions();
+        if (perm.location !== 'granted') {
+           // We already checked this in useEffect, but just in case
+           const req = await Geolocation.requestPermissions();
+           if (req.location !== 'granted') throw new Error("Permission denied");
         }
+        coordinates = await Geolocation.getCurrentPosition();
+      } else {
+        if (!navigator.geolocation) {
+          showToast("Location not supported", "error");
+          setLoadingLocation(false);
+          return;
+        }
+        coordinates = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+      }
 
-        setLoadingLocation(false);
-      },
-      () => {
-        showToast("Permission denied. Please enter manually.", "error");
-        setLoadingLocation(false);
-      },
-    );
+      if (coordinates) {
+        const lat = coordinates.coords.latitude;
+        const lng = coordinates.coords.longitude;
+
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+        );
+
+        const data = await res.json();
+        const addr = data.address || {};
+
+        setFormData((prev) => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng,
+          city: addr.city || addr.town || addr.village || "",
+          state: addr.state || "",
+          pincode: addr.postcode || "",
+          area: addr.suburb || addr.neighbourhood || addr.city_district || "",
+          address: data.display_name || "",
+        }));
+      }
+    } catch (error) {
+      showToast("Permission denied or location failed. Please enter manually.", "error");
+    } finally {
+      setLoadingLocation(false);
+    }
   };
 
   const handleNext = async (e) => {

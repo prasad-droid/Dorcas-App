@@ -1,14 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Archivo", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
-  --color-brand: #0d6efd;
-  --color-base: #f9f9f9;
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #0D6EFD;
+  --color-base: #F8F9FA;
 }
 
 @layer base {
   :root {
+    --primary: #0D6EFD;
+    --primary-dark: #0B5ED7;
+    --dark: #212529;
+    --light: #F8F9FA;
+    --border: #DEE2E6;
+    --success: #198754;
+    --warning: #FFC107;
+    --white: #FFFFFF;
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -23,6 +32,29 @@
     @apply font-sans;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    background-color: var(--light);
+    color: var(--dark);
+  }
+}
+
+@layer components {
+  .btn {
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 12px 24px;
+    transition: 0.3s ease;
+  }
+
+  .btn:hover {
+    background: var(--primary-dark);
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 20px;
   }
 }
 
@@ -42,4 +74,3 @@
       -webkit-appearance: none;
   }
 }
-

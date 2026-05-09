@@ -97,10 +97,14 @@ export function BookingFormScreen() {
       let coordinates;
       if (Capacitor.isNativePlatform()) {
         const perm = await Geolocation.checkPermissions();
-        if (perm.location === 'prompt') {
-          await Geolocation.requestPermissions();
+        if (perm.location === 'granted') {
+          coordinates = await Geolocation.getCurrentPosition({ timeout: 5000 });
+        } else if (perm.location === 'prompt') {
+          const req = await Geolocation.requestPermissions();
+          if (req.location === 'granted') {
+            coordinates = await Geolocation.getCurrentPosition();
+          }
         }
-        coordinates = await Geolocation.getCurrentPosition();
       } else {
         // Web fallback
         if (!navigator.geolocation) {

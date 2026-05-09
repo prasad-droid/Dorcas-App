@@ -76,12 +76,16 @@ export function TechServicesScreen() {
       try {
         if (Capacitor.isNativePlatform()) {
           const perm = await Geolocation.checkPermissions();
-          if (perm.location !== 'granted') {
+          if (perm.location === 'granted') {
+            const position = await Geolocation.getCurrentPosition({ timeout: 5000 });
+            setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+          } else if (perm.location === 'prompt') {
             const req = await Geolocation.requestPermissions();
-            if (req.location !== 'granted') return;
+            if (req.location === 'granted') {
+              const position = await Geolocation.getCurrentPosition();
+              setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+            }
           }
-          const position = await Geolocation.getCurrentPosition();
-          setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
         } else if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition((position) => {
             setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
