@@ -22,7 +22,6 @@ import { HomeScreen } from "./components/screens/customer/HomeScreen";
 import { BookingsScreen } from "./components/screens/customer/BookingsScreen";
 import { RewardsScreen } from "./components/screens/customer/RewardsScreen";
 import { CategoryScreen } from "./components/screens/customer/CategoryScreen";
-import { ServiceProvidersScreen } from "./components/screens/customer/ServiceProvidersScreen";
 import { BookingFormScreen } from "./components/screens/customer/BookingFormScreen";
 import { DashboardScreen } from "./components/screens/customer/DashboardScreen";
 import { OrderHistoryScreen } from "./components/screens/customer/OrderHistoryScreen";
@@ -171,7 +170,7 @@ function AppContent() {
   }, [isAuthenticated, location.pathname, isAppLoading, showSplash, navigate, authMode]);
 
   return (
-    <div className="min-h-[100dvh] h-[100dvh] sm:min-h-screen bg-brand flex items-center justify-center sm:p-4 overflow-hidden font-sans tracking-normal">
+    <div className="min-h-[100dvh] h-[100dvh] sm:min-h-screen brand-gradient flex items-center justify-center sm:p-4 overflow-hidden font-sans tracking-normal">
       <div className="w-full h-[100dvh] sm:h-[844px] sm:w-[390px] sm:max-h-[95vh] sm:rounded-[2.5rem] sm:border-[14px] sm:border-black sm:overflow-hidden bg-base relative flex flex-col items-center shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
 
         <div className="hidden sm:block absolute top-[10px] left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-full z-[999] shadow-inner"></div>
@@ -184,7 +183,7 @@ function AppContent() {
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="absolute inset-0 z-[2000] bg-brand flex flex-col items-center justify-center"
+              className="absolute inset-0 z-[2000] brand-gradient flex flex-col items-center justify-center"
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -272,7 +271,6 @@ function AppContent() {
                     <Route path="/notifications" element={<NotificationScreen />} />
                     <Route path="/deals" element={<DealsScreen />} />
                     <Route path="/category/:categoryId" element={<CategoryScreen />} />
-                    <Route path="/service/:serviceId" element={<ServiceProvidersScreen />} />
                     <Route path="/book/:serviceId/:providerId" element={<BookingFormScreen />} />
                     <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />} />
                   </>

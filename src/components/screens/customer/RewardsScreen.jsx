@@ -180,7 +180,7 @@ export function RewardsScreen() {
 
       <div className="flex-1 overflow-y-auto pb-28 space-y-8 remove-scrollbar">
         {/* Points Banner */}
-        <div className="bg-gradient-to-br from-brand to-brand/80 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+        <div className="brand-gradient rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="relative z-10">
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">{t('available_redemption')}</p>
@@ -243,7 +243,7 @@ export function RewardsScreen() {
                 onClick={() => !card.is_scratched && setActiveCard(card)}
                 className={`aspect-[4/5] rounded-3xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-sm border ${card.is_scratched
                     ? "bg-emerald-50 border-emerald-100"
-                    : "bg-brand border-brand/5 cursor-pointer"
+                    : "brand-gradient border-brand/5 cursor-pointer text-white"
                   }`}
               >
                 {card.is_scratched ? (
@@ -304,7 +304,7 @@ export function RewardsScreen() {
               </div>
               <button
                 onClick={copyReferral}
-                className="bg-brand text-white p-4 rounded-2xl transition-all shadow-lg active:scale-90"
+                className="brand-gradient text-white p-4 rounded-2xl transition-all shadow-lg active:scale-90"
               >
                 <Copy size={20} />
               </button>

@@ -3,17 +3,22 @@
 
 @theme {
   --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
-  --color-brand: #0D6EFD;
-  --color-base: #F8F9FA;
+  --color-brand: #1554ab;
+  --color-brand-secondary: #048895;
+  --color-base: #ffffff;
+  --color-text-main: #333333;
+  --color-text-muted: #666666;
 }
 
 @layer base {
   :root {
-    --primary: #0D6EFD;
-    --primary-dark: #0B5ED7;
-    --dark: #212529;
-    --light: #F8F9FA;
-    --border: #DEE2E6;
+    --primary: #1554ab;
+    --primary-dark: #0f3d7a;
+    --secondary: #048895;
+    --dark: #333333;
+    --light: #ffffff;
+    --muted: #666666;
+    --border: #f0f0f0;
     --success: #198754;
     --warning: #FFC107;
     --white: #FFFFFF;
@@ -65,6 +70,10 @@
   .remove-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .brand-gradient {
+    background: linear-gradient(90deg, #1554ab 0%, #048895 100%);
   }
 
   /* Hide native date/time picker icons */

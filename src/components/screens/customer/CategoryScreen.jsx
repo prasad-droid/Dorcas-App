@@ -9,6 +9,11 @@ import { useLanguage } from "../../../context/LanguageContext";
 
 const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
 
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html.replace(/<[^>]*>?/gm, '');
+};
+
 export function CategoryScreen() {
   const { categoryId } = useParams();
   const { t } = useLanguage();
@@ -35,7 +40,7 @@ export function CategoryScreen() {
               id: srv.id,
               name: srv.service_name,
               price: srv.service_price ? `₹${srv.service_price}` : "₹299",
-              desc: srv.service_desc || "Expert service at your doorstep",
+              desc: stripHtml(srv.service_desc) || "Expert service at your doorstep",
               image: srv.service_img
                 ? srv.service_img.startsWith("http")
                   ? srv.service_img
@@ -137,7 +142,7 @@ export function CategoryScreen() {
                         `/book/${sub.id}/0?name=${encodeURIComponent(sub.name)}`,
                       )
                     }
-                    className="mt-auto bg-brand text-base px-5 py-2.5 rounded-full text-xs font-bold hover:bg-brand/90 transition-colors shadow-sm"
+                    className="mt-auto brand-gradient text-white px-5 py-2.5 rounded-full text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"
                   >
                     {t('book_now')}
                   </button>

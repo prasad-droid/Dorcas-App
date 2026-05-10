@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion,AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Search, MapPin, Bell, ArrowRight, Star, Heart, ArrowUpRight, Wallet,
@@ -13,6 +13,11 @@ import { Capacitor } from '@capacitor/core';
 import { API_BASE, UPLOAD_BASE } from "../../../config";
 
 const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
+
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html.replace(/<[^>]*>?/gm, '');
+};
 
 const iconMap = {
   "Appliance": Tv,
@@ -40,6 +45,8 @@ export function HomeScreen() {
   const [offers, setOffers] = useState([]);
   const [profileData, setProfileData] = useState(null);
   const [localImage, setLocalImage] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -146,7 +153,7 @@ export function HomeScreen() {
               id: srv.id,
               name: srv.service_name,
               price: srv.service_price ? `₹${srv.service_price}` : "₹299",
-              desc: srv.service_desc || "Expert service at your doorstep",
+              desc: stripHtml(srv.service_desc) || "Expert service at your doorstep",
               image: srv.service_img ? (srv.service_img.startsWith('http') ? srv.service_img : `https://dorcasaid.com/${srv.service_img}`) : "services/cleaning.png"
             }));
           });
@@ -184,6 +191,23 @@ export function HomeScreen() {
   }, []);
 
   useEffect(() => {
+    if (searchQuery.trim().length > 1) {
+      const allServices = [];
+      Object.values(categoryDetails).forEach(services => {
+        allServices.push(...services);
+      });
+      const filtered = allServices.filter(s => 
+        s.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 5);
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, categoryDetails]);
+
+  useEffect(() => {
     if (profileData?.id) {
       const role = localStorage.getItem("role");
       const savedImage = localStorage.getItem(`profile_image_${role}_${profileData.id}`);
@@ -213,7 +237,7 @@ export function HomeScreen() {
       className="flex flex-col w-full h-full bg-base"
     >
       {/* App Bar / Header */}
-      <div className="bg-brand px-5 pt-12 pb-5 sm:pt-6 rounded-b-[2rem] shadow-sm text-base">
+      <div className="brand-gradient px-5 pt-12 pb-5 sm:pt-6 rounded-b-[2rem] shadow-sm text-base">
         <div className="flex justify-between items-center mb-5">
           <div className="flex items-center gap-2">
             <div className="bg-base/20 p-2 rounded-full">
@@ -268,6 +292,32 @@ export function HomeScreen() {
             className="w-full bg-base text-brand rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
             placeholder={t('search_placeholder')}
           />
+          
+          <AnimatePresence>
+            {showSuggestions && suggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl z-50 overflow-hidden border border-brand/5"
+              >
+                {suggestions.map((svc) => (
+                  <div
+                    key={svc.id}
+                    onClick={() => {
+                      setSearchQuery(svc.name);
+                      setShowSuggestions(false);
+                      navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`);
+                    }}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-brand/5 cursor-pointer transition-colors border-b border-brand/5 last:border-0"
+                  >
+                    <Search size={14} className="text-brand/30" />
+                    <span className="text-sm font-bold text-brand">{svc.name}</span>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -317,7 +367,7 @@ export function HomeScreen() {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.2 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-52 sm:h-52 bg-brand rounded-full flex items-center justify-center shadow-[0_12px_32px_rgba(13,110,253,0.5)] z-20"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-52 sm:h-52 brand-gradient rounded-full flex items-center justify-center shadow-[0_12px_32px_rgba(21,84,171,0.5)] z-20"
           >
             <div className="absolute inset-1.5 rounded-full border-[3px] border-dashed border-[#ffb800] animate-[spin_10s_linear_infinite] opacity-90"></div>
             <motion.div
@@ -361,7 +411,7 @@ export function HomeScreen() {
               onClick={() => navigate("/bookings")}
               className="flex flex-col items-center gap-2 group cursor-pointer"
             >
-              <div className="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center shadow-md group-hover:bg-brand/90 transition-colors">
+              <div className="w-14 h-14 brand-gradient rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
                 <ArrowRight size={24} strokeWidth={2.5} className="text-base" />
               </div>
               <span className="text-[10px] font-semibold text-brand text-center leading-tight w-full break-words px-1">
@@ -374,7 +424,7 @@ export function HomeScreen() {
             {(trendingServices.length > 0 ? trendingServices : []).map((svc) => (
               <div
                 key={svc.id}
-                onClick={() => navigate(`/service/${svc.id}?name=${encodeURIComponent(svc.name)}`)}
+                onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)}
                 className="w-[200px] h-[260px] shrink-0 rounded-[1.5rem] overflow-hidden relative snap-center shadow-[0_4px_12px_rgba(13,110,253,0.15)] bg-brand border border-brand/10 group cursor-pointer"
               >
                 <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -387,7 +437,7 @@ export function HomeScreen() {
                     <Heart size={14} className="fill-brand text-brand font-bold" />
                   </div>
                 </div>
-                <div className="absolute bottom-0 inset-x-0 h-[40%] bg-gradient-to-t from-brand/80 via-brand/40 to-transparent pointer-events-none z-0"></div>
+                <div className="absolute bottom-0 inset-x-0 h-[40%] bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none z-0"></div>
                 <div className="absolute bottom-3 inset-x-3 flex justify-between items-end z-10">
                   <h4 className="text-white text-[14px] font-bold leading-tight max-w-[70%] pb-1 drop-shadow-md">{svc.name}</h4>
                   <div className="w-8 h-8 bg-base text-brand rounded-[10px] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform shrink-0">
@@ -412,7 +462,7 @@ export function HomeScreen() {
                 className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-brand/10"
               >
                 <img src={offer.image} alt={offer.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-brand/40 to-brand/95 z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/20 to-black/80 z-10"></div>
                 <div className="relative z-20">
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-base/20 backdrop-blur-md px-2 py-1 rounded-md mb-2 inline-block text-white">{offer.title}</span>
                   <p className="text-sm font-bold text-white leading-snug drop-shadow-md">{offer.desc}</p>
@@ -448,9 +498,9 @@ export function HomeScreen() {
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(categoryDetails[activeCategory] || []).map((svc) => (
-              <div key={svc.id} onClick={() => navigate(`/service/${svc.id}?name=${encodeURIComponent(svc.name)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-brand/10">
+              <div key={svc.id} onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-brand/10">
                 <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand/80 via-brand/10 to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
                 <div className="absolute bottom-0 w-full p-4 flex justify-between items-end z-10">
                   <h4 className="text-white font-bold text-base leading-tight max-w-[70%] drop-shadow-md">{svc.name}</h4>
                   <span className="bg-brand text-white px-3 py-1 rounded-full text-xs font-bold shadow-md border border-base/20 border-opacity-50">{svc.price}</span>

@@ -5,6 +5,11 @@ import { Search, SlidersHorizontal, Star, Eye, CalendarCheck, X, LayoutGrid } fr
 import { API_BASE, UPLOAD_BASE } from "../../../config";
 import { useLanguage } from "../../../context/LanguageContext";
 
+const stripHtml = (html) => {
+  if (!html) return "";
+  return html.replace(/<[^>]*>?/gm, '');
+};
+
 export function BookingsScreen() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +41,7 @@ export function BookingsScreen() {
                 id: s.id,
                 name: s.service_name,
                 price: `₹${parseFloat(s.amount).toFixed(0)}`,
-                desc: s.description || "Professional service at your doorstep",
+                desc: stripHtml(s.description) || "Professional service at your doorstep",
                 image: s.image ? (s.image.startsWith('http') ? s.image : `${UPLOAD_BASE}/services/${s.image}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop",
                 categoryName: cat.category_name
               });
@@ -165,7 +170,7 @@ export function BookingsScreen() {
 
                 {/* Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="flex items-center justify-center gap-2 bg-brand text-base py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
+                  <button onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="flex items-center justify-center gap-2 brand-gradient text-white py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
                     <CalendarCheck size={16} />
                     {t('book_now')}
                   </button>

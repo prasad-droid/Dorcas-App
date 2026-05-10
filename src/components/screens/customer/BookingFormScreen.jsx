@@ -12,6 +12,7 @@ import { Capacitor } from '@capacitor/core';
 
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { MapPicker } from "../../ui/MapPicker";
 
 export function BookingFormScreen() {
   const { serviceId, providerId } = useParams();
@@ -140,6 +141,28 @@ export function BookingFormScreen() {
     }
   };
 
+  const handleMapLocationChange = async (lat, lng) => {
+    try {
+      setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+      
+      // Reverse geocode to update address/city
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+      );
+      const data = await res.json();
+      const addr = data.address || {};
+      
+      setFormData(prev => ({
+        ...prev,
+        city: addr.city || addr.town || addr.village || prev.city,
+        pincode: addr.postcode || prev.pincode,
+        address: data.display_name || prev.address,
+      }));
+    } catch (error) {
+      console.error("Map reverse geocode error:", error);
+    }
+  };
+
   const handleConfirm = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
@@ -235,14 +258,14 @@ export function BookingFormScreen() {
       <div className="absolute top-0 w-full h-64 bg-brand/5 -z-10" />
 
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-12 pb-4 z-30 sticky top-0 bg-[#f8fbff]/80 backdrop-blur-md">
+      <div className="flex items-center justify-between px-6 pt-12 pb-5 z-30 sticky top-0 brand-gradient text-white shadow-lg">
         <button
           onClick={() => navigate(-1)}
-          className="w-11 h-11 bg-white rounded-2xl shadow-sm flex items-center justify-center border border-brand/5 text-brand"
+          className="w-11 h-11 bg-white/20 backdrop-blur-md rounded-2xl shadow-sm flex items-center justify-center border border-white/10 text-white"
         >
           <ChevronLeft size={22} />
         </button>
-        <h1 className="text-lg font-black text-brand">{t('booking') + ' ' + t('view_details')}</h1>
+        <h1 className="text-lg font-black">{t('booking') + ' ' + t('view_details')}</h1>
         <div className="w-11" />
       </div>
 
@@ -281,6 +304,15 @@ export function BookingFormScreen() {
                 {t('use_current_location')}
               </button>
             </div>
+
+            <div className="mt-2 mb-4">
+              <MapPicker 
+                lat={formData.latitude} 
+                lng={formData.longitude} 
+                onLocationChange={handleMapLocationChange} 
+              />
+            </div>
+
             {formData.latitude && (
               <div className="flex items-center gap-2 px-2 py-1 bg-emerald-50 rounded-lg border border-emerald-100 w-fit ml-1 -mt-2 mb-2">
                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -386,7 +418,7 @@ export function BookingFormScreen() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isSubmitting}
-              className={`w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+              className={`w-full brand-gradient text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(21,84,171,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
             >
               {isSubmitting ? t('loading') : t('confirm_booking')}
               {!isSubmitting && <Shield size={20} />}
@@ -508,7 +540,7 @@ function BookingSuccessView({ details, onClose, card }) {
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={onClose}
-          className="w-full bg-brand text-white py-5 rounded-[2rem] text-[17px] font-black shadow-lg hover:shadow-brand/20 transition-all flex items-center justify-center gap-2"
+          className="w-full brand-gradient text-white py-5 rounded-[2rem] text-[17px] font-black shadow-lg hover:shadow-brand/20 transition-all flex items-center justify-center gap-2"
         >
           Go to My Dashboard
         </motion.button>

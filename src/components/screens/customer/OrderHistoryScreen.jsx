@@ -177,7 +177,7 @@ export function OrderHistoryScreen() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2.5 rounded-2xl text-[13px] font-black transition-all border shadow-sm ${activeTab === tab
-                  ? "bg-brand text-white border-brand shadow-brand/20"
+                  ? "brand-gradient text-white border-brand shadow-brand/20"
                   : "bg-white text-brand/50 border-brand/5 hover:border-brand/20"
                 }`}
             >
@@ -263,7 +263,7 @@ export function OrderHistoryScreen() {
                       setSelectedBooking(booking);
                       setShowDetailsModal(true);
                     }}
-                    className="flex-1 bg-brand text-white py-3 rounded-2xl text-xs font-black shadow-lg shadow-brand/10 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    className="flex-1 brand-gradient text-white py-3 rounded-2xl text-xs font-black shadow-lg shadow-brand/10 active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     <MoreVertical size={14} />
                     {t('view_details')}
@@ -309,7 +309,7 @@ export function OrderHistoryScreen() {
               </p>
               <button
                 onClick={() => navigate("/")}
-                className="mt-8 bg-brand text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-xl shadow-brand/20 active:scale-95 transition-transform"
+                className="mt-8 brand-gradient text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-xl shadow-brand/20 active:scale-95 transition-transform"
               >
                 {t('book_now')}
               </button>

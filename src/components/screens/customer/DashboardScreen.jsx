@@ -65,7 +65,7 @@ export function DashboardScreen() {
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Header */}
-      <div className="bg-brand pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
+      <div className="brand-gradient pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between">
           <button
@@ -86,7 +86,7 @@ export function DashboardScreen() {
             <span className="text-[11px] font-bold text-brand/60 uppercase tracking-widest mb-1">{t('bookings')}</span>
             <span className="text-3xl font-black text-brand">{profileData?.stats?.value1 || 0}</span>
           </div>
-          <div className="flex-[1.5] bg-gradient-to-br from-brand to-brand/80 rounded-2xl p-4 flex flex-col justify-center text-base shadow-inner overflow-hidden relative">
+          <div className="flex-[1.5] brand-gradient rounded-2xl p-4 flex flex-col justify-center text-base shadow-inner overflow-hidden relative">
             <div className="absolute top-2 right-2 opacity-20"><Wallet size={48} /></div>
             <div className="relative z-10">
               <span className="text-[11px] font-semibold text-base/80 uppercase tracking-widest mb-1 block">Your Wallet</span>
@@ -164,7 +164,7 @@ export function DashboardScreen() {
             </div>
             <button
               onClick={copyReferral}
-              className="bg-brand text-white w-12 rounded-xl flex items-center justify-center hover:bg-brand/90 transition-colors shadow-md shrink-0"
+              className="brand-gradient text-white w-12 rounded-xl flex items-center justify-center hover:opacity-90 transition-opacity shadow-md shrink-0"
             >
               <Copy size={18} />
             </button>

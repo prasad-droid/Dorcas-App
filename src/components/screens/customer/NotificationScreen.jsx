@@ -73,7 +73,7 @@ export function NotificationScreen() {
       exit={{ opacity: 0, x: 20 }}
       className="flex flex-col w-full h-full bg-base"
     >
-      <div className="bg-brand px-5 pt-12 pb-6 rounded-b-[2rem] shadow-sm text-base flex items-center gap-4">
+      <div className="brand-gradient px-5 pt-12 pb-6 rounded-b-[2rem] shadow-sm text-base flex items-center gap-4">
         <button 
           onClick={() => navigate(-1)}
           className="w-10 h-10 bg-base/20 backdrop-blur-md rounded-full flex items-center justify-center"

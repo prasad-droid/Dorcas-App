@@ -58,7 +58,7 @@ export function DealsScreen() {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col w-full h-full bg-base"
     >
-      <div className="bg-brand px-5 pt-12 pb-6 rounded-b-[2rem] shadow-sm text-base flex items-center gap-4">
+      <div className="brand-gradient px-5 pt-12 pb-6 rounded-b-[2rem] shadow-sm text-base flex items-center gap-4">
         <button 
           onClick={() => navigate(-1)}
           className="w-10 h-10 bg-base/20 backdrop-blur-md rounded-full flex items-center justify-center"
@@ -114,7 +114,7 @@ export function DealsScreen() {
                     navigator.clipboard.writeText(profileData?.referral_code || "");
                     showToast("Code copied!", "success");
                   }}
-                  className="w-14 h-14 bg-brand text-base rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+                  className="w-14 h-14 brand-gradient text-base rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform"
                 >
                   <Copy size={24} />
                 </button>
@@ -124,7 +124,7 @@ export function DealsScreen() {
             <div className="space-y-4">
               <button 
                 onClick={handleShare}
-                className="w-full bg-brand text-base py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-brand/20 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
+                className="w-full brand-gradient text-base py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-brand/20 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
               >
                 <Share2 size={24} />
                 {t('invite_friends')}
