@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { 
-  ChevronLeft, Star, CheckCircle2, Briefcase, 
+import {
+  ChevronLeft, Star, CheckCircle2, Briefcase,
   IndianRupee, Zap, Clock, AlertCircle, Award,
-  ShieldCheck, LayoutDashboard, Search, TrendingUp, Users
+  ShieldCheck, LayoutDashboard, Search, TrendingUp, MapPin
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
@@ -20,46 +20,68 @@ export function TechDashboardScreen() {
     todayRevenue: "₹0",
     rating: "0.0",
     acceptanceRate: "0%",
+    completionRate: "0%",
     activeJobs: "0",
     completedJobs: "0",
     reviewsCount: "0",
     servicesOffered: "0",
-    missedJobs: "0"
+    missedJobs: "0",
+    totalRequests: "0",
+    totalAccepted: "0",
+    totalDeclined: "0",
+    totalExpired: "0"
   });
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const expertServices = [
-    { id: 1, name: "Home Cleaning", category: "Cleaning", rating: "4.9", icon: "🧹" },
-    { id: 2, name: "Deep Sanitization", category: "Cleaning", rating: "4.8", icon: "✨" }
-  ];
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
+        if (!token) {
+          navigate("/login");
+          return;
+        }
         const headers = { "Authorization": `Bearer ${token}`, "Role": role };
-        
-        const response = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
-        const data = await response.json();
-        
-        if (data.status) {
-          setProfileData(data.data);
-          if (data.data.stats) {
-            setStats({
-              totalJobs: data.data.stats.total_jobs || "0",
-              monthlyGrowth: data.data.stats.growth || "+0%",
-              todayRevenue: `₹${data.data.stats.today_earnings || "0"}`,
-              rating: data.data.stats.rating || "0.0",
-              acceptanceRate: data.data.stats.acceptance_rate || "0%",
-              activeJobs: data.data.stats.active_jobs || "0",
-              completedJobs: data.data.stats.completed_jobs || "0",
-              reviewsCount: data.data.stats.reviews_count || "0",
-              servicesOffered: data.data.stats.services_count || "0",
-              missedJobs: data.data.stats.missed_jobs || "0"
-            });
-          }
+
+        // Fetch Profile
+        const profRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
+        const profData = await profRes.json();
+        console.log('profileData', profData);
+        // Fetch Stats
+        const statsRes = await fetch(`${API_BASE}/vendors/get_tech_stats.php`, { headers });
+        const statsData = await statsRes.json();
+        console.log('statsData', statsData);
+        // Fetch My Services
+        const servicesRes = await fetch(`${API_BASE}/vendors/get_vendor_services.php`, { headers });
+        const servicesData = await servicesRes.json();
+        console.log('servicesData', servicesData);
+        if (servicesData.status) setServices(servicesData.data);
+
+        if (profData.status) {
+          setProfileData(profData.data);
+          const pStats = profData.data.stats || {};
+          const act = statsData.data?.activity || {};
+
+          setStats({
+            totalJobs: pStats.total_jobs || "0",
+            monthlyGrowth: pStats.growth || "+0%",
+            todayRevenue: `₹${pStats.today_earnings || "0"}`,
+            rating: pStats.rating || "0.0",
+            acceptanceRate: act.acceptance_rate || "0%",
+            completionRate: act.completion_rate || "0%",
+            activeJobs: pStats.active_jobs || "0",
+            completedJobs: act.total_completed || "0",
+            reviewsCount: pStats.reviews_count || "0",
+            servicesOffered: pStats.services_count || "0",
+            missedJobs: (parseInt(act.total_declined || 0) + parseInt(act.total_expired || 0)).toString(),
+            totalRequests: act.total_requests || "0",
+            totalAccepted: act.total_accepted || "0",
+            totalDeclined: act.total_declined || "0",
+            totalExpired: act.total_expired || "0"
+          });
         }
       } catch (error) {
         console.error("Dashboard Detail Fetch Error:", error);
@@ -79,117 +101,84 @@ export function TechDashboardScreen() {
     );
   }
 
+  const kycStatus = profileData?.kyc_status || 'none';
+  const isVerified = kycStatus === 'verified' || profileData?.is_approved;
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar"
     >
-      {/* Premium Header - Referenced from Customer Dashboard */}
-      <div className="bg-brand pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative text-white">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-        <div className="relative z-10 flex items-center justify-between">
+        <div className="relative z-10 flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 bg-base/20 rounded-full flex items-center justify-center hover:bg-base/30 transition-colors shadow-sm"
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md hover:bg-white/30 transition-all shadow-sm border border-white/10"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} />
           </button>
-          <h2 className="text-xl font-black tracking-tight">Performance Dashboard</h2>
-          <div className="w-10 h-10"></div>
+          <div className="text-center">
+            <h2 className="text-xl font-black tracking-tight leading-none mb-1">Dashboard</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">{new Date().toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+          </div>
+          <div className="w-11" />
+        </div>
+
+        <div className="relative z-10 flex gap-2 -mt-5 justify-center items-center">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+            <MapPin size={12} className="text-orange-400" />
+            <span className="text-[9px] font-black uppercase tracking-wider text-white">{profileData?.city || "Vasai-Virar"}</span>
+          </div>
         </div>
       </div>
 
-      {/* Floating Main Stats Card - Cleaner & Compact */}
-      <div className="relative z-20 px-5 -mt-12 mb-8">
-        <div className="bg-white shadow-[0_15px_35px_rgba(13,110,253,0.12)] border border-brand/5 rounded-[2rem] p-6 flex gap-4">
-          <div className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10">
-            <span className="text-[10px] font-black text-brand/40 uppercase tracking-widest mb-1">Total Jobs</span>
-            <span className="text-3xl font-black text-brand tracking-tighter">{stats.totalJobs}</span>
-          </div>
-          <div className="flex-[1.5] bg-gradient-to-br from-brand to-brand/80 rounded-2xl p-4 flex flex-col justify-center text-base shadow-inner overflow-hidden relative">
-            <div className="absolute top-2 right-2 opacity-20"><TrendingUp size={48} /></div>
-            <div className="relative z-10">
-              <span className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1 block">Monthly Growth</span>
-              <span className="text-3xl font-black text-white">{stats.monthlyGrowth}</span>
-              <div className="mt-2 flex items-center gap-1 bg-white/20 w-max px-2 py-0.5 rounded-full text-[10px] font-black text-white uppercase tracking-wider">
-                {parseFloat(stats.rating) >= 4.5 ? "Top 5% Partner" : "Active Partner"}
+      <div className="px-5 mt-10 space-y-6 relative z-20">
+
+        {/* Web Style Stats Grid (3 columns) */}
+        <div className="grid grid-cols-3 gap-3">
+          <WebStatCard label="Total Jobs" value={stats.totalJobs} icon={Briefcase} color="text-teal-500" bg="bg-teal-50" />
+          <WebStatCard label="Avg. Rating" value={stats.rating} icon={Star} color="text-amber-500" bg="bg-amber-50" />
+          <WebStatCard label="Services" value={stats.servicesOffered} icon={Zap} color="text-blue-500" bg="bg-blue-50" />
+
+          <WebStatCard label="Completed" value={stats.completedJobs} icon={CheckCircle2} color="text-emerald-500" bg="bg-emerald-50" />
+          <WebStatCard label="Active" value={stats.activeJobs} icon={Clock} color="text-pink-500" bg="bg-pink-50" />
+          <WebStatCard label="Missed" value={stats.missedJobs} icon={AlertCircle} color="text-slate-400" bg="bg-slate-50" />
+
+          <WebStatCard label="Today Revenue" value={stats.todayRevenue} icon={IndianRupee} color="text-brand" bg="bg-brand/5" />
+          <WebStatCard label="Reviews" value={stats.reviewsCount} icon={Star} color="text-purple-500" bg="bg-purple-50" />
+          <WebStatCard label="Acceptance Rate" value={stats.acceptanceRate} icon={TrendingUp} color="text-teal-600" bg="bg-teal-50" />
+        </div>
+
+        {/* My Services & Profile Sections - Side by side style on mobile as cards */}
+        <div className="space-y-6">
+          {/* My Services Card */}
+          <div className="bg-white rounded-3xl border border-orange-100 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-orange-50 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Zap size={18} className="text-orange-500" />
+                <h3 className="text-sm font-black text-brand uppercase tracking-tight">My Services</h3>
               </div>
+              <button onClick={() => navigate("/tech/manage-services")} className="text-[10px] font-bold text-teal-600 hover:underline uppercase tracking-widest">View All</button>
+            </div>
+            <div className="p-4 flex gap-3 overflow-x-auto remove-scrollbar">
+              {services.length > 0 ? services.map((svc, i) => (
+                <div key={i} className="min-w-[100px] bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-white rounded-xl mb-2 overflow-hidden border border-slate-100 flex items-center justify-center p-1">
+                    <img src={"https://dorcasaid.com/" + svc.image_path} alt="" className="w-full h-full object-contain" />
+                  </div>
+                  <span className="text-[10px] font-black text-brand leading-tight line-clamp-2">{svc.service_name}</span>
+                  <span className="text-[8px] font-bold text-brand/40 uppercase mt-1">{svc.category_name}</span>
+                </div>
+              )) : (
+                <p className="text-[10px] text-brand/40 font-bold py-4 w-full text-center">No services added yet.</p>
+              )}
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="px-5 space-y-8">
-        
-        {/* Core Performance Grid - Grouped by type */}
-        <div className="space-y-4">
-          <SectionHeader title="Live Performance Metrics" />
-          <div className="grid grid-cols-2 gap-3">
-             {[
-               { label: "Today's Revenue", value: stats.todayRevenue, icon: IndianRupee, color: "text-emerald-500", bg: "bg-emerald-50" },
-               { label: "Partner Rating", value: stats.rating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
-               { label: "Acceptance Rate", value: stats.acceptanceRate, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
-               { label: "Active Jobs", value: stats.activeJobs, icon: Clock, color: "text-blue-500", bg: "bg-blue-50" },
-               { label: "Completed Jobs", value: stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
-               { label: "Customer Reviews", value: stats.reviewsCount, icon: Users, color: "text-amber-600", bg: "bg-amber-50" },
-               { label: "Services Offered", value: stats.servicesOffered, icon: Briefcase, color: "text-brand", bg: "bg-brand/5" },
-               { label: "Missed / Declined", value: stats.missedJobs, icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
-             ].map((stat, i) => (
-               <div key={i} className="bg-white rounded-2xl p-4 border border-brand/5 shadow-sm flex items-center gap-3">
-                 <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} shrink-0`}>
-                   <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
-                 </div>
-                 <div className="min-w-0">
-                   <p className="text-[9px] font-black text-brand/30 uppercase tracking-tight leading-none mb-1.5 truncate">{stat.label}</p>
-                   <span className="text-base font-black text-brand tracking-tighter">{stat.value}</span>
-                 </div>
-               </div>
-             ))}
-          </div>
-        </div>
 
-        {/* Expertise Section - Compact Mode */}
-        <div className="space-y-4">
-          <SectionHeader title="Your Expert Portfolios" />
-          <div className="grid grid-cols-1 gap-3">
-            {expertServices.map((service) => (
-              <div 
-                key={service.id} 
-                className="bg-white p-4 rounded-2xl border border-brand/5 shadow-sm flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-xl">{service.icon}</div>
-                  <div>
-                    <h4 className="text-[13px] font-black text-brand leading-none mb-1">{service.name}</h4>
-                    <span className="text-[10px] font-bold text-brand/30 uppercase tracking-widest">{service.category}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 text-amber-500 bg-amber-50 px-2 py-1 rounded-lg">
-                  <Star size={10} fill="currentColor" />
-                  <span className="text-[11px] font-black">{service.rating}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Professional Recognition Card - From Customer Design System */}
-        <div className="bg-[#ffb800]/10 rounded-3xl shadow-[0_4px_16px_rgba(255,184,0,0.1)] border border-[#ffb800]/30 p-6 relative overflow-hidden">
-          <div className="absolute -bottom-6 -right-6 opacity-10">
-            <ShieldCheck size={120} />
-          </div>
-          <div className="flex items-center gap-2 mb-2 relative z-10">
-            <span className="bg-[#ffb800] text-brand text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md">Elite Partner</span>
-          </div>
-          <h3 className="text-lg font-extrabold text-brand tracking-tight mb-1 relative z-10">You're in the Top Tier.</h3>
-          <p className="text-[12px] font-semibold text-brand/70 mb-4 relative z-10 leading-snug">
-            Your performance stats are in the top 5% of all technicians. You are now a priority partner for premium bookings.
-          </p>
-          <button className="bg-brand text-white px-6 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md relative z-10 active:scale-95 transition-all">
-            View Benefits
-          </button>
         </div>
 
       </div>
@@ -197,8 +186,17 @@ export function TechDashboardScreen() {
   );
 }
 
-function SectionHeader({ title }) {
+function WebStatCard({ label, value, icon: Icon, color, bg }) {
   return (
-    <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-[2px] px-1">{title}</h3>
+    <div className={`flex flex-col items-center p-3 rounded-2xl ${bg} border border-brand/5 shadow-sm text-center min-h-[90px] justify-center`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${color} bg-white shadow-inner`}>
+        <Icon size={16} />
+      </div>
+      <div className="text-[15px] font-black text-brand tracking-tighter leading-none mb-1">{value}</div>
+      <p className="text-[9px] font-bold text-brand/40 uppercase tracking-tight leading-tight px-1">{label}</p>
+    </div>
   );
 }
+
+
+

@@ -274,7 +274,7 @@ export function BookingFormScreen() {
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-brand/5 mb-8 mt-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center text-brand">
-              <Shield size={28} />
+              <Shield size={28} /> 
             </div>
             <div>
               <h2 className="text-xl font-black text-brand leading-tight">{serviceName}</h2>

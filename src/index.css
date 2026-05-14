@@ -76,6 +76,17 @@
     background: linear-gradient(90deg, #1554ab 0%, #048895 100%);
   }
 
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .shadow-premium {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
   /* Hide native date/time picker icons */
   input[type="date"]::-webkit-calendar-picker-indicator,
   input[type="time"]::-webkit-calendar-picker-indicator {

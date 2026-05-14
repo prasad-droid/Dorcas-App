@@ -38,34 +38,62 @@ export const LoginScreen = () => {
 
   // Auto-check location on mount
   useEffect(() => {
-    if (navigator.permissions) {
-      navigator.permissions.query({ name: 'geolocation' }).then(result => {
-        if (result.state === 'prompt') {
-          setShowLocationModal(true);
-        } else if (result.state === 'granted') {
-          requestLocation();
-        }
+  if (!navigator.geolocation) {
+    setShowLocationModal(true);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setCoords({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
       });
-    } else {
-      setShowLocationModal(true);
+
+      setShowLocationModal(false);
+    },
+    (err) => {
+      console.log(err);
+
+      // Only show modal if permission denied
+      if (err.code === 1) {
+        setShowLocationModal(true);
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
     }
-  }, []);
+  );
+}, []);
 
   const requestLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setCoords({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude
-        });
-        setShowLocationModal(false);
-      }, (err) => {
-        console.warn(err);
-        setShowLocationModal(false);
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      setCoords({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
       });
-    }
-  };
 
+      setShowLocationModal(false);
+    },
+    (err) => {
+      console.log(err);
+
+      if (err.code === 1) {
+        showToast("Location permission denied", "error");
+      } else {
+        showToast("Unable to fetch location", "error");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    }
+  );
+};
   const handleLogin = async (e) => {
     e.preventDefault();
 

@@ -49,20 +49,16 @@ export function TechCommissionScreen() {
         "Content-Type": "application/json"
       };
 
-      // We fetch completed jobs and filter for those where commission is not paid
-      // In a real scenario, this would be a specific endpoint
       const response = await fetch(`${API_BASE}/bookings/get_technician_bookings.php?status=completed`, { headers });
       const data = await response.json();
 
       if (data.status) {
-        // Filter jobs where commission_status is 'pending'
+        // Now using commission_status directly from API
         const pending = data.data.filter(job => job.commission_status === 'pending');
         setUnpaidJobs(pending);
         
         const total = pending.reduce((sum, job) => {
-          // Use commission_amount from DB if available, else fallback to 10%
-          const commission = parseFloat(job.commission_amount || (parseFloat(job.amount_paid || 0) * 0.10));
-          return sum + commission;
+          return sum + parseFloat(job.commission_amount || 0);
         }, 0);
         setTotalDue(total);
       }
@@ -124,20 +120,27 @@ export function TechCommissionScreen() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
+      className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar"
     >
-      {/* Header */}
-      <div className="px-6 pt-12 pb-6 bg-white border-b border-brand/5 sticky top-0 z-30">
-        <div className="flex items-center justify-between mb-6">
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative  text-white sticky top-0 z-30">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="relative z-10 flex items-center justify-between mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-brand/5 flex items-center justify-center text-brand active:scale-90 transition-transform"
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-sm"
           >
             <ChevronLeft size={24} />
           </button>
-          <h2 className="text-xl font-black text-brand tracking-tight">Commission Dues</h2>
-          <div className="w-10" />
+          <div className="text-center">
+            <h2 className="text-xl font-black tracking-tight leading-none mb-1">Commissions</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">Outstanding Dues</p>
+          </div>
+          <div className="w-11" />
         </div>
+      </div>
+
+      <div className="px-6 pt-8 pb-4">
 
         {/* Summary Card */}
         <div className="bg-brand rounded-[2rem] p-6 text-white shadow-xl shadow-brand/20 relative overflow-hidden">

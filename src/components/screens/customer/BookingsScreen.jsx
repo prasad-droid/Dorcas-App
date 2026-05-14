@@ -42,7 +42,7 @@ export function BookingsScreen() {
                 name: s.service_name,
                 price: `₹${parseFloat(s.amount).toFixed(0)}`,
                 desc: stripHtml(s.description) || "Professional service at your doorstep",
-                image: s.image ? (s.image.startsWith('http') ? s.image : `${UPLOAD_BASE}/services/${s.image}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop",
+                image: "https://www.dorcasaid.com/"+s.image ,
                 categoryName: cat.category_name
               });
             });

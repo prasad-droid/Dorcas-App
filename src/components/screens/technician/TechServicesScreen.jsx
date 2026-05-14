@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { 
-  MapPin, Clock, IndianRupee, ChevronRight, 
+import {
+  MapPin, Clock, IndianRupee, ChevronLeft,
   Search, Filter, Briefcase, Zap, Star,
   Shield, User, Calendar, AlertCircle, Phone
 } from "lucide-react";
@@ -32,11 +32,12 @@ export function TechServicesScreen() {
   const [availableJobs, setAvailableJobs] = useState([]);
   const [ongoingJobs, setOngoingJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("available"); // available, ongoing
+  const [activeTab, setActiveTab] = useState("available"); // available, ongoing, completed
+  const [completedJobs, setCompletedJobs] = useState([]);
   const [showKycAlert, setShowKycAlert] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  
+
   const isKycComplete = profileData?.is_approved || false;
 
   const handleAcceptJob = async (job) => {
@@ -46,6 +47,7 @@ export function TechServicesScreen() {
     }
 
     try {
+
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
       const response = await fetch(`${API_BASE}/bookings/accept_job.php`, {
@@ -58,11 +60,12 @@ export function TechServicesScreen() {
         body: JSON.stringify({ job_id: job.id })
       });
       const data = await response.json();
-      
       if (data.status) {
         showToast(data.message, "success");
+
         setAvailableJobs(prev => prev.filter(j => j.id !== job.id));
         setActiveTab("ongoing"); // Switch to ongoing tab
+
       } else {
         showToast(data.message, "error");
       }
@@ -104,19 +107,22 @@ export function TechServicesScreen() {
         setIsLoading(true);
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
-        const headers = { 
-          "Authorization": `Bearer ${token}`, 
+        const headers = {
+          "Authorization": `Bearer ${token}`,
           "Role": role,
           "Content-Type": "application/json"
         };
 
         const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
         const profileJson = await profileRes.json();
+        
         if (profileJson.status) setProfileData(profileJson.data);
 
         if (activeTab === "available") {
           const response = await fetch(`${API_BASE}/bookings/get_available_jobs.php`, { headers });
           const data = await response.json();
+          console.log(data);
+          
           if (data.status) {
             setAvailableJobs(data.data.map(job => {
               const dist = calculateDistance(userLocation?.lat, userLocation?.lng, job.latitude, job.longitude);
@@ -127,13 +133,13 @@ export function TechServicesScreen() {
                 location: job.address || "Nearby",
                 distanceValue: dist,
                 distance: dist ? `${dist.toFixed(1)} km` : "Nearby",
-                price: `₹${job.price || job.amount || "0"}`,
+                price: `₹${job.price || job.amount || job.service_price || "0"}`,
                 time: job.service_date ? `${job.service_date}, ${job.service_time || ""}` : "Flexible",
-                image: job.image ? (job.image.startsWith('http') ? job.image : `${UPLOAD_BASE}/${job.image}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop"
+                image: "https://www.dorcasaid.com/admin/"+job.image  
               };
             }).sort((a, b) => (a.distanceValue || 999) - (b.distanceValue || 999)));
           }
-        } else {
+        } else if (activeTab === "ongoing") {
           const response = await fetch(`${API_BASE}/bookings/get_technician_bookings.php`, { headers });
           const data = await response.json();
           if (data.status) {
@@ -142,14 +148,31 @@ export function TechServicesScreen() {
               title: job.service_name || job.subcategory_name || "Home Service",
               category: job.subcategory_name || (job.status?.toLowerCase() === 'pending' ? "Assigned" : "Ongoing"),
               location: job.address || "Mumbai",
-              price: `₹${job.amount || "0"}`,
+              price: `₹${job.amount ||job.service_price || "0"}`,
               time: `${job.service_date}, ${job.service_time}`,
               customer: job.customer_name,
               status: job.status,
-              image: job.image ? (job.image.startsWith('http') ? job.image : `${UPLOAD_BASE}/${job.image}`) : "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=200&auto=format&fit=crop"
+              image: "https://www.dorcasaid.com/admin/"+job.image
             })));
           } else {
-              setOngoingJobs([]);
+            setOngoingJobs([]);
+          }
+        } else {
+          // Completed Jobs
+          const response = await fetch(`${API_BASE}/bookings/get_technician_bookings.php?status=completed`, { headers });
+          const data = await response.json();
+          if (data.status) {
+            setCompletedJobs(data.data.map(job => ({
+              id: job.id,
+              title: job.service_name || job.subcategory_name || "Home Service",
+              category: "Completed",
+              location: job.address || "Mumbai",
+              price: `₹${job.amount_paid || job.amount || "0"}`,
+              time: `${job.service_date || ""}`,
+              customer: job.customer_name,
+              status: "completed",
+              image: "https://dorcasaid.com/admin/" + job.image
+            })));
           }
         }
       } catch (error) {
@@ -175,16 +198,30 @@ export function TechServicesScreen() {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar relative"
     >
-      <div className="px-6 pt-12 pb-4 bg-base sticky top-0 z-30">
-        <h2 className="text-3xl font-black tracking-tight text-brand">My Jobs</h2>
-        <div className="flex bg-brand/5 p-1.5 rounded-2xl mt-4 mb-2">
-          {["available", "ongoing"].map((tab) => (
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative overflow-hidden text-white">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="relative z-10 flex items-center justify-between mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md hover:bg-white/30 transition-all shadow-sm border border-white/10"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <div className="text-center">
+            <h2 className="text-xl font-black tracking-tight leading-none mb-1">Service Jobs</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">Work Queue</p>
+          </div>
+          <div className="w-11" />
+        </div>
+        
+        <div className="relative z-10 flex bg-white/10 backdrop-blur-md p-1 rounded-2xl">
+          {["available", "ongoing", "completed"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
-                activeTab === tab ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-brand/40"
-              }`}
+              className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? "bg-white text-brand shadow-lg" : "text-white/60"
+                }`}
             >
               {tab}
             </button>
@@ -192,7 +229,7 @@ export function TechServicesScreen() {
         </div>
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-5 pt-6 space-y-4">
         {activeTab === "available" ? (
           availableJobs.length > 0 ? (
             availableJobs.map((job) => (
@@ -201,13 +238,21 @@ export function TechServicesScreen() {
           ) : (
             <EmptyState message="No available jobs nearby" />
           )
-        ) : (
+        ) : activeTab === "ongoing" ? (
           ongoingJobs.length > 0 ? (
             ongoingJobs.map((job) => (
               <JobCard key={job.id} job={job} onDetails={() => navigate(`/tech/job/${job.id}`)} isOngoing />
             ))
           ) : (
             <EmptyState message="No ongoing jobs at the moment" />
+          )
+        ) : (
+          completedJobs.length > 0 ? (
+            completedJobs.map((job) => (
+              <JobCard key={job.id} job={job} onDetails={() => navigate(`/tech/job/${job.id}`)} isCompleted />
+            ))
+          ) : (
+            <EmptyState message="No completed jobs yet" />
           )
         )}
       </div>
@@ -217,7 +262,7 @@ export function TechServicesScreen() {
   );
 }
 
-function JobCard({ job, onAccept, onDetails, isOngoing }) {
+function JobCard({ job, onAccept, onDetails, isOngoing, isCompleted }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -229,20 +274,22 @@ function JobCard({ job, onAccept, onDetails, isOngoing }) {
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-1">
             <h3 className="text-[14px] font-bold text-brand leading-tight truncate">{job.title}</h3>
-            <span className="bg-brand/10 text-brand px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase">{job.category}</span>
+            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase ${isCompleted ? 'bg-emerald-50 text-emerald-500' : 'bg-brand/10 text-brand'}`}>{job.category}</span>
           </div>
           <div className="text-[13px] font-bold text-brand mb-1">{job.price}</div>
           <div className="text-[11px] text-brand/40 font-medium truncate flex items-center gap-1">
-             <MapPin size={10} /> {job.location} {job.distance && `• ${job.distance}`}
+            <MapPin size={10} /> {job.location} {job.distance && `• ${job.distance}`}
           </div>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 mt-4">
         <button onClick={onDetails} className="bg-brand/5 text-brand py-3 rounded-xl text-[12px] font-bold">Details</button>
-        {!isOngoing ? (
+        {!isOngoing && !isCompleted ? (
           <button onClick={onAccept} className="bg-brand text-white py-3 rounded-xl text-[12px] font-bold shadow-md">Accept</button>
         ) : (
-          <div className="flex items-center justify-center text-emerald-500 text-[10px] font-black uppercase tracking-widest border border-emerald-100 bg-emerald-50 rounded-xl">Ongoing</div>
+          <div className={`flex items-center justify-center text-[10px] font-black uppercase tracking-widest border rounded-xl ${isCompleted ? 'text-emerald-500 border-emerald-100 bg-emerald-50' : 'text-emerald-500 border-emerald-100 bg-emerald-50'}`}>
+            {isCompleted ? "Completed" : "Ongoing"}
+          </div>
         )}
       </div>
     </motion.div>

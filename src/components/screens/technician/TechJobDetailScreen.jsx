@@ -71,7 +71,7 @@ export function TechJobDetailScreen() {
             contact: job.phone || "No contact",
             notes: job.notes || "No additional notes provided.",
             paymentMode: job.payment_method || "Pay After Service",
-            image: job.image ? (job.image.startsWith('http') ? job.image : `${UPLOAD_BASE}/${job.image}`) : "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop",
+            image: "https://dorcasaid.com/admin/"+job.image,
             coords: job.coords || (job.latitude && job.longitude ? `${job.latitude},${job.longitude}` : "19.0760,72.8777"),
             status: job.status,
             vendor_id: job.vendor_id
@@ -204,14 +204,14 @@ export function TechJobDetailScreen() {
         <div className="absolute top-12 left-0 w-full px-6 flex items-center justify-between z-20">
            <button 
              onClick={() => navigate(-1)}
-             className="w-11 h-11 bg-white rounded-2xl flex items-center justify-center border border-brand/5 text-brand active:scale-90 transition-all shadow-md"
+             className="w-11 h-11 brand-gradient rounded-2xl flex items-center justify-center border border-white/20 text-white active:scale-90 transition-all shadow-lg"
            >
              <ChevronLeft size={24} />
            </button>
-           <div className="bg-white px-4 py-2 rounded-2xl border border-brand/5 text-brand text-[10px] font-black uppercase tracking-widest shadow-md">
+           <div className="brand-gradient px-4 py-2 rounded-2xl border border-white/20 text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
              Job Details
            </div>
-           <button className="w-11 h-11 bg-white rounded-2xl flex items-center justify-center border border-brand/5 text-brand active:scale-90 transition-all shadow-md">
+           <button className="w-11 h-11 brand-gradient rounded-2xl flex items-center justify-center border border-white/20 text-white active:scale-90 transition-all shadow-lg">
              <MessageSquare size={20} />
            </button>
         </div>

@@ -87,26 +87,7 @@ export const RegisterScreen = () => {
     };
     checkLocation();
   }, []);
-  useEffect(() => {
-    setFormData({
-      phoneNumber: "",
-      otp: "",
-      name: "",
-      email: "",
-      pincode: "",
-      city: "",
-      state: "",
-      area: "", // ✅ NEW
-      address: "",
-      landmark: "", // optional (good UX)
-      referralCode: "",
-      latitude: "",
-      longitude: "",
-      selectedServices: [],
-      agreedToTerms: false,
-    });
-  }, [authMode]);
-
+  // Fetch categories for services
   useEffect(() => {
     fetch(`${API_BASE}/services/get_services.php`)
       .then((res) => res.json())
@@ -122,26 +103,31 @@ export const RegisterScreen = () => {
     getLocation();
   }, []);
 
-  const getLocation = async () => {
+  const getLocation = async (isManual = false) => {
     setLoadingLocation(true);
     try {
       let coordinates;
       if (Capacitor.isNativePlatform()) {
         const perm = await Geolocation.checkPermissions();
         if (perm.location !== 'granted') {
-           // We already checked this in useEffect, but just in case
            const req = await Geolocation.requestPermissions();
            if (req.location !== 'granted') throw new Error("Permission denied");
         }
-        coordinates = await Geolocation.getCurrentPosition();
+        coordinates = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000
+        });
       } else {
         if (!navigator.geolocation) {
-          showToast("Location not supported", "error");
+          if (isManual) showToast("Location not supported by your browser", "error");
           setLoadingLocation(false);
           return;
         }
         coordinates = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000
+          });
         });
       }
 
@@ -151,6 +137,11 @@ export const RegisterScreen = () => {
 
         const res = await fetch(
           `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+          {
+            headers: {
+              'User-Agent': 'DorcasApp/1.0'
+            }
+          }
         );
 
         const data = await res.json();
@@ -160,15 +151,19 @@ export const RegisterScreen = () => {
           ...prev,
           latitude: lat,
           longitude: lng,
-          city: addr.city || addr.town || addr.village || "",
-          state: addr.state || "",
-          pincode: addr.postcode || "",
-          area: addr.suburb || addr.neighbourhood || addr.city_district || "",
-          address: data.display_name || "",
+          city: addr.city || addr.town || addr.village || prev.city,
+          state: addr.state || prev.state,
+          pincode: addr.postcode || prev.pincode,
+          area: addr.suburb || addr.neighbourhood || addr.city_district || addr.subdistrict || prev.area,
+          address: data.display_name || prev.address,
+          landmark: addr.house_number || addr.building || prev.landmark, // Try to auto-fill building/house number
         }));
+        
+        if (isManual) showToast("Location updated successfully", "success");
       }
     } catch (error) {
-      showToast("Permission denied or location failed. Please enter manually.", "error");
+      if (isManual) showToast("Could not detect location. Please enter manually.", "error");
+      console.error("Location Error:", error);
     } finally {
       setLoadingLocation(false);
     }
@@ -521,9 +516,19 @@ export const RegisterScreen = () => {
               </div>
             )}
             <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                Full Address
-              </label>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em]">
+                  Full Address
+                </label>
+                <button 
+                  type="button"
+                  onClick={() => getLocation(true)}
+                  className="flex items-center gap-1.5 text-brand hover:text-brand/80 transition-colors"
+                >
+                  <MapPin size={12} className="text-brand" />
+                  <span className="text-[10px] font-black uppercase tracking-wider">Detect Location</span>
+                </button>
+              </div>
               <div className="relative group">
                 <div className="grid grid-cols-1 gap-4">
                   <div>
@@ -649,7 +654,7 @@ export const RegisterScreen = () => {
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
                           isOpen ? "bg-brand text-white" : "bg-brand/5 text-brand"
                         }`}>
-                          <img src={category.category_img} alt="" />
+                          <img src={`https://www.dorcasaid.com/admin/${category.category_img}`} alt="" />
                         </div>
                         <div className="text-left">
                           <span className={`block font-black text-sm tracking-tight transition-colors ${

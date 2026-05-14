@@ -106,26 +106,27 @@ export function TechVerificationScreen() {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
-      {/* Header */}
-      <div className="bg-brand pt-14 pb-12 px-5 rounded-b-[2.5rem] relative overflow-hidden shadow-sm">
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-14 pb-5 px-5 rounded-b-[2.5rem] relative overflow-hidden shadow-lg">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-        <div className="relative z-10 flex items-center gap-4">
+        <div className="relative z-10  flex items-center justify-between mb-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10"
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-sm"
           >
-            <ChevronLeft size={20} className="text-white" />
+            <ChevronLeft size={24} />
           </button>
-          <div>
-            <h2 className="text-xl font-black text-white tracking-tight">ID Verification</h2>
-            <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mt-0.5">Secure KYC Process</p>
+          <div className="text-center">
+            <h2 className="text-xl font-black text-white tracking-tight leading-none mb-1">ID Verification</h2>
+            <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Secure KYC Process</p>
           </div>
+          <div className="w-11" />
         </div>
       </div>
 
-      <div className="px-6 -mt-6">
+      <div className="px-6 mt-6">
         {/* Status Card */}
-        <div className="bg-white rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-brand/5 mb-8">
+        <div className="bg-gray-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-brand/5 mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-500' :
               kycStatus === 'pending' ? 'bg-amber-50 text-amber-500' :

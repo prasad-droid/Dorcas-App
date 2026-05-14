@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { 
-  IndianRupee, ArrowUpRight, Briefcase, 
+  IndianRupee, ArrowUpRight, Briefcase, ChevronLeft,
   TrendingUp, ChevronRight, Wallet 
 } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
@@ -20,6 +20,7 @@ export function TechEarningsScreen() {
     today: "0",
     thisWeek: "0",
     thisMonth: "0",
+    commissionDue: 0,
     transactions: []
   });
   const [upiId, setUpiId] = useState("");
@@ -36,7 +37,7 @@ export function TechEarningsScreen() {
           "Content-Type": "application/json"
         };
 
-        // 1. Fetch Profile for stats
+        // 1. Fetch Profile for basic info
         const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
         const profileJson = await profileRes.json();
         
@@ -44,8 +45,14 @@ export function TechEarningsScreen() {
         const txRes = await fetch(`${API_BASE}/bookings/get_technician_bookings.php?status=completed`, { headers });
         const txJson = await txRes.json();
 
+        // 3. Fetch Tech Stats for accurate commission and activity
+        const statsRes = await fetch(`${API_BASE}/vendors/get_tech_stats.php`, { headers });
+        const statsJson = await statsRes.json();
+
         if (profileJson.status) {
           const stats = profileJson.data.stats || {};
+          console.log(stats);
+          
           setEarningsData(prev => ({
             ...prev,
             pendingPayout: stats.pending_payout || "0",
@@ -54,19 +61,36 @@ export function TechEarningsScreen() {
             thisMonth: `${stats.monthly_earnings || "0"}`,
           }));
         }
+        console.log(statsJson);
+        
 
-        if (txJson.status) {
+        if (statsJson.status) {
           setEarningsData(prev => ({
             ...prev,
-            transactions: txJson.data.map(tx => ({
-              id: `TX-${tx.id}`,
-              service: tx.service_name || tx.subcategory_name || "Home Service",
-              customer: tx.customer_name || "Guest Client",
-              date: tx.service_date || "Recent",
-              amount: `₹${tx.amount && tx.amount !== "0" ? tx.amount : (tx.service_price || "0")}`,
-              status: tx.status || "completed",
-              type: "credit"
-            }))
+            commissionDue: statsJson.data?.activity?.total_commission_due || 0
+          }));
+        }
+
+        if (txJson.status) {
+          const completedTransactions = txJson.data.map(tx => ({
+            id: `TX-${tx.id}`,
+            service: tx.service_name || tx.subcategory_name || "Home Service",
+            customer: tx.customer_name || "Guest Client",
+            date: tx.service_date || "Recent",
+            amount: `₹${tx.amount_paid && tx.amount_paid !== "0" ? tx.amount_paid : (tx.service_price || "0")}`,
+            status: tx.status || "completed",
+            type: "credit",
+            commission: parseFloat(tx.commission_amount || (parseFloat(tx.amount_paid || 0) * 0.10))
+          }));
+
+          const totalCommission = txJson.data
+            .filter(tx => tx.commission_status === 'pending')
+            .reduce((sum, tx) => sum + parseFloat(tx.commission_amount || (parseFloat(tx.amount_paid || 0) * 0.10)), 0);
+
+          setEarningsData(prev => ({
+            ...prev,
+            transactions: completedTransactions,
+            commissionDue: totalCommission
           }));
         }
       } catch (error) {
@@ -120,11 +144,24 @@ export function TechEarningsScreen() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
+      className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar"
     >
-      <div className="px-6 pt-12 bg-base sticky top-0 z-30">
-        <h2 className="text-3xl font-black tracking-tight text-brand">Your Earnings</h2>
-        <p className="text-brand/40 text-[10px] font-bold uppercase tracking-widest mt-1">Financial Overview</p>
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative text-white">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="relative z-10 flex items-center justify-between">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white backdrop-blur-md"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <div className="text-center">
+            <h2 className="text-xl font-black tracking-tight">Earnings</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">Financial Overview</p>
+          </div>
+          <div className="w-10" />
+        </div>
       </div>
 
       {isLoading ? (
@@ -141,11 +178,11 @@ export function TechEarningsScreen() {
               <IndianRupee size={160} strokeWidth={1} className="text-white" />
            </div>
            
-           <div className="relative z-10">
-              <p className="text-white/60 text-[10px] font-bold uppercase tracking-[2px] mb-1">Total Payout Pending</p>
-              <div className="flex items-baseline gap-1.5 text-white mb-6">
-                 <span className="text-xl font-black">₹</span>
-                 <span className="text-4xl font-black tracking-tighter">{earningsData.pendingPayout}</span>
+           <div className="relative z-10 text-center">
+              <p className="text-white/60 text-[10px] font-bold uppercase tracking-[2px] mb-2">Total Payout Pending</p>
+              <div className="flex items-baseline justify-center gap-1.5 text-white mb-6">
+                 <span className="text-xl font-black opacity-50">₹</span>
+                 <span className="text-5xl font-black tracking-tighter">{earningsData.pendingPayout}</span>
               </div>
 
               {Number(earningsData.pendingPayout) > 0 && (
@@ -180,7 +217,7 @@ export function TechEarningsScreen() {
               </div>
               <div>
                  <p className="text-[10px] font-bold text-amber-900/40 uppercase tracking-widest mb-0.5">Commission Dues</p>
-                 <p className="text-lg font-black text-amber-900 tracking-tight">₹{(earningsData.transactions.length * 49.9).toFixed(2)}</p>
+                 <p className="text-lg font-black text-amber-900 tracking-tight">₹{parseFloat(earningsData.commissionDue || 0).toFixed(2)}</p>
               </div>
            </div>
            <button 
@@ -198,10 +235,10 @@ export function TechEarningsScreen() {
              { label: "This Week", value: `₹${earningsData.thisWeek}` },
              { label: "This Month", value: `₹${earningsData.thisMonth}` },
            ].map((stat, i) => (
-             <div key={i} className="bg-white rounded-2xl p-4 border border-brand/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center">
-                <p className="text-[10px] font-bold text-brand/30 uppercase tracking-widest mb-1.5">{stat.label}</p>
-                <p className="text-[14px] font-black text-brand">{stat.value}</p>
-             </div>
+              <div key={i} className="bg-white rounded-2xl p-3.5 border border-brand/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center flex flex-col justify-center min-h-[80px]">
+                 <p className="text-[9px] font-bold text-brand/30 uppercase tracking-widest mb-1.5 leading-tight px-1">{stat.label}</p>
+                 <p className="text-[15px] font-black text-brand leading-none">{stat.value}</p>
+              </div>
            ))}
         </div>
 

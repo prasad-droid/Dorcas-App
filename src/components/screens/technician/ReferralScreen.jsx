@@ -72,20 +72,23 @@ export function ReferralScreen() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar">
-      {/* Header */}
-      <div className="bg-brand pt-12 pb-24 px-6 rounded-b-[3rem] relative overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand via-brand to-blue-700 opacity-40"></div>
+    <div className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar">
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-24 px-6 rounded-b-[3rem] relative shadow-2xl">
+
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-        
+
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center text-white backdrop-blur-md border border-white/20 active:scale-95 transition-all"
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-sm"
           >
             <ChevronLeft size={24} />
           </button>
-          <h2 className="text-xl font-black text-white tracking-tight">Refer & Earn</h2>
+          <div className="text-center">
+            <h2 className="text-xl font-black text-white tracking-tight leading-none mb-1">Refer & Earn</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">Partner Rewards</p>
+          </div>
           <div className="w-11" />
         </div>
 

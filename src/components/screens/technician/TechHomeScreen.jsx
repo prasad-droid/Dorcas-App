@@ -118,7 +118,7 @@ export function TechHomeScreen() {
           if (ongoing.length > 0) {
             setActiveJob(ongoing[0]);
           }
-          
+
           // Check for pending commissions
           const pending = activeJson.data.filter(j => j.status?.toLowerCase() === 'completed' && j.commission_status?.toLowerCase() === 'pending');
           setPendingCommissions(pending);
@@ -140,7 +140,7 @@ export function TechHomeScreen() {
               ...job,
               distanceValue: dist,
               distance: dist ? `${dist.toFixed(1)} km` : "Nearby",
-              image: job.image ? (job.image.startsWith('http') ? job.image : `${UPLOAD_BASE}/${job.image}`) : "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=400&auto=format&fit=crop"
+              image: `https://www.dorcasaid.com/admin/${job.image}`
             };
           }).sort((a, b) => (a.distanceValue || 999) - (b.distanceValue || 999));
 
@@ -242,9 +242,8 @@ export function TechHomeScreen() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="bg-brand pt-12 pb-18 px-6 rounded-b-[2.5rem] relative overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand via-brand to-blue-700 opacity-40"></div>
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] relative  shadow-2xl">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex justify-between items-center">
           <div className="flex items-center gap-3">
@@ -259,11 +258,11 @@ export function TechHomeScreen() {
                 <span className="text-xl font-black text-white">{getInitials(profileData?.name)}</span>
               )}
             </div>
-            <div>
+            <div className="text-white">
               <p className="text-white/60 text-[10px] font-black tracking-widest uppercase mb-0.5">Welcome back,</p>
-              <h2 className="text-2xl font-black tracking-tight text-white leading-none">{profileData?.name?.split(' ')[0] || "Partner"}</h2>
-              <div className="flex items-center gap-1 text-white/90">
-                <MapPin size={12} className="text-white" />
+              <h2 className="text-2xl font-black tracking-tight leading-none">{profileData?.name?.split(' ')[0] || "Partner"}</h2>
+              <div className="flex items-center gap-1 opacity-90">
+                <MapPin size={12} />
                 <span className="text-[10px] font-bold tracking-wide">{profileData?.city || "Mumbai, MH"}</span>
               </div>
             </div>
@@ -271,15 +270,15 @@ export function TechHomeScreen() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate("/tech/referral")}
-              className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 active:scale-95 transition-transform"
+              className="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 active:scale-95 transition-transform shadow-sm"
             >
-              <Gift size={24} className="text-white" />
+              <Gift size={22} className="text-white" />
             </button>
             <button
               onClick={() => navigate("/notifications")}
-              className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center relative backdrop-blur-md border border-white/20 active:scale-95 transition-transform"
+              className="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center relative backdrop-blur-md border border-white/20 active:scale-95 transition-transform shadow-sm"
             >
-              <Bell size={24} className="text-white" />
+              <Bell size={22} className="text-white" />
               <motion.span
                 animate={{ scale: [1, 1.4, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
@@ -331,7 +330,7 @@ export function TechHomeScreen() {
                 <div className="flex gap-4">
                   <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-black/[0.02]">
                     <img
-                      src={availableRequests[0].image || "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=400&auto=format&fit=crop"}
+                      src={availableRequests[0].image}
                       className="w-full h-full object-cover"
                       alt="Service"
                     />
@@ -379,7 +378,7 @@ export function TechHomeScreen() {
               </motion.div>
             )}
           </AnimatePresence>
-          
+
           {/* Commission Due Alert */}
           <AnimatePresence>
             {pendingCommissions.length > 0 && (
@@ -387,7 +386,7 @@ export function TechHomeScreen() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="bg-red-50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center"
+                className="mt-4 bg-red-50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center"
               >
                 <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 shrink-0">
                   <IndianRupee size={24} />
@@ -407,8 +406,8 @@ export function TechHomeScreen() {
           </AnimatePresence>
 
           {/* Performance Dashboard with Graphs */}
-          <div className="space-y-4">
-            <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('performance_overview')}</h3>
+          <div className="space-y-4 mt-5">
+            <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('performance_overview')}</h3>
 
             {/* Main Graph Card */}
             <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm">
@@ -453,7 +452,7 @@ export function TechHomeScreen() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2 bg-brand rounded-[2rem] p-6 shadow-xl shadow-brand/20 relative overflow-hidden">
+              <div className="col-span-2 bg-brand rounded-[2rem] p-6 shadow-xl shadow-brand/20 relative overflow-hidden group active:scale-[0.98] transition-transform cursor-pointer" onClick={() => navigate("/tech/earnings")}>
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                 <div className="relative z-10 flex justify-between items-center text-white">
                   <div>
@@ -470,12 +469,12 @@ export function TechHomeScreen() {
               </div>
 
               {
-              [
-                { label: t('avg_rating'), value: stats.avgRating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
-                { label: t('completed_jobs'), value: stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
-                { label: t('active_jobs'), value: availableRequests.length, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
-                { label: t('missed_jobs'), value: "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
-              ].map((stat, i) => (
+                [
+                  { label: t('avg_rating'), value: stats.avgRating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
+                  { label: "Acceptance Rate", value: techStats?.activity?.acceptance_rate || stats.acceptanceRate, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
+                  { label: "Completed Jobs", value: techStats?.activity?.total_completed || stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
+                  { label: "Missed / Declined", value: techStats?.activity ? (parseInt(techStats.activity.total_declined) + parseInt(techStats.activity.total_expired)) : "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
+                ].map((stat, i) => (
                   <div key={i} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm">
                     <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
                       <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
@@ -486,12 +485,20 @@ export function TechHomeScreen() {
                 ))
               }
             </div>
+
+            {/* View Full Dashboard Link */}
+            <button
+              onClick={() => navigate("/tech/dashboard")}
+              className="w-full py-4 bg-brand/5 border border-brand/10 rounded-2xl flex items-center justify-center gap-2 text-brand font-black text-[11px] uppercase tracking-widest active:scale-95 transition-transform"
+            >
+              View Dashboard <ChevronRight size={16} />
+            </button>
           </div>
 
           {/* Top Services & Ratings Section */}
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-6 mt-5">
             <div className="space-y-4">
-              <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('top_services')}</h3>
+              <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('top_services')}</h3>
               <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm space-y-4">
                 {techStats?.top_services.length > 0 ? techStats.top_services.map((s, i) => (
                   <div key={i} className="flex items-center justify-between">
@@ -506,7 +513,7 @@ export function TechHomeScreen() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">{t('recent_completed')}</h3>
+              <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('recent_completed')}</h3>
               <div className="space-y-3">
                 {techStats?.recent_completed.length > 0 ? techStats.recent_completed.map((job, i) => (
                   <div key={i} className="bg-white p-4 rounded-2xl border border-brand/5 shadow-sm flex items-center justify-between">
@@ -519,30 +526,13 @@ export function TechHomeScreen() {
                         <p className="text-[10px] font-bold text-brand/40 uppercase">₹{job.amount_paid || 0}</p>
                       </div>
                     </div>
-                    <span className="text-[9px] font-black text-brand/20 uppercase">{new Date(job.completed_at).toLocaleDateString()}</span>
+                    <span className="text-[9px] font-black text-brand/40 uppercase">{new Date(job.completed_at).toLocaleDateString()}</span>
                   </div>
                 )) : <div className="py-8 text-center bg-white rounded-[2rem] border border-dashed border-brand/10 text-brand/20 text-[10px] font-black uppercase">No completed jobs</div>}
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1 text-red-400">{t('recent_missed')}</h3>
-              <div className="space-y-3">
-                {techStats?.recent_missed.length > 0 ? techStats.recent_missed.map((job, i) => (
-                  <div key={i} className="bg-white p-4 rounded-2xl border border-red-100 shadow-sm flex items-center justify-between opacity-60">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-400">
-                        <Clock size={20} />
-                      </div>
-                      <div>
-                        <h4 className="text-[13px] font-black text-brand leading-none mb-1">{job.service_name}</h4>
-                        <p className="text-[10px] font-bold text-brand/40 uppercase">{t('missed')}</p>
-                      </div>
-                    </div>
-                  </div>
-                )) : <div className="py-8 text-center bg-white rounded-[2rem] border border-dashed border-brand/10 text-brand/20 text-[10px] font-black uppercase">No missed requests lately!</div>}
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

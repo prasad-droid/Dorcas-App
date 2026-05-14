@@ -100,22 +100,26 @@ export function ManageServicesScreen() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col bg-base overflow-y-auto pb-32">
-      {/* Header */}
-      <div className="px-6 pt-12 pb-6 bg-white border-b border-brand/5">
-        <div className="flex items-center justify-between mb-6">
+    <div className="flex-1 w-full flex flex-col bg-[#f8fafc] overflow-y-auto pb-32">
+      {/* Brand Gradient Header */}
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative overflow-hidden text-white">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div className="relative z-10 flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-brand/5 flex items-center justify-center text-brand"
+            className="w-11 h-11 bg-white/20 rounded-2xl flex items-center justify-center text-white backdrop-blur-md border border-white/10 shadow-sm"
           >
             <ChevronLeft size={24} />
           </button>
-          <h2 className="text-xl font-black text-brand tracking-tight">Manage Services</h2>
-          <div className="w-10" />
+          <div className="text-center">
+            <h2 className="text-xl font-black tracking-tight leading-none mb-1">Services</h2>
+            <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px]">Expertise Portfolio</p>
+          </div>
+          <div className="w-11" />
         </div>
 
-        <div className="relative group">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
+        <div className="relative z-10 group">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors">
             <Search size={18} />
           </div>
           <input
@@ -123,7 +127,7 @@ export function ManageServicesScreen() {
             placeholder="Search services..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-brand/5 border border-transparent rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
+            className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-white/10 focus:border-white/40 transition-all placeholder:text-white/40 text-white shadow-sm"
           />
         </div>
       </div>
@@ -198,7 +202,7 @@ export function ManageServicesScreen() {
                               <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                                 isSelected ? "bg-brand text-white" : "bg-brand/5 text-brand/20"
                               }`}>
-                                <Zap size={14} />
+                                  <img src={`https://www.dorcasaid.com/${service.image}`} className="w-full h-full object-cover rounded-lg" alt="" />
                               </div>
                               <div className="text-left">
                                 <span className="text-sm font-bold text-brand">{service.service_name}</span>
