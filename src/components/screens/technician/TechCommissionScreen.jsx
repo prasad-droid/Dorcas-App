@@ -227,7 +227,7 @@ export function TechCommissionScreen() {
             {unpaidJobs.length > 0 ? (
               unpaidJobs.map((job) => {
                 const amount = parseFloat(job.amount_paid || 0);
-                const commission = parseFloat(job.commission_amount || (amount * 0.10));
+                const commission = parseFloat(job.commission_amount || 0);
                 return (
                   <div key={job.id} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm space-y-4">
                     <div className="flex justify-between items-start">

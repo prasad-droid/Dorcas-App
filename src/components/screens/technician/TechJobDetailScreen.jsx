@@ -246,10 +246,29 @@ export function TechJobDetailScreen() {
         <SectionTitle title="Client Information" />
         <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-brand/5 mb-6 space-y-6">
            <DetailItem icon={User} label="Client Name" value={jobData.customer} />
-           <div className="pt-2">
-              <DetailItem icon={MapPin} label="Service Address" value={jobData.address} />
-              
-              {/* Real Map iframe */}
+            <div className="pt-2">
+               <DetailItem icon={MapPin} label="Service Address" value={jobData.address} />
+               
+               {/* Call Option above map */}
+               <div className="mt-6 flex items-center justify-between bg-brand/5 p-4 rounded-2xl border border-brand/10">
+                  <div className="flex items-center gap-3">
+                     <div className="w-10 h-10 bg-brand text-white rounded-xl flex items-center justify-center shadow-lg shadow-brand/20">
+                        <Phone size={20} />
+                     </div>
+                     <div>
+                        <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest leading-none mb-1">Contact Customer</p>
+                        <p className="text-[14px] font-bold text-brand">{jobData.contact}</p>
+                     </div>
+                  </div>
+                  <a 
+                    href={`tel:${jobData.contact}`}
+                    className="bg-brand text-white px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                  >
+                    Call Now
+                  </a>
+               </div>
+               
+               {/* Real Map iframe */}
               <div className="mt-6 rounded-2xl overflow-hidden border border-brand/5 shadow-inner bg-brand/5 h-48 relative group">
                  <iframe 
                    title="Job Location"
@@ -334,7 +353,7 @@ export function TechJobDetailScreen() {
                  onClick={() => navigate("/tech/commissions")}
                  className="w-full bg-brand text-white py-5 rounded-[2rem] text-[15px] font-black shadow-[0_15px_35px_rgba(13,110,253,0.3)] flex items-center justify-center gap-2 active:scale-95 transition-all"
                >
-                 Pay Commission (10%)
+                 Pay Commission
                  <ArrowRight size={18} />
                </motion.button>
              </div>

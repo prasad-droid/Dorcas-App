@@ -80,12 +80,12 @@ export function TechEarningsScreen() {
             amount: `₹${tx.amount_paid && tx.amount_paid !== "0" ? tx.amount_paid : (tx.service_price || "0")}`,
             status: tx.status || "completed",
             type: "credit",
-            commission: parseFloat(tx.commission_amount || (parseFloat(tx.amount_paid || 0) * 0.10))
+            commission: parseFloat(tx.commission_amount || 0)
           }));
 
           const totalCommission = txJson.data
             .filter(tx => tx.commission_status === 'pending')
-            .reduce((sum, tx) => sum + parseFloat(tx.commission_amount || (parseFloat(tx.amount_paid || 0) * 0.10)), 0);
+            .reduce((sum, tx) => sum + parseFloat(tx.commission_amount || 0), 0);
 
           setEarningsData(prev => ({
             ...prev,

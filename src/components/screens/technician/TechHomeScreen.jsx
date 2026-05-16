@@ -89,6 +89,8 @@ export function TechHomeScreen() {
         // 1. Fetch Profile & Stats
         const profileRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
         const profileJson = await profileRes.json();
+        console.log(profileJson);
+        
         if (profileJson.status) {
           setProfileData(profileJson.data);
           if (profileJson.data.reviews) {
