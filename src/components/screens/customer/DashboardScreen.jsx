@@ -82,7 +82,10 @@ export function DashboardScreen() {
       {/* Floating Main Stats */}
       <div className="relative z-20 px-5 -mt-12 mb-6">
         <div className="bg-white shadow-[0_8px_24px_rgba(13,110,253,0.12)] border border-brand/5 rounded-3xl p-5 flex gap-4">
-          <div className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10">
+          <div 
+            onClick={() => navigate("/bookings")}
+            className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10 cursor-pointer active:scale-95 transition-transform"
+          >
             <span className="text-[11px] font-bold text-brand/60 uppercase tracking-widest mb-1">{t('bookings')}</span>
             <span className="text-3xl font-black text-brand">{profileData?.stats?.value1 || 0}</span>
           </div>

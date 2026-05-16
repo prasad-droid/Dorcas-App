@@ -18,6 +18,7 @@ import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
+import { AndroidSmsRetriever } from '@capgo/capacitor-android-sms-retriever';
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
@@ -43,12 +44,12 @@ export const RegisterScreen = () => {
     state: "",
     area: "", 
     address: "",
-    landmark: "", 
+    landmark: "", // We'll keep this in state but remove from UI if requested, or just remove completely. User said "remove room no, building name inputs".
     referralCode: referralParam || "",
     latitude: "",
     longitude: "",
     selectedServices: [],
-    agreedToTerms: false,
+    agreedToTerms: true,
   });
 
   useEffect(() => {
@@ -213,6 +214,37 @@ export const RegisterScreen = () => {
         if (data.status) {
           showToast("OTP sent successfully!", "success");
           setStep(2);
+          
+          // Start SMS Retriever for real auto-fetch
+          if (Capacitor.isNativePlatform()) {
+            try {
+              AndroidSmsRetriever.getHashString().then(res => console.log("App Hash for SMS:", res.hash));
+              
+              const setupListener = async () => {
+                const listener = await AndroidSmsRetriever.addListener('smsReceived', (event) => {
+                  const otpMatch = event.message.match(/\d{6}/);
+                  if (otpMatch) {
+                    setFormData(prev => ({ ...prev, otp: otpMatch[0] }));
+                    showToast("OTP auto-filled from SMS", "success");
+                  }
+                  listener.remove();
+                });
+                await AndroidSmsRetriever.startWatch();
+              };
+              
+              setupListener();
+            } catch (e) {
+               console.warn("SMS Retriever not available", e);
+            }
+          }
+
+          // Keep simulation for non-native/fallback
+          if (!Capacitor.isNativePlatform()) {
+            setTimeout(() => {
+              setFormData(prev => ({ ...prev, otp: "" }));
+              showToast("OTP auto-filled (Simulation)", "info");
+            }, 3000);
+          }
         } else {
           
           showToast(data.message || "Failed to send OTP", "error");
@@ -325,7 +357,7 @@ export const RegisterScreen = () => {
       setShowSuccessModal(true);
     } else {
       setIsAuthenticated(true);
-      navigate("/");
+      navigate("/", { replace: true });
     }
   };
 
@@ -460,12 +492,11 @@ export const RegisterScreen = () => {
                   }
                   placeholder="john@example.com"
                   className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
-                  required
                 />
               </div>
             </div>
 
-            {authMode === "technician" && (
+            
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
@@ -508,7 +539,6 @@ export const RegisterScreen = () => {
                   </div>
                 </div>
               </div>
-            )}
             {loadingLocation && (
               <div className="flex items-center gap-2 px-3 py-2 bg-brand/5 rounded-xl border border-brand/10">
                 <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin" />
@@ -531,41 +561,11 @@ export const RegisterScreen = () => {
               </div>
               <div className="relative group">
                 <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-black text-brand/40 uppercase mb-2 px-1">
-                      Room No / Building Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.landmark}
-                      onChange={(e) =>
-                        setFormData({ ...formData, landmark: e.target.value })
-                      }
-                      placeholder="Flat 101, Sunshine Apartments"
-                      className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 px-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all shadow-sm"
-                    />
-                  </div>
                 </div>
                 <div className="grid grid-cols-1 gap-4 mt-4">
-                  <div>
-                    <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                      Area / Locality
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.area}
-                      onChange={(e) =>
-                        setFormData({ ...formData, area: e.target.value })
-                      }
-                      placeholder="Andheri West"
-                      className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 px-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all shadow-sm"
-                    />
-                  </div>
+                 
                 </div>
                 <div className="grid grid-cols-1 gap-4 mt-4">
-                  <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                    Address
-                  </label>
                   <textarea
                     className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 px-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all shadow-sm"
                     value={formData.address}

@@ -37,6 +37,7 @@ import { TechVerificationScreen } from "./components/screens/technician/TechVeri
 import { ManageServicesScreen } from "./components/screens/technician/ManageServicesScreen";
 import { ReferralScreen } from "./components/screens/technician/ReferralScreen";
 import { TechCommissionScreen } from "./components/screens/technician/TechCommissionScreen";
+import { TechReviewsScreen } from "./components/screens/technician/TechReviewsScreen";
 
 // Shared Screens
 import { ProfileScreen } from "./components/screens/shared/ProfileScreen";
@@ -124,7 +125,10 @@ function AppContent() {
   // Back Button Handling
   useEffect(() => {
     const backButtonListener = CapApp.addListener('backButton', ({ canGoBack }) => {
-      if (canGoBack) {
+      const homePaths = ["/", "/tech", "/login"];
+      if (homePaths.includes(location.pathname)) {
+        CapApp.exitApp();
+      } else if (canGoBack) {
         window.history.back();
       } else {
         CapApp.exitApp();
@@ -134,7 +138,7 @@ function AppContent() {
     return () => {
       backButtonListener.then(l => l.remove());
     };
-  }, []);
+  }, [location.pathname]);
 
   // Splash Screen Timer
   useEffect(() => {
@@ -249,6 +253,7 @@ function AppContent() {
                     <Route path="/tech/earnings" element={<TechEarningsScreen />} />
                     <Route path="/tech/commissions" element={<TechCommissionScreen />} />
                     <Route path="/tech/portfolio" element={<TechPortfolioScreen />} />
+                    <Route path="/tech/reviews" element={<TechReviewsScreen />} />
                     <Route path="/payment-callback" element={<PaymentCallbackScreen />} />
                     <Route path="/notifications" element={<NotificationScreen />} />
                     <Route path="/profile" element={<ProfileScreen />} />

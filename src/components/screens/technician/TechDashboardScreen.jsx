@@ -139,16 +139,16 @@ export function TechDashboardScreen() {
 
         {/* Web Style Stats Grid (3 columns) */}
         <div className="grid grid-cols-3 gap-3">
-          <WebStatCard label="Total Jobs" value={stats.totalJobs} icon={Briefcase} color="text-teal-500" bg="bg-teal-50" />
-          <WebStatCard label="Avg. Rating" value={stats.rating} icon={Star} color="text-amber-500" bg="bg-amber-50" />
-          <WebStatCard label="Services" value={stats.servicesOffered} icon={Zap} color="text-blue-500" bg="bg-blue-50" />
+          <WebStatCard label="Total Jobs" value={stats.totalJobs} icon={Briefcase} color="text-teal-500" bg="bg-teal-50" onClick={() => navigate("/tech")} />
+          <WebStatCard label="Avg. Rating" value={stats.rating} icon={Star} color="text-amber-500" bg="bg-amber-50" onClick={() => navigate("/tech/reviews")} />
+          <WebStatCard label="Services" value={stats.servicesOffered} icon={Zap} color="text-blue-500" bg="bg-blue-50" onClick={() => navigate("/tech/manage-services")} />
 
-          <WebStatCard label="Completed" value={stats.completedJobs} icon={CheckCircle2} color="text-emerald-500" bg="bg-emerald-50" />
-          <WebStatCard label="Active" value={stats.activeJobs} icon={Clock} color="text-pink-500" bg="bg-pink-50" />
+          <WebStatCard label="Completed" value={stats.completedJobs} icon={CheckCircle2} color="text-emerald-500" bg="bg-emerald-50" onClick={() => navigate("/tech/services")} />
+          <WebStatCard label="Active" value={stats.activeJobs} icon={Clock} color="text-pink-500" bg="bg-pink-50" onClick={() => navigate("/tech/services")} />
           <WebStatCard label="Missed" value={stats.missedJobs} icon={AlertCircle} color="text-slate-400" bg="bg-slate-50" />
 
-          <WebStatCard label="Today Revenue" value={stats.todayRevenue} icon={IndianRupee} color="text-brand" bg="bg-brand/5" />
-          <WebStatCard label="Reviews" value={stats.reviewsCount} icon={Star} color="text-purple-500" bg="bg-purple-50" />
+          <WebStatCard label="Today Revenue" value={stats.todayRevenue} icon={IndianRupee} color="text-brand" bg="bg-brand/5" onClick={() => navigate("/tech/earnings")} />
+          <WebStatCard label="Reviews" value={stats.reviewsCount} icon={Star} color="text-purple-500" bg="bg-purple-50" onClick={() => navigate("/tech/reviews")} />
           <WebStatCard label="Acceptance Rate" value={stats.acceptanceRate} icon={TrendingUp} color="text-teal-600" bg="bg-teal-50" />
         </div>
 
@@ -186,9 +186,12 @@ export function TechDashboardScreen() {
   );
 }
 
-function WebStatCard({ label, value, icon: Icon, color, bg }) {
+function WebStatCard({ label, value, icon: Icon, color, bg, onClick }) {
   return (
-    <div className={`flex flex-col items-center p-3 rounded-2xl ${bg} border border-brand/5 shadow-sm text-center min-h-[90px] justify-center`}>
+    <div 
+      onClick={onClick}
+      className={`flex flex-col items-center p-3 rounded-2xl ${bg} border border-brand/5 shadow-sm text-center min-h-[90px] justify-center active:scale-95 transition-transform cursor-pointer`}
+    >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${color} bg-white shadow-inner`}>
         <Icon size={16} />
       </div>

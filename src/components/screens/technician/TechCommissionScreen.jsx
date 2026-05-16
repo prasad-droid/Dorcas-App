@@ -17,11 +17,26 @@ export function TechCommissionScreen() {
   const [unpaidJobs, setUnpaidJobs] = useState([]);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [totalDue, setTotalDue] = useState(0);
+  const [totalCompletedJobs, setTotalCompletedJobs] = useState(0);
 
   useEffect(() => {
     fetchUnpaidCommissions();
     fetchPaymentHistory();
+    fetchProfileStats();
   }, []);
+
+  const fetchProfileStats = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+      const headers = { "Authorization": `Bearer ${token}`, "Role": role };
+      const res = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
+      const data = await res.json();
+      if (data.status) {
+        setTotalCompletedJobs(parseInt(data.data.stats?.completed_jobs || 0));
+      }
+    } catch (e) {}
+  };
 
   const fetchPaymentHistory = async () => {
     try {
@@ -53,8 +68,10 @@ export function TechCommissionScreen() {
       const data = await response.json();
 
       if (data.status) {
-        // Now using commission_status directly from API
-        const pending = data.data.filter(job => job.commission_status === 'pending');
+        const pending = data.data.filter(job => 
+          job.commission_status === 'pending' && 
+          parseFloat(job.commission_amount || 0) > 0 // Only show if commission is set by admin (> 0)
+        );
         setUnpaidJobs(pending);
         
         const total = pending.reduce((sum, job) => {
@@ -147,18 +164,33 @@ export function TechCommissionScreen() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
           <div className="relative z-10">
             <p className="text-white/60 text-[10px] font-black uppercase tracking-[2px] mb-1">Total Outstanding</p>
-            <div className="flex items-baseline gap-1.5 mb-6">
-              <span className="text-xl font-black">₹</span>
-              <span className="text-4xl font-black tracking-tighter">{totalDue.toFixed(2)}</span>
-            </div>
-            <button 
-              onClick={handlePayAll}
-              disabled={isProcessing || totalDue <= 0}
-              className="w-full bg-white text-brand py-4 rounded-2xl font-black text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {isProcessing ? "Processing..." : "Pay All Dues via CCAvenue"}
-              <CreditCard size={18} />
-            </button>
+            {totalCompletedJobs < 3 ? (
+              <div className="py-4">
+                <p className="text-sm font-bold opacity-80">Commission starts after your first 3 successful jobs.</p>
+                <div className="mt-2 h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white transition-all duration-500" 
+                    style={{ width: `${(totalCompletedJobs / 3) * 100}%` }}
+                  />
+                </div>
+                <p className="text-[10px] font-black uppercase mt-2 opacity-60">{totalCompletedJobs}/3 Jobs Completed</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-baseline gap-1.5 mb-6">
+                  <span className="text-xl font-black">₹</span>
+                  <span className="text-4xl font-black tracking-tighter">{totalDue.toFixed(2)}</span>
+                </div>
+                <button 
+                  onClick={handlePayAll}
+                  disabled={isProcessing || totalDue <= 0}
+                  className="w-full bg-white text-brand py-4 rounded-2xl font-black text-sm shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isProcessing ? "Processing..." : "Pay All Dues via CCAvenue"}
+                  <CreditCard size={18} />
+                </button>
+              </>
+            )}
           </div>
         </div>
         {/* Tabs */}

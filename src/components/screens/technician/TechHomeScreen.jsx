@@ -128,6 +128,12 @@ export function TechHomeScreen() {
         const requestsRes = await fetch(`${API_BASE}/bookings/get_available_jobs.php`, { headers });
         const requestsJson = await requestsRes.json();
 
+        // 4. Fetch Tech Services for Fake Lead
+        const servicesRes = await fetch(`${API_BASE}/vendors/get_vendor_services.php`, { headers });
+        const servicesJson = await servicesRes.json();
+        const techServices = servicesJson.status ? servicesJson.data : [];
+        const topService = techServices.length > 0 ? techServices[0] : null;
+
         if (requestsJson.status) {
           const mapped = requestsJson.data.map(job => {
             const dist = calculateDistance(
@@ -146,7 +152,24 @@ export function TechHomeScreen() {
 
           // Apply 2km filtering logic: if jobs exist < 2km, show only them.
           const within2km = mapped.filter(j => j.distanceValue && j.distanceValue <= 2);
-          setAvailableRequests(within2km.length > 0 ? within2km : mapped);
+          
+          // Inject Fake Lead for unverified users
+          const currentProfile = profileJson.data || profileData;
+          if (currentProfile?.kyc_status !== 'verified' || !currentProfile?.is_approved) {
+            const fakeLead = {
+              id: "fake_123",
+              service_name: topService ? topService.service_name : "Premium Cleaning Service",
+              service_price: topService ? topService.price : "2500",
+              city: "Near You",
+              distance: "0.5 km",
+              image: "https://www.dorcasaid.com/"+topService.image_path,
+              is_fake: true,
+              time: "Just now"
+            };
+            setAvailableRequests([fakeLead, ...(within2km.length > 0 ? within2km : mapped)]);
+          } else {
+            setAvailableRequests(within2km.length > 0 ? within2km : mapped);
+          }
         }
       } catch (error) {
       } finally {
@@ -200,48 +223,7 @@ export function TechHomeScreen() {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
-      {/* KYC Verification Modal Overlay (Moved to top of relative parent) */}
-      <AnimatePresence>
-        {(profileData?.kyc_status !== 'verified' || !profileData?.is_approved) && (
-          <div className="fixed inset-0 z-[999] flex items-center justify-center px-6 pointer-events-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 bg-brand/80 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="relative bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 w-full h-2 bg-amber-500" />
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50" />
-
-              <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center text-amber-500 mb-6 shadow-xl shadow-amber-500/10">
-                  <Shield size={40} strokeWidth={2.5} />
-                </div>
-
-                <h3 className="text-2xl font-black text-brand tracking-tight mb-3">{t('verification_required')}</h3>
-                <p className="text-[13px] font-medium text-brand/60 leading-relaxed mb-8">
-                  Your account is currently <span className="text-amber-600 font-bold">{t('pending_approval')}</span>. {t('kyc_desc')}
-                </p>
-
-                <div className="w-full space-y-3">
-                  <button
-                    onClick={() => navigate("/tech/verification")}
-                    className="w-full bg-brand text-white py-4 rounded-2xl font-black text-[15px] shadow-xl shadow-brand/20 active:scale-95 transition-transform flex items-center justify-center gap-2"
-                  >
-                    {t('start_kyc')} <Zap size={18} />
-                  </button>
-                  <p className="text-[10px] font-black text-brand/30 uppercase tracking-[0.1em]">Documents usually verified in 24h</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
+   
       {/* Brand Gradient Header */}
       <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] relative  shadow-2xl">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
@@ -269,10 +251,11 @@ export function TechHomeScreen() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate("/tech/referral")}
+              onClick={() => navigate("/tech/dashboard")}
               className="w-11 h-11 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 active:scale-95 transition-transform shadow-sm"
+              title="Dashboard"
             >
-              <Gift size={22} className="text-white" />
+              <LayoutGrid size={22} className="text-white" />
             </button>
             <button
               onClick={() => navigate("/notifications")}
@@ -280,18 +263,40 @@ export function TechHomeScreen() {
             >
               <Bell size={22} className="text-white" />
               <motion.span
-                animate={{ scale: [1, 1.4, 1] }}
+                animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute top-3.5 right-3.5 w-2.5 h-2.5 bg-red-500 border-2 border-brand rounded-full shadow-lg shadow-red-500/50"
+                className="absolute top-3 right-3 w-3 h-3 bg-red-500 border-2 border-white rounded-full shadow-lg"
               ></motion.span>
             </button>
           </div>
         </div>
       </div>
+      
+      {(profileData?.kyc_status !== 'verified' || !profileData?.is_approved) && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-5 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-4 items-center shadow-sm"
+        >
+          <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 shrink-0">
+            <Shield size={20} />
+          </div>
+          <div className="flex-1">
+            <h4 className="text-[12px] font-black text-brand leading-tight">Verification Pending</h4>
+            <p className="text-[10px] font-bold text-amber-600/70 uppercase mt-0.5">Complete KYC to accept real jobs</p>
+          </div>
+          <button
+            onClick={() => navigate("/tech/verification")}
+            className="bg-brand text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest active:scale-95 transition-transform"
+          >
+            Start KYC
+          </button>
+        </motion.div>
+      )}
 
       <div className="px-5 mt-8 space-y-6 relative">
-        {/* Dashboard Content (Visible behind modal but inactive) */}
-        <div className={(profileData?.kyc_status !== 'verified' || !profileData?.is_approved) ? "blur-[2px] pointer-events-none" : ""}>
+        {/* Dashboard Content (Visible) */}
+        <div>
           {/* Active Work / Request Card */}
           <AnimatePresence mode="wait">
             {activeJob ? (
@@ -353,10 +358,16 @@ export function TechHomeScreen() {
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button
-                    onClick={() => navigate(`/tech/job/${availableRequests[0].id}`)}
+                    onClick={() => {
+                      if (availableRequests[0].is_fake) {
+                        navigate("/tech/verification");
+                      } else {
+                        navigate(`/tech/job/${availableRequests[0].id}`);
+                      }
+                    }}
                     className="flex-1 bg-brand text-white py-2.5 rounded-lg font-bold text-sm shadow-sm active:scale-95 transition-transform"
                   >
-                    {t('view_accept')}
+                    {availableRequests[0].is_fake ? "Verify to Accept" : t('view_accept')}
                   </button>
                   <button className="px-5 bg-gray-50 text-brand/40 py-2.5 rounded-lg font-bold text-sm border border-black/[0.02] active:scale-95 transition-transform">
                     {t('ignore')}
@@ -475,7 +486,11 @@ export function TechHomeScreen() {
                   { label: "Completed Jobs", value: techStats?.activity?.total_completed || stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
                   { label: "Missed / Declined", value: techStats?.activity ? (parseInt(techStats.activity.total_declined) + parseInt(techStats.activity.total_expired)) : "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
                 ].map((stat, i) => (
-                  <div key={i} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm">
+                  <div 
+                    key={i} 
+                    onClick={() => stat.label === t('avg_rating') && navigate("/tech/reviews")}
+                    className={`bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm ${stat.label === t('avg_rating') ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
+                  >
                     <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
                       <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
                     </div>

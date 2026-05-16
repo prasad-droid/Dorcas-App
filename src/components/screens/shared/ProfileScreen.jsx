@@ -162,12 +162,20 @@ export function ProfileScreen() {
               {isTech ? `₹${profileData?.stats?.total_earnings || "0"}` : (profileData?.stats?.value2 || "0")}
             </p>
           </div>
-          <div className="flex-1">
+          <div 
+            className={`flex-1 ${isTech ? 'cursor-pointer active:opacity-60 transition-opacity' : ''}`}
+            onClick={() => isTech && navigate("/tech/reviews")}
+          >
             <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">
               {isTech ? "Rating" : "Status"}
             </p>
-            <p className="text-sm font-black text-brand mt-1">
-              {isTech ? (profileData?.stats?.rating || "0.0") : (profileData?.stats?.value3 || "REGULAR")}
+            <p className="text-sm font-black text-brand mt-1 flex items-center justify-center gap-1">
+              {isTech ? (
+                <>
+                  <Star size={12} fill="currentColor" className="text-amber-500" />
+                  {profileData?.stats?.rating || "0.0"}
+                </>
+              ) : (profileData?.stats?.value3 || "REGULAR")}
             </p>
           </div>
         </div>

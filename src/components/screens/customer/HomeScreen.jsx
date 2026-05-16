@@ -250,13 +250,17 @@ export function HomeScreen() {
               </h2>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+            
             <button
-              onClick={() => navigate("/rewards")}
-              className="bg-base/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-base/10"
+              onClick={() => navigate("/notifications")}
+              className="w-10 h-10 bg-base/20 backdrop-blur-md rounded-full flex items-center justify-center relative border border-base/10"
             >
-              <Sparkles size={14} className="text-amber-400" />
-              <span className="text-xs font-bold">{profileData?.stats?.value2 || 0}</span>
+              <Bell size={20} className="text-white" />
+              <motion.span
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full shadow-lg"
+              ></motion.span>
             </button>
             <button
               onClick={() => navigate("/profile")}
@@ -276,8 +280,8 @@ export function HomeScreen() {
         </div>
 
         {/* Search Bar */}
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <div className="relative mx-auto mt-5 w-80">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ">
             <Search size={18} className="text-brand/50" />
           </div>
           <input
@@ -319,7 +323,6 @@ export function HomeScreen() {
             )}
           </AnimatePresence>
         </div>
-      </div>
 
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-28 space-y-8 remove-scrollbar">
 
@@ -510,6 +513,6 @@ export function HomeScreen() {
           </div>
         </section>
       </div>
-    </motion.div>
+    </motion.div> 
   );
 }

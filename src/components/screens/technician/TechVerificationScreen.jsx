@@ -107,7 +107,7 @@ export function TechVerificationScreen() {
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Brand Gradient Header */}
-      <div className="brand-gradient pt-14 pb-5 px-5 rounded-b-[2.5rem] relative overflow-hidden shadow-lg">
+      <div className="brand-gradient pt-14 pb-5 px-5 rounded-b-[2.5rem] relative  shadow-lg">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10  flex items-center justify-between mb-2">
           <button
