@@ -11,6 +11,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 
 import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { CustomerHomeSkeleton } from "../../ui/SkeletonScreen";
 
 const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
 
@@ -76,9 +77,7 @@ export function HomeScreen() {
           const { latitude, longitude } = coordinates.coords;
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`);
           const data = await res.json();
-          const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Mumbai";
-          const area = data.address.suburb || data.address.neighbourhood || "";
-          setLocationName(area ? `${area}, ${city}` : city);
+          setLocationName(data.display_name || "Mumbai, Maharashtra, India");
         }
       } catch (error) {
         // console.error("Location error:", error);
@@ -221,12 +220,7 @@ export function HomeScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-base">
-        <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-sm font-bold text-brand/40 uppercase tracking-widest">{t('loading')}</p>
-      </div>
-    );
+    return <CustomerHomeSkeleton />;
   }
 
   return (
@@ -238,33 +232,12 @@ export function HomeScreen() {
     >
       {/* App Bar / Header */}
       <div className="brand-gradient px-5 pt-12 pb-5 sm:pt-6 rounded-b-[2rem] shadow-sm text-base">
-        <div className="flex justify-between items-center mb-5">
-          <div className="flex items-center gap-2">
-            <div className="bg-base/20 p-2 rounded-full">
-              <MapPin size={18} className="text-base" />
-            </div>
-            <div>
-              <p className="text-[10px] text-base/80 uppercase font-semibold tracking-wider">{t('current_location')}</p>
-              <h2 className="text-sm font-semibold flex items-center gap-1">
-                {locationName}
-              </h2>
-            </div>
-          </div>
-            
-            <button
-              onClick={() => navigate("/notifications")}
-              className="w-10 h-10 bg-base/20 backdrop-blur-md rounded-full flex items-center justify-center relative border border-base/10"
-            >
-              <Bell size={20} className="text-white" />
-              <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full shadow-lg"
-              ></motion.span>
-            </button>
+        <div className="flex justify-between items-start gap-3">
+          {/* Left/Center: Avatar + Name & Address */}
+          <div className="flex items-start gap-3 flex-1 min-w-0">
             <button
               onClick={() => navigate("/profile")}
-              className="w-10 h-10 rounded-full border-2 border-base/20 p-0.5 overflow-hidden active:scale-95 transition-transform flex items-center justify-center bg-base/10 shadow-sm"
+              className="w-12 h-12 rounded-full border-2 border-white/20 p-0.5 overflow-hidden active:scale-95 transition-transform flex items-center justify-center bg-white/10 shadow-sm shrink-0"
             >
               {localImage || profileData?.profile_img ? (
                 <img 
@@ -276,8 +249,39 @@ export function HomeScreen() {
                 <span className="text-[14px] font-black text-white">{getInitials(profileData?.name)}</span>
               )}
             </button>
+            <div className="text-white min-w-0 flex-1">
+              <p className="text-white/60 text-[9px] font-black tracking-widest uppercase mb-0.5">Welcome back,</p>
+              <h1 className="text-lg font-black text-white leading-tight truncate">{profileData?.name || "Customer"}</h1>
+              
+              {/* Address below the name horizontally, wrapped in two lines */}
+              <div className="flex items-start gap-1 mt-1 text-white/95">
+                <MapPin size={12} className="shrink-0 mt-0.5 text-white" />
+                <span 
+                  className="text-[10px] font-semibold leading-tight text-left"
+                  style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                >
+                  {locationName || "Mumbai, MH"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Stacked icon */}
+          <div className="flex flex-col items-center gap-2 shrink-0">
+            <button
+              onClick={() => navigate("/notifications")}
+              className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center relative backdrop-blur-md border border-white/20 active:scale-95 transition-transform shadow-sm"
+            >
+              <Bell size={18} className="text-white" />
+              <motion.span
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full shadow-lg"
+              ></motion.span>
+            </button>
           </div>
         </div>
+      </div>
 
         {/* Search Bar */}
         <div className="relative mx-auto mt-5 w-80">

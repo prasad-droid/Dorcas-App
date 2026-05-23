@@ -9,7 +9,6 @@ import {
   Mail,
   MapPin,
   Check,
-  Search,
 } from "lucide-react";
 import { Logo } from "../../ui/Logo";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -26,7 +25,7 @@ export const RegisterScreen = () => {
   const referralParam = searchParams.get("refer");
   const { setIsAuthenticated, authMode, setAuthMode } = useAuth();
   const { showToast } = useToast();
-  const [loadingLocation, setLoadingLocation] = useState("");
+  const [loadingLocation, setLoadingLocation] = useState(false);
   const [categories, setCategories] = useState([]);
   const [openCategory, setOpenCategory] = useState(null);
 
@@ -44,13 +43,16 @@ export const RegisterScreen = () => {
     state: "",
     area: "", 
     address: "",
-    landmark: "", // We'll keep this in state but remove from UI if requested, or just remove completely. User said "remove room no, building name inputs".
+    landmark: "",
     referralCode: referralParam || "",
     latitude: "",
     longitude: "",
     selectedServices: [],
     agreedToTerms: true,
   });
+
+  const isTech = authMode === "technician";
+  const fontClass = isTech ? "font-tech" : "font-sans";
 
   useEffect(() => {
     if (referralParam) {
@@ -88,6 +90,7 @@ export const RegisterScreen = () => {
     };
     checkLocation();
   }, []);
+
   // Fetch categories for services
   useEffect(() => {
     fetch(`${API_BASE}/services/get_services.php`)
@@ -157,7 +160,7 @@ export const RegisterScreen = () => {
           pincode: addr.postcode || prev.pincode,
           area: addr.suburb || addr.neighbourhood || addr.city_district || addr.subdistrict || prev.area,
           address: data.display_name || prev.address,
-          landmark: addr.house_number || addr.building || prev.landmark, // Try to auto-fill building/house number
+          landmark: addr.house_number || addr.building || prev.landmark,
         }));
         
         if (isManual) showToast("Location updated successfully", "success");
@@ -172,7 +175,6 @@ export const RegisterScreen = () => {
 
   const handleNext = async (e) => {
     if (e) e.preventDefault();
-    console.log("Here", authMode);
     if (step === 1) {
       // Validate phone number and send OTP
       if (!formData.phoneNumber.trim()) {
@@ -209,7 +211,6 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        console.log(data);
 
         if (data.status) {
           showToast("OTP sent successfully!", "success");
@@ -246,7 +247,6 @@ export const RegisterScreen = () => {
             }, 3000);
           }
         } else {
-          
           showToast(data.message || "Failed to send OTP", "error");
         }
       } catch (error) {
@@ -273,7 +273,6 @@ export const RegisterScreen = () => {
         );
 
         const data = await response.json();
-        console.log(data);
         if (data.status) {
           localStorage.setItem("token", data.data.token);
           localStorage.setItem("role", authMode);
@@ -283,7 +282,6 @@ export const RegisterScreen = () => {
           showToast(data.message || "Invalid OTP", "error");
         }
       } catch (error) {
-        // console.error("Error sending OTP:", error);
         showToast("Error verifying OTP. Please try again.", "error");
       }
     }
@@ -307,7 +305,6 @@ export const RegisterScreen = () => {
           );
 
           const data = await response.json();
-          console.log(data);
 
           if (data.status) {
             handleFinalSubmit();
@@ -315,7 +312,6 @@ export const RegisterScreen = () => {
             showToast(data.message || "Registration failed", "error");
           }
         } catch (error) {
-          // console.error("Error : ", error.toString());
           showToast("Something went wrong", "error");
         }
       }
@@ -332,13 +328,12 @@ export const RegisterScreen = () => {
             },
             body: JSON.stringify({
               ...formData,
-              services: formData.selectedServices, // 👈 important
+              services: formData.selectedServices,
             }),
           },
         );
 
         const data = await response.json();
-        console.log("Step 4 Response:", data);
 
         if (data.status) {
           handleFinalSubmit();
@@ -346,7 +341,6 @@ export const RegisterScreen = () => {
           showToast(data.message || "Failed to complete profile", "error");
         }
       } catch (error) {
-        // console.error("Step 4 Error:", error);
         showToast("Something went wrong", "error");
       }
     }
@@ -377,14 +371,14 @@ export const RegisterScreen = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-4 overflow-y-auto max-h-[50dvh] remove-scrollbar pr-0.5"
           >
             <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
+              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Full Name
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
                   <User size={18} />
                 </div>
                 <input
@@ -393,45 +387,49 @@ export const RegisterScreen = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="John Doe"
-                  className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
+                  placeholder="Enter your full name"
+                  className={`w-full bg-white border rounded-2xl py-3 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
+              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Mobile Number
               </label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
+              <div className="relative group flex items-center">
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
                   <Phone size={18} />
                 </div>
+                <span className={`absolute left-11 text-sm font-semibold select-none ${isTech ? "text-emerald-700/60" : "text-brand/60"}`}>
+                  +91
+                </span>
                 <input
                   type="tel"
                   value={formData.phoneNumber}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phoneNumber: e.target.value })
-                  }
-                  placeholder="+91 00000 00000"
-                  className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    setFormData({ ...formData, phoneNumber: val });
+                  }}
+                  placeholder="00000 00000"
+                  className={`w-full bg-white border rounded-2xl py-3 pl-20 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
             </div>
 
             {/* Terms and Conditions Checkbox */}
-            <div className="flex items-start gap-3 px-1 pt-2">
+            <div className="flex items-start gap-3 px-1 pt-1">
               <input
                 type="checkbox"
                 id="reg-terms"
                 checked={formData.agreedToTerms}
                 onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
-                className="mt-1 w-4 h-4 rounded border-brand/20 text-brand focus:ring-brand/20"
+                className={`mt-1 w-4 h-4 rounded border-brand/20 focus:ring-brand/20 ${isTech ? "text-emerald-600 focus:ring-emerald-600/20 border-emerald-600/20" : "text-brand"}`}
               />
-              <label htmlFor="reg-terms" className="text-[12px] font-medium text-brand/60 leading-snug">
-                I agree to the <a href="https://dorcasaid.com/terms-condition.php" className="text-brand font-bold hover:underline">Terms of Service</a> and <a href="https://dorcasaid.com/privacy-policy.php" className="text-brand font-bold hover:underline">Privacy Policy</a>
+              <label htmlFor="reg-terms" className={`text-[11px] font-semibold leading-snug ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
+                I agree to the <a href="https://dorcasaid.com/terms-condition.php" className={`font-black hover:underline ${isTech ? "text-emerald-600" : "text-brand"}`}>Terms of Service</a> and <a href="https://dorcasaid.com/privacy-policy.php" className={`font-black hover:underline ${isTech ? "text-emerald-600" : "text-brand"}`}>Privacy Policy</a>
               </label>
             </div>
           </motion.div>
@@ -441,14 +439,14 @@ export const RegisterScreen = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
+            className="space-y-4 overflow-y-auto max-h-[50dvh] remove-scrollbar pr-0.5"
           >
             <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
+              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Verification Code
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
                   <Shield size={18} />
                 </div>
                 <input
@@ -458,13 +456,13 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, otp: e.target.value })
                   }
                   placeholder="Enter 6-digit OTP"
-                  className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
+                  className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   maxLength={6}
                   required
                 />
               </div>
-              <p className="text-[11px] font-medium text-brand/50 mt-3 px-1">
-                Code sent to {formData.phoneNumber}
+              <p className={`text-[10px] font-bold mt-2 px-1 ${isTech ? "text-emerald-800/50" : "text-brand/50"}`}>
+                Code sent to +91 {formData.phoneNumber}
               </p>
             </div>
           </motion.div>
@@ -474,14 +472,14 @@ export const RegisterScreen = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-3 overflow-y-auto max-h-[52dvh] remove-scrollbar pr-0.5 pb-2"
           >
             <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
+              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Email Address
               </label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
                   <Mail size={18} />
                 </div>
                 <input
@@ -491,124 +489,122 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="john@example.com"
-                  className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
+                  className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                 />
               </div>
             </div>
 
-            
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                    City
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
-                      <MapPin size={18} />
-                    </div>
-                    <input
-                      type="text"
-                      value={formData.city}
-                      onChange={(e) =>
-                        setFormData({ ...formData, city: e.target.value })
-                      }
-                      placeholder="Mumbai"
-                      className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
-                      required
-                    />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+                  City
+                </label>
+                <div className="relative group">
+                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
+                    <MapPin size={18} />
                   </div>
-                </div>
-                <div>
-                  <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                    State
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brand/30 group-focus-within:text-brand transition-colors">
-                      <MapPin size={18} />
-                    </div>
-                    <input
-                      type="text"
-                      value={formData.state}
-                      onChange={(e) =>
-                        setFormData({ ...formData, state: e.target.value })
-                      }
-                      placeholder="MH"
-                      className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 pl-12 pr-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all placeholder:text-brand/20 shadow-sm"
-                      required
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
+                    placeholder="City"
+                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    required
+                  />
                 </div>
               </div>
+              <div>
+                <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+                  State
+                </label>
+                <div className="relative group">
+                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
+                    <MapPin size={18} />
+                  </div>
+                  <input
+                    type="text"
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
+                    placeholder="State"
+                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
             {loadingLocation && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-brand/5 rounded-xl border border-brand/10">
-                <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin" />
-                <span className="text-[10px] font-bold text-brand/60 tracking-wider uppercase">Detecting Location...</span>
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${isTech ? "bg-emerald-50 border-emerald-100" : "bg-brand/5 border-brand/10"}`}>
+                <div className={`w-3 h-3 border-2 border-t-transparent rounded-full animate-spin ${isTech ? "border-emerald-600" : "border-brand"}`} />
+                <span className={`text-[9px] font-bold tracking-wider uppercase ${isTech ? "text-emerald-700/80" : "text-brand/60"}`}>Detecting Location...</span>
               </div>
             )}
+
             <div>
-              <div className="flex items-center justify-between mb-2 px-1">
-                <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em]">
+              <div className="flex items-center justify-between mb-1 px-1">
+                <label className={`block text-[10px] font-black uppercase tracking-[0.1em] ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                   Full Address
                 </label>
                 <button 
                   type="button"
                   onClick={() => getLocation(true)}
-                  className="flex items-center gap-1.5 text-brand hover:text-brand/80 transition-colors"
+                  className={`flex items-center gap-1.5 transition-colors ${isTech ? "text-emerald-600 hover:text-emerald-700" : "text-brand hover:text-brand/80"}`}
                 >
-                  <MapPin size={12} className="text-brand" />
-                  <span className="text-[10px] font-black uppercase tracking-wider">Detect Location</span>
+                  <MapPin size={12} className={isTech ? "text-emerald-600" : "text-brand"} />
+                  <span className="text-[9px] font-black uppercase tracking-wider">Detect</span>
                 </button>
               </div>
               <div className="relative group">
-                <div className="grid grid-cols-1 gap-4">
-                </div>
-                <div className="grid grid-cols-1 gap-4 mt-4">
-                 
-                </div>
-                <div className="grid grid-cols-1 gap-4 mt-4">
-                  <textarea
-                    className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 px-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all shadow-sm"
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
-                  ></textarea>
-                </div>
+                <textarea
+                  className={`w-full bg-white border rounded-2xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  placeholder="Street address, building name, flat number, etc."
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  rows={2}
+                  required
+                ></textarea>
               </div>
             </div>
 
-            <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase tracking-[0.1em] mb-2 px-1">
-                Pincode
-              </label>
-              <div className="relative group">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+                  Pincode
+                </label>
                 <input
-                  className="w-full bg-white border border-brand/10 text-brand rounded-2xl py-4 px-4 text-[15px] font-semibold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/40 transition-all shadow-sm"
                   type="text"
-                  placeholder="Pincode"
+                  placeholder="6-digit Pincode"
+                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   value={formData.pincode}
                   onChange={(e) =>
                     setFormData({ ...formData, pincode: e.target.value })
                   }
+                  required
                 />
               </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-black text-brand/40 uppercase mb-2 px-1">
-                Referral Code (Optional)
-              </label>
-              <input
-                type="text"
-                value={formData.referralCode}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    referralCode: e.target.value.toUpperCase(),
-                  })
-                }
-                placeholder="Enter referral code"
-                className="w-full bg-white border border-brand/10 rounded-2xl py-4 px-4 text-[15px] font-semibold"
-              />
+              <div>
+                <label className={`block text-[10px] font-black uppercase mb-1 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+                  Referral Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.referralCode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      referralCode: e.target.value.toUpperCase(),
+                    })
+                  }
+                  placeholder="Code (Optional)"
+                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                />
+              </div>
             </div>
           </motion.div>
         );
@@ -617,23 +613,23 @@ export const RegisterScreen = () => {
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
+            className="space-y-4 overflow-y-auto max-h-[50dvh] remove-scrollbar pr-0.5"
           >
-            <div className="bg-brand/5 rounded-3xl p-6 border border-brand/10">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-[11px] font-black text-brand uppercase tracking-[0.1em]">
+            <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.1em]">
                   Available Services
                 </label>
-                <span className="text-[10px] font-black text-white bg-brand px-3 py-1 rounded-full shadow-lg shadow-brand/20">
+                <span className="text-[9px] font-black text-white bg-emerald-600 px-2 py-0.5 rounded-full shadow-lg">
                   {formData.selectedServices.length} Selected
                 </span>
               </div>
-              <p className="text-[12px] font-medium text-brand/60 leading-snug">
+              <p className="text-[11px] font-semibold text-emerald-800/60 leading-snug">
                 Choose the categories and specific services you are qualified to provide.
               </p>
             </div>
 
-            <div className="space-y-4 pb-12">
+            <div className="space-y-3 pb-4">
               {categories.map((category) => {
                 const isOpen = openCategory === category.id;
                 const selectedCount = category.services.filter(s => formData.selectedServices.includes(s.id)).length;
@@ -644,35 +640,35 @@ export const RegisterScreen = () => {
                     <button
                       type="button"
                       onClick={() => setOpenCategory(isOpen ? null : category.id)}
-                      className={`w-full p-5 rounded-2xl flex justify-between items-center transition-all border ${
+                      className={`w-full p-4 rounded-2xl flex justify-between items-center transition-all border ${
                         isOpen 
-                          ? "bg-white border-brand shadow-xl shadow-brand/5 ring-4 ring-brand/5" 
-                          : "bg-white border-brand/10 hover:border-brand/30"
+                          ? "bg-white border-emerald-600 shadow-lg shadow-emerald-600/5 ring-4 ring-emerald-500/5" 
+                          : "bg-white border-emerald-600/10 hover:border-emerald-600/30"
                       }`}
                     >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                          isOpen ? "bg-brand text-white" : "bg-brand/5 text-brand"
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                          isOpen ? "bg-emerald-600 text-white animate-pulse" : "bg-emerald-50 text-emerald-600"
                         }`}>
-                          <img src={`https://www.dorcasaid.com/admin/${category.category_img}`} alt="" />
+                          <img src={`https://www.dorcasaid.com/admin/${category.category_img}`} alt="" className="w-5 h-5 object-contain" />
                         </div>
                         <div className="text-left">
-                          <span className={`block font-black text-sm tracking-tight transition-colors ${
-                            isOpen ? "text-brand" : "text-brand/80"
+                          <span className={`block font-black text-xs tracking-tight transition-colors ${
+                            isOpen ? "text-emerald-600" : "text-emerald-800/80"
                           }`}>
                             {category.category_name}
                           </span>
                           {selectedCount > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-600 block">
-                              {selectedCount} services selected
+                            <span className="text-[9px] font-bold text-emerald-600 block">
+                              {selectedCount} selected
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform duration-300 ${
-                        isOpen ? "bg-brand/10 text-brand rotate-180" : "bg-brand/5 text-brand/40"
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${
+                        isOpen ? "bg-emerald-50 text-emerald-600 rotate-180" : "bg-emerald-50 text-emerald-600/40"
                       }`}>
-                        <ChevronLeft size={16} className="-rotate-90" />
+                        <ChevronLeft size={12} className="-rotate-90" />
                       </div>
                     </button>
 
@@ -681,11 +677,11 @@ export const RegisterScreen = () => {
                       {isOpen && (
                         <motion.div
                           initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                          animate={{ opacity: 1, height: "auto", marginTop: 8 }}
                           exit={{ opacity: 0, height: 0, marginTop: 0 }}
                           className="overflow-hidden"
                         >
-                          <div className="grid grid-cols-2 gap-3 px-1">
+                          <div className="grid grid-cols-2 gap-2 px-0.5">
                             {category.services.map((service) => {
                               const isSelected = formData.selectedServices.includes(service.id);
 
@@ -695,24 +691,24 @@ export const RegisterScreen = () => {
                                   type="button"
                                   key={service.id}
                                   onClick={() => toggleService(service.id)}
-                                  className={`p-4 rounded-xl border text-xs font-bold transition-all flex flex-col gap-3 relative overflow-hidden text-left ${
+                                  className={`p-3 rounded-xl border text-[10px] font-bold transition-all flex flex-col gap-2 relative overflow-hidden text-left ${
                                     isSelected 
-                                      ? "bg-brand border-brand text-white shadow-lg shadow-brand/20" 
-                                      : "bg-white border-brand/5 text-brand/60 hover:border-brand/20"
+                                      ? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+                                      : "bg-white border-emerald-600/10 text-emerald-800/60 hover:border-emerald-600/25"
                                   }`}
                                 >
                                   {isSelected && (
                                     <motion.div 
                                       initial={{ scale: 0 }}
                                       animate={{ scale: 1 }}
-                                      className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-bl-xl flex items-center justify-center"
+                                      className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-bl-lg flex items-center justify-center"
                                     >
-                                      <Check size={12} className="text-brand" strokeWidth={4} />
+                                      <Check size={9} className="text-emerald-600" strokeWidth={4} />
                                     </motion.div>
                                   )}
                                   <span className="relative z-10">{service.service_name}</span>
-                                  <span className={`text-[10px] font-medium opacity-60 ${isSelected ? "text-white" : "text-brand/40"}`}>
-                                    Professional Service
+                                  <span className={`text-[8px] font-medium opacity-60 ${isSelected ? "text-white" : "text-emerald-800/45"}`}>
+                                    Professional
                                   </span>
                                 </motion.button>
                               );
@@ -733,95 +729,96 @@ export const RegisterScreen = () => {
   };
 
   return (
-    <div className="h-full w-full bg-base overflow-y-auto relative scroll-smooth flex flex-col">
-      <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-brand/10 to-transparent -z-10" />
+    <div className={`h-[100dvh] w-full bg-base overflow-hidden relative flex flex-col justify-between ${fontClass}`}>
+      <div className={`absolute top-0 left-0 right-0 h-64 bg-gradient-to-b ${isTech ? "from-emerald-500/10" : "from-brand/10"} to-transparent -z-10`} />
 
-      <div className="px-6 pt-12 pb-6 flex items-center justify-between">
+      {/* App Bar / Header */}
+      <div className="px-6 pt-12 pb-2 flex items-center justify-between shrink-0">
         <button
           onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}
-          className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-brand"
+          className={`w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center ${isTech ? "text-emerald-600" : "text-brand"}`}
         >
           <ChevronLeft size={24} />
         </button>
         <div className="flex items-center gap-2">
-          <Logo className="w-8 h-8 text-brand" />
-          <span className="font-black text-xl tracking-tight text-brand">
+          <Logo className={`w-8 h-8 ${isTech ? "text-emerald-600" : "text-brand"}`} />
+          <span className={`font-black text-xl tracking-tight ${isTech ? "text-emerald-600" : "text-brand"}`}>
             Dorcasaid
           </span>
         </div>
         <div className="w-10" />
       </div>
 
-      <div className="px-6 pb-24 pt-4">
-        <div className="mt-4 mb-8">
-          <h1 className="text-3xl font-black text-brand tracking-normal">
-            {step === 4 ? "Specialties" : "Create Account"}
-          </h1>
-          <p className="text-brand/60 font-medium mt-1">
-            {step === 1 && "Join the community of trusted services"}
-            {step === 2 && "Verification code sent to your phone"}
-            {step === 3 && "Tell us a bit about yourself"}
-            {step === 4 && "Select all services you can provide"}
-          </p>
+      {/* Main Content Form */}
+      <div className="px-6 pb-6 pt-2 flex-1 flex flex-col justify-between overflow-hidden">
+        <div>
+          <div className="mt-1 mb-4">
+            <h1 className={`text-2xl font-black tracking-normal ${isTech ? "text-emerald-600" : "text-brand"}`}>
+              {step === 4 ? "Specialties" : "Create Account"}
+            </h1>
+            <p className={`text-xs font-semibold mt-0.5 ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
+              {step === 1 && "Join the community of trusted services"}
+              {step === 2 && `Verification code sent to +91 ${formData.phoneNumber}`}
+              {step === 3 && "Tell us a bit about yourself"}
+              {step === 4 && "Select all services you can provide"}
+            </p>
+          </div>
+
+          {step === 1 && (
+            <div className={`flex p-1 rounded-2xl mb-5 border ${isTech ? "bg-emerald-50 border-emerald-100" : "bg-brand/5 border-brand/5"}`}>
+              <button
+                onClick={() => setAuthMode("customer")}
+                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === "customer" ? "bg-white text-brand shadow-md shadow-brand/10" : (isTech ? "text-emerald-600/40" : "text-brand/40")}`}
+              >
+                Customer
+              </button>
+              <button
+                onClick={() => setAuthMode("technician")}
+                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === "technician" ? "bg-white text-emerald-600 shadow-md shadow-emerald-600/10" : "text-brand/40"}`}
+              >
+                Technician
+              </button>
+            </div>
+          )}
+
+          <form onSubmit={handleNext} className="flex-1 flex flex-col justify-between overflow-hidden">
+            {renderStep()}
+
+            <div className="pt-4 shrink-0">
+              <button
+                type="submit"
+                disabled={step === 4 && formData.selectedServices.length === 0}
+                className={`w-full py-3.5 rounded-2xl shadow-lg transition-all flex justify-center items-center gap-2.5 text-sm font-black tracking-normal ${isTech
+                    ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
+                    : "bg-brand shadow-brand/20 text-white hover:-translate-y-0.5"
+                  }`}
+              >
+                {step === 1
+                  ? "Send Verification"
+                  : step === 4
+                    ? "Complete Profile & Enter Dashboard"
+                    : step === 3 && authMode === "customer"
+                      ? "Create Account"
+                      : "Continue"}
+                {isTech ? <Zap size={16} /> : <Shield size={16} />}
+              </button>
+            </div>
+          </form>
         </div>
 
-        {step === 1 && (
-          <div className="flex bg-brand/5 p-1 rounded-2xl mb-8 border border-brand/5">
-            <button
-              onClick={() => setAuthMode("customer")}
-              className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${authMode === "customer" ? "bg-white text-brand shadow-md shadow-brand/10" : "text-brand/40"}`}
-            >
-              Customer
-            </button>
-            <button
-              onClick={() => setAuthMode("technician")}
-              className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all ${authMode === "technician" ? "bg-white text-brand shadow-md shadow-brand/10" : "text-brand/40"}`}
-            >
-              Technician
-            </button>
-          </div>
-        )}
-
-        <form onSubmit={handleNext} className="space-y-5 pb-10">
-          {renderStep()}
-
-          <div className="pt-4">
-            <button
-              type="submit"
-              disabled={step === 4 && formData.selectedServices.length === 0}
-              className={`w-full py-4 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 text-[15px] font-black tracking-normal ${authMode === "technician"
-                  ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
-                  : "bg-brand shadow-brand/20 text-white hover:shadow-2xl hover:shadow-brand/30 hover:-translate-y-0.5"
-                }`}
-            >
-              {step === 1
-                ? "Send Verification"
-                : step === 4
-                  ? "Complete Profile & Enter Dashboard"
-                  : step === 3 && authMode === "customer"
-                    ? "Create Account"
-                    : "Continue"}
-              {authMode === "technician" ? (
-                <Zap size={18} />
-              ) : (
-                <Shield size={18} />
-              )}
-            </button>
-          </div>
-        </form>
-
-        <div className="mt-auto pt-10 text-center">
-          <p className="text-brand/40 text-xs font-medium">
+        <div className="text-center pt-4 shrink-0">
+          <p className={`text-xs font-semibold ${isTech ? "text-emerald-800/40" : "text-brand/40"}`}>
             Already have an account?{" "}
             <button
               onClick={() => navigate("/login")}
-              className="text-brand font-black hover:underline"
+              className={`font-black hover:underline ${isTech ? "text-emerald-600" : "text-brand"}`}
             >
               Sign In
             </button>
           </p>
         </div>
       </div>
+
       {/* Location Permission Modal */}
       <AnimatePresence>
         {showLocationModal && (
@@ -830,23 +827,23 @@ export const RegisterScreen = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-brand/40 backdrop-blur-sm"
+              className={`absolute inset-0 backdrop-blur-sm ${isTech ? "bg-emerald-950/40" : "bg-brand/40"}`}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative bg-white w-full max-sm rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+              className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-full -mr-16 -mt-16" />
+              <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 ${isTech ? "bg-emerald-600/5" : "bg-brand/5"}`} />
               
               <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-20 h-20 bg-brand rounded-3xl flex items-center justify-center text-white mb-6 shadow-xl shadow-brand/20">
+                <div className={`w-20 h-20 rounded-3xl flex items-center justify-center text-white mb-6 shadow-xl ${isTech ? "bg-emerald-600 shadow-emerald-600/20" : "bg-brand shadow-brand/20"}`}>
                   <MapPin size={40} />
                 </div>
                 
-                <h3 className="text-2xl font-black text-brand tracking-tight mb-3">Location Access</h3>
-                <p className="text-sm font-medium text-brand/60 leading-relaxed mb-8">
+                <h3 className={`text-2xl font-black tracking-tight mb-3 ${isTech ? "text-emerald-600" : "text-brand"}`}>Location Access</h3>
+                <p className={`text-sm font-medium leading-relaxed mb-8 ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
                   To provide you with the best experience and find nearby services, we need access to your location.
                 </p>
                 
@@ -855,14 +852,14 @@ export const RegisterScreen = () => {
                     getLocation();
                     setShowLocationModal(false);
                   }}
-                  className="w-full bg-brand text-white py-4 rounded-2xl font-black text-[15px] shadow-lg shadow-brand/20 active:scale-95 transition-transform"
+                  className={`w-full py-4 rounded-2xl font-black text-[15px] shadow-lg active:scale-95 transition-transform ${isTech ? "bg-emerald-600 text-white shadow-emerald-600/20" : "bg-brand text-white shadow-brand/20"}`}
                 >
                   Allow Access
                 </button>
                 
                 <button
                   onClick={() => setShowLocationModal(false)}
-                  className="mt-4 text-[11px] font-black text-brand/30 uppercase tracking-[0.1em] hover:text-brand transition-colors"
+                  className={`mt-4 text-[11px] font-black uppercase tracking-[0.1em] transition-colors ${isTech ? "text-emerald-600/40 hover:text-emerald-600" : "text-brand/30 hover:text-brand"}`}
                 >
                   I'll do it later
                 </button>

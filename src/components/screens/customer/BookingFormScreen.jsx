@@ -9,7 +9,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { ScratchCard } from "../../ui/ScratchCard";
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
-
+import { FormSkeleton } from '../../ui/SkeletonScreen'
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
 import { MapPicker } from "../../ui/MapPicker";
@@ -144,14 +144,14 @@ export function BookingFormScreen() {
   const handleMapLocationChange = async (lat, lng) => {
     try {
       setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
-      
+
       // Reverse geocode to update address/city
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
       );
       const data = await res.json();
       const addr = data.address || {};
-      
+
       setFormData(prev => ({
         ...prev,
         city: addr.city || addr.town || addr.village || prev.city,
@@ -201,7 +201,7 @@ export function BookingFormScreen() {
 
       const data = await response.json();
       console.log("Response Data:", data);
-      
+
       if (data.status) {
         setGeneratedCard({ ...data.data.scratch_card, booking_id: data.data.booking_id });
         const newBooking = {
@@ -230,12 +230,7 @@ export function BookingFormScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-        <p className="ml-3 font-bold text-brand">{t('loading')}</p>
-      </div>
-    );
+    return <FormSkeleton />;
   }
 
   if (step === "success") {
@@ -274,7 +269,7 @@ export function BookingFormScreen() {
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-brand/5 mb-8 mt-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center text-brand">
-              <Shield size={28} /> 
+              <Shield size={28} />
             </div>
             <div>
               <h2 className="text-xl font-black text-brand leading-tight">{serviceName}</h2>
@@ -306,10 +301,10 @@ export function BookingFormScreen() {
             </div>
 
             <div className="mt-2 mb-4">
-              <MapPicker 
-                lat={formData.latitude} 
-                lng={formData.longitude} 
-                onLocationChange={handleMapLocationChange} 
+              <MapPicker
+                lat={formData.latitude}
+                lng={formData.longitude}
+                onLocationChange={handleMapLocationChange}
               />
             </div>
 

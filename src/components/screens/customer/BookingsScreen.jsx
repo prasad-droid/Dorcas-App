@@ -29,7 +29,7 @@ export function BookingsScreen() {
         setIsLoading(true);
         const res = await fetch(`${API_BASE}/categories/get_categories_with_services.php`);
         const data = await res.json();
-        
+
         if (data.status) {
           const apiCategories = ["All", ...data.data.map(cat => cat.category_name)];
           setCategories(apiCategories);
@@ -42,7 +42,7 @@ export function BookingsScreen() {
                 name: s.service_name,
                 price: `₹${parseFloat(s.amount).toFixed(0)}`,
                 desc: stripHtml(s.description) || "Professional service at your doorstep",
-                image: "https://www.dorcasaid.com/"+s.image ,
+                image: "https://www.dorcasaid.com/" + s.image,
                 categoryName: cat.category_name
               });
             });
@@ -67,8 +67,8 @@ export function BookingsScreen() {
   const filteredServices = allServices.filter((svc) => {
     const price = parseInt(svc.price.replace(/[^0-9]/g, "")) || 0;
     const matchesCategory = activeCategory === "All" || svc.categoryName === activeCategory;
-    const matchesSearch = svc.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          svc.desc.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = svc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      svc.desc.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPrice = price >= priceRange[0] && price <= priceRange[1];
     return matchesCategory && matchesSearch && matchesPrice;
   }).sort((a, b) => {
@@ -82,7 +82,7 @@ export function BookingsScreen() {
   });
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -94,7 +94,7 @@ export function BookingsScreen() {
       </div>
 
       <div className="flex-1 overflow-y-auto w-full remove-scrollbar pb-28 pt-2">
-        
+
         {/* Search */}
         <div className="px-5 space-y-4 mb-6">
           <div className="flex gap-3">
@@ -110,7 +110,7 @@ export function BookingsScreen() {
                 placeholder={t('search_placeholder')}
               />
             </div>
-            <button 
+            <button
               onClick={() => setShowFilters(true)}
               className={`w-12 h-12 bg-base shadow-[0_2px_12px_rgba(13,110,253,0.04)] border rounded-2xl flex items-center justify-center text-brand shrink-0 transition-colors relative ${sortBy !== 'Popularity' || priceRange[1] < 5000 ? 'border-brand bg-brand/5' : 'border-brand/10'}`}
             >
@@ -124,14 +124,13 @@ export function BookingsScreen() {
           {/* Filter Chips */}
           <div className="flex gap-2 overflow-x-auto remove-scrollbar pb-1">
             {categories.map((cat) => (
-              <button 
+              <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-[13px] font-bold transition-all shadow-[0_2px_8px_rgba(13,110,253,0.06)] ${
-                  activeCategory === cat 
-                    ? 'bg-brand text-base border border-brand' 
-                    : 'bg-base text-brand border border-brand/5 hover:bg-brand/5'
-                }`}
+                className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-[13px] font-bold transition-all shadow-[0_2px_8px_rgba(13,110,253,0.06)] ${activeCategory === cat
+                  ? 'bg-brand text-base border border-brand'
+                  : 'bg-base text-brand border border-brand/5 hover:bg-brand/5'
+                  }`}
               >
                 {cat === 'All' ? t('all') : cat}
               </button>
@@ -149,7 +148,7 @@ export function BookingsScreen() {
           ) : filteredServices.length > 0 ? (
             filteredServices.map((svc) => (
               <div key={svc.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
-                
+
                 {/* Details */}
                 <div className="flex gap-3 items-start">
                   <img src={svc.image} alt={svc.name} className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0 border border-brand/5 bg-brand/5" />
@@ -158,7 +157,7 @@ export function BookingsScreen() {
                       <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">{svc.name}</h3>
                       <span className="bg-brand/10 text-brand px-2 py-1 rounded-lg text-[9px] uppercase tracking-wider font-bold shrink-0 line-clamp-1 max-w-[80px] text-center">{svc.categoryName}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-1.5 mb-2">
                       <Star size={14} className="fill-brand text-brand" />
                       <span className="text-[12px] font-bold text-brand/80">4.8 <span className="font-medium opacity-60">(1.2k)</span></span>
@@ -192,14 +191,14 @@ export function BookingsScreen() {
       {/* Filter Modal */}
       <AnimatePresence>
         {showFilters && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="absolute inset-0 z-[200] bg-brand/40 backdrop-blur-sm flex items-end justify-center"
             onClick={() => setShowFilters(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -207,12 +206,12 @@ export function BookingsScreen() {
               className="bg-white w-full rounded-t-[3rem] p-8 pb-10 shadow-2xl space-y-8 relative z-[201]"
               onClick={e => e.stopPropagation()}
             >
-            
+
               <div className="w-12 h-1.5 bg-brand/10 rounded-full mx-auto mb-8"></div>
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-black text-brand">{t('filter_sort')}</h3>
                 <button onClick={() => setShowFilters(false)} className="w-10 h-10 bg-brand/5 rounded-full flex items-center justify-center text-brand">
-                   <X size={20} />
+                  <X size={20} />
                 </button>
               </div>
 
@@ -220,7 +219,7 @@ export function BookingsScreen() {
                 <h4 className="text-xs font-black text-brand/40 uppercase tracking-widest">Sort By</h4>
                 <div className="flex flex-wrap gap-2">
                   {["Popularity", "Price: Low to High", "Price: High to Low"].map(opt => (
-                    <button 
+                    <button
                       key={opt}
                       onClick={() => setSortBy(opt)}
                       className={`px-5 py-3 rounded-2xl text-[13px] font-bold transition-all ${sortBy === opt ? 'bg-brand text-white shadow-lg' : 'bg-brand/5 text-brand'}`}
@@ -236,10 +235,10 @@ export function BookingsScreen() {
                   <h4 className="text-xs font-black text-brand/40 uppercase tracking-widest">Price Range</h4>
                   <span className="text-xs font-bold text-brand">₹{priceRange[0]} - ₹{priceRange[1]}</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="5000" 
+                <input
+                  type="range"
+                  min="0"
+                  max="5000"
                   step="100"
                   value={priceRange[1]}
                   onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
@@ -247,7 +246,7 @@ export function BookingsScreen() {
                 />
               </div>
 
-              <button 
+              <button
                 onClick={() => setShowFilters(false)}
                 className="w-full bg-brand text-white py-4 rounded-[1.5rem] font-black text-sm shadow-xl shadow-brand/20 active:scale-[0.98] transition-transform"
               >

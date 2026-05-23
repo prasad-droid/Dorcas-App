@@ -7,6 +7,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE, APP_DOMAIN } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { DashboardSkeleton } from "../../ui/SkeletonScreen";
 
 export function DashboardScreen() {
   const navigate = useNavigate();
@@ -47,11 +48,7 @@ export function DashboardScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const bookingsCount = Number(profileData?.stats?.value1) || 0;
@@ -65,7 +62,7 @@ export function DashboardScreen() {
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Header */}
-      <div className="brand-gradient pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
+      <div className="brand-gradient pt-14 pb-24 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col shrink-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between">
           <button

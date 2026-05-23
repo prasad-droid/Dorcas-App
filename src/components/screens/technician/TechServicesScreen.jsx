@@ -11,6 +11,7 @@ import { useToast } from "../../../context/ToastContext";
 import { API_BASE, UPLOAD_BASE } from "../../../config";
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return null;
@@ -102,9 +103,9 @@ export function TechServicesScreen() {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (isBackground = false) => {
       try {
-        setIsLoading(true);
+        if (!isBackground) setIsLoading(true);
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
         const headers = {
@@ -135,7 +136,7 @@ export function TechServicesScreen() {
                 distance: dist ? `${dist.toFixed(1)} km` : "Nearby",
                 price: `₹${job.price || job.amount || job.service_price || "0"}`,
                 time: job.service_date ? `${job.service_date}, ${job.service_time || ""}` : "Flexible",
-                image: "https://www.dorcasaid.com/admin/"+job.image  
+                image: "https://www.dorcasaid.com/"+job.image  
               };
             }).sort((a, b) => (a.distanceValue || 999) - (b.distanceValue || 999)));
           }
@@ -152,7 +153,7 @@ export function TechServicesScreen() {
               time: `${job.service_date}, ${job.service_time}`,
               customer: job.customer_name,
               status: job.status,
-              image: "https://www.dorcasaid.com/admin/"+job.image
+              image: "https://www.dorcasaid.com/"+job.image
             })));
           } else {
             setOngoingJobs([]);
@@ -171,24 +172,28 @@ export function TechServicesScreen() {
               time: `${job.service_date || ""}`,
               customer: job.customer_name,
               status: "completed",
-              image: "https://dorcasaid.com/admin/" + job.image
+              image: "https://dorcasaid.com/" + job.image
             })));
           }
         }
       } catch (error) {
       } finally {
-        setIsLoading(false);
+        if (!isBackground) setIsLoading(false);
       }
     };
-    fetchData();
+    
+    fetchData(false);
+
+    // Short Polling for Real-Time Updates
+    const intervalId = setInterval(() => {
+      fetchData(true);
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(intervalId);
   }, [isAuthenticated, userLocation, activeTab]);
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <ListTabSkeleton />;
   }
 
   return (
@@ -199,7 +204,7 @@ export function TechServicesScreen() {
       className="flex flex-col w-full h-full bg-base overflow-y-auto pb-24 remove-scrollbar relative"
     >
       {/* Brand Gradient Header */}
-      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative overflow-hidden text-white">
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative overflow-hidden text-white shrink-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button
@@ -267,7 +272,7 @@ function JobCard({ job, onAccept, onDetails, isOngoing, isCompleted }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white border border-brand/5 rounded-3xl p-4 shadow-sm"
+      className="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm"
     >
       <div className="flex gap-3 items-start">
         <img src={job.image} alt="job" className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0" />

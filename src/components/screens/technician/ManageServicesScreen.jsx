@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, LayoutGrid, Check, Search, Save, Zap } from "lucide-react";
-import { API_BASE, UPLOAD_BASE } from "../../../config";
+import { API_BASE } from "../../../config";
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 import { useToast } from "../../../context/ToastContext";
 
 export function ManageServicesScreen() {
@@ -92,11 +93,7 @@ export function ManageServicesScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <ListTabSkeleton />;
   }
 
   return (

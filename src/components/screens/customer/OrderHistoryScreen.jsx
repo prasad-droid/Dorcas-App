@@ -6,6 +6,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE } from "../../../config";
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 
 export function OrderHistoryScreen() {
   const { isAuthenticated } = useAuth();
@@ -73,11 +74,11 @@ export function OrderHistoryScreen() {
   const handleReviewSubmit = async () => {
     if (!selectedBooking) return;
     try {
-      
+
       setIsSubmittingReview(true);
       const token = localStorage.getItem("token");
       const role = localStorage.getItem("role");
-      
+
       const response = await fetch(`${API_BASE}/bookings/add_review.php`, {
         method: "POST",
         headers: {
@@ -91,9 +92,9 @@ export function OrderHistoryScreen() {
           review: reviewText
         })
       });
-      
+
       const data = await response.json();
-      console.log("here",data);
+      console.log("here", data);
       if (data.status) {
         setShowReviewModal(false);
         setReviewText("");
@@ -134,12 +135,7 @@ export function OrderHistoryScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-base">
-        <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-sm font-bold text-brand/40 uppercase tracking-widest">{t('loading')}</p>
-      </div>
-    );
+    return <ListTabSkeleton />;
   }
 
   return (
@@ -150,7 +146,7 @@ export function OrderHistoryScreen() {
       className="flex flex-col w-full h-full bg-[#f8fbff] overflow-hidden"
     >
       {/* Header */}
-      <div className="px-5 pt-12 pb-4 flex items-center justify-between sticky top-0 bg-[#f8fbff]/80 backdrop-blur-md z-30">
+      <div className="px-5 pt-12 pb-4 flex items-center justify-between sticky top-0 bg-[#f8fbff]/80 backdrop-blur-md z-30 shrink-0">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
@@ -177,8 +173,8 @@ export function OrderHistoryScreen() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2.5 rounded-2xl text-[13px] font-black transition-all border shadow-sm ${activeTab === tab
-                  ? "brand-gradient text-white border-brand shadow-brand/20"
-                  : "bg-white text-brand/50 border-brand/5 hover:border-brand/20"
+                ? "brand-gradient text-white border-brand shadow-brand/20"
+                : "bg-white text-brand/50 border-brand/5 hover:border-brand/20"
                 }`}
             >
               {tab}
@@ -258,7 +254,7 @@ export function OrderHistoryScreen() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2.5 mt-2">
-                  <button 
+                  <button
                     onClick={() => {
                       setSelectedBooking(booking);
                       setShowDetailsModal(true);
@@ -269,7 +265,7 @@ export function OrderHistoryScreen() {
                     {t('view_details')}
                   </button>
                   {booking.status.toLowerCase() === 'completed' && !booking.is_reviewed && (
-                    <button 
+                    <button
                       onClick={() => {
                         setSelectedBooking(booking);
                         setShowReviewModal(true);
@@ -321,12 +317,12 @@ export function OrderHistoryScreen() {
       {/* Details Modal */}
       <AnimatePresence>
         {showDetailsModal && selectedBooking && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-brand/90 backdrop-blur-md flex items-end justify-center"
             onClick={() => setShowDetailsModal(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="bg-white w-full rounded-t-[3rem] p-8 pb-10 shadow-2xl relative z-[101]"
@@ -336,7 +332,7 @@ export function OrderHistoryScreen() {
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-black text-brand">{t('view_details')}</h3>
                 <button onClick={() => setShowDetailsModal(false)} className="w-10 h-10 bg-brand/5 rounded-full flex items-center justify-center text-brand">
-                   <X size={20} />
+                  <X size={20} />
                 </button>
               </div>
 
@@ -402,12 +398,12 @@ export function OrderHistoryScreen() {
       {/* Review Modal */}
       <AnimatePresence>
         {showReviewModal && selectedBooking && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-brand/90 backdrop-blur-md flex items-end justify-center"
             onClick={() => setShowReviewModal(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
               className="bg-white w-full rounded-t-[3rem] p-8 pb-20 shadow-2xl relative z-[101] max-h-[95vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
@@ -418,14 +414,14 @@ export function OrderHistoryScreen() {
 
               <div className="flex justify-center gap-3 mb-10">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <button 
-                    key={star} 
+                  <button
+                    key={star}
                     onClick={() => setRating(star)}
                     className="transition-transform active:scale-90"
                   >
-                    <Star 
-                      size={42} 
-                      className={`${star <= rating ? "text-amber-400 fill-amber-400" : "text-slate-200 fill-slate-100"} transition-colors`} 
+                    <Star
+                      size={42}
+                      className={`${star <= rating ? "text-amber-400 fill-amber-400" : "text-slate-200 fill-slate-100"} transition-colors`}
                     />
                   </button>
                 ))}
@@ -439,13 +435,13 @@ export function OrderHistoryScreen() {
               />
 
               <div className="flex gap-4">
-                <button 
+                <button
                   onClick={() => setShowReviewModal(false)}
                   className="flex-1 py-4 rounded-2xl text-sm font-black text-brand/40 hover:bg-slate-50 transition-colors"
                 >
                   {t('cancel')}
                 </button>
-                <button 
+                <button
                   onClick={handleReviewSubmit}
                   disabled={isSubmittingReview}
                   className="flex-[2] bg-brand text-white py-4 rounded-2xl text-sm font-black shadow-xl shadow-brand/20 active:scale-[0.98] transition-transform disabled:opacity-50"

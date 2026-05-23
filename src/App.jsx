@@ -92,18 +92,21 @@ function AppContent() {
   useEffect(() => {
     if (isAuthenticated && Capacitor.isNativePlatform()) {
       const initPush = async () => {
+        const isEnabled = localStorage.getItem("pushNotificationsEnabled") !== "false";
+        if (!isEnabled) return; // Do not register or listen if disabled
+
         let permStatus = await PushNotifications.checkPermissions();
         if (permStatus.receive === 'prompt') {
           permStatus = await PushNotifications.requestPermissions();
         }
-        
+
         if (permStatus.receive === 'granted') {
           try {
             await PushNotifications.register();
           } catch (err) {
             console.error("Push registration failed", err);
           }
-          
+
           PushNotifications.addListener('registration', (token) => {
             NotificationService.registerDevice(token.value, null, authMode);
           });
@@ -117,7 +120,7 @@ function AppContent() {
           });
         }
       };
-      
+
       initPush();
     }
   }, [isAuthenticated, authMode]);

@@ -6,6 +6,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 
 export function DealsScreen() {
   const navigate = useNavigate();
@@ -69,11 +70,7 @@ export function DealsScreen() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-8 space-y-8">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : (
+        {isLoading ? <ListTabSkeleton /> : (
           <>
             <div className="relative h-[300px] rounded-[2.5rem] overflow-hidden shadow-2xl group border-4 border-white">
               <img 

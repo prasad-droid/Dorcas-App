@@ -9,6 +9,7 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLanguage } from "../../../context/LanguageContext";
 import { API_BASE } from "../../../config";
+import { TechDashboardSkeleton } from "../../ui/SkeletonScreen";
 
 export function TechDashboardScreen() {
   const navigate = useNavigate();
@@ -94,11 +95,7 @@ export function TechDashboardScreen() {
   }, [isAuthenticated]);
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <TechDashboardSkeleton />;
   }
 
   const kycStatus = profileData?.kyc_status || 'none';
@@ -111,7 +108,7 @@ export function TechDashboardScreen() {
       className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Brand Gradient Header */}
-      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative text-white">
+      <div className="brand-gradient pt-12 pb-8 px-6 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-white shrink-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between mb-8">
           <button
@@ -139,17 +136,17 @@ export function TechDashboardScreen() {
 
         {/* Web Style Stats Grid (3 columns) */}
         <div className="grid grid-cols-3 gap-3">
-          <WebStatCard label="Total Jobs" value={stats.totalJobs} icon={Briefcase} color="text-teal-500" bg="bg-teal-50" onClick={() => navigate("/tech")} />
-          <WebStatCard label="Avg. Rating" value={stats.rating} icon={Star} color="text-amber-500" bg="bg-amber-50" onClick={() => navigate("/tech/reviews")} />
-          <WebStatCard label="Services" value={stats.servicesOffered} icon={Zap} color="text-blue-500" bg="bg-blue-50" onClick={() => navigate("/tech/manage-services")} />
+          <WebStatCard label="Total Jobs" value={stats.totalJobs} icon={Briefcase} color="text-white" bg="bg-teal-500"  />
+          <WebStatCard label="Avg. Rating" value={stats.rating} icon={Star} color="text-white" bg="bg-amber-500" onClick={() => navigate("/tech/reviews")} />
+          <WebStatCard label="Services" value={stats.servicesOffered} icon={Zap} color="text-white" bg="bg-blue-500" onClick={() => navigate("/tech/manage-services")} />
 
-          <WebStatCard label="Completed" value={stats.completedJobs} icon={CheckCircle2} color="text-emerald-500" bg="bg-emerald-50" onClick={() => navigate("/tech/services")} />
-          <WebStatCard label="Active" value={stats.activeJobs} icon={Clock} color="text-pink-500" bg="bg-pink-50" onClick={() => navigate("/tech/services")} />
-          <WebStatCard label="Missed" value={stats.missedJobs} icon={AlertCircle} color="text-slate-400" bg="bg-slate-50" />
+          <WebStatCard label="Completed" value={stats.completedJobs} icon={CheckCircle2} color="text-white" bg="bg-emerald-500" onClick={() => navigate("/tech/services")} />
+          <WebStatCard label="Active" value={stats.activeJobs} icon={Clock} color="text-white" bg="bg-pink-500" onClick={() => navigate("/tech/services")} />
+          <WebStatCard label="Missed" value={stats.missedJobs} icon={AlertCircle} color="text-white" bg="bg-slate-500" />
 
-          <WebStatCard label="Today Revenue" value={stats.todayRevenue} icon={IndianRupee} color="text-brand" bg="bg-brand/5" onClick={() => navigate("/tech/earnings")} />
-          <WebStatCard label="Reviews" value={stats.reviewsCount} icon={Star} color="text-purple-500" bg="bg-purple-50" onClick={() => navigate("/tech/reviews")} />
-          <WebStatCard label="Acceptance Rate" value={stats.acceptanceRate} icon={TrendingUp} color="text-teal-600" bg="bg-teal-50" />
+          <WebStatCard label="Today Revenue" value={stats.todayRevenue} icon={IndianRupee} color="text-white" bg="bg-indigo-500" onClick={() => navigate("/tech/earnings")} />
+          <WebStatCard label="Reviews" value={stats.reviewsCount} icon={Star} color="text-white" bg="bg-purple-500" onClick={() => navigate("/tech/reviews")} />
+          <WebStatCard label="Accept. Rate" value={stats.acceptanceRate} icon={TrendingUp} color="text-white" bg="bg-cyan-600" />
         </div>
 
         {/* My Services & Profile Sections - Side by side style on mobile as cards */}
@@ -190,13 +187,13 @@ function WebStatCard({ label, value, icon: Icon, color, bg, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className={`flex flex-col items-center p-3 rounded-2xl ${bg} border border-brand/5 shadow-sm text-center min-h-[90px] justify-center active:scale-95 transition-transform cursor-pointer`}
+      className={`flex flex-col items-center p-3 rounded-2xl ${bg} shadow-md text-center min-h-[90px] justify-center active:scale-95 transition-transform cursor-pointer`}
     >
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${color} bg-white shadow-inner`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${color} bg-white/20 shadow-inner`}>
         <Icon size={16} />
       </div>
-      <div className="text-[15px] font-black text-brand tracking-tighter leading-none mb-1">{value}</div>
-      <p className="text-[9px] font-bold text-brand/40 uppercase tracking-tight leading-tight px-1">{label}</p>
+      <div className="text-[15px] font-black text-white tracking-tighter leading-none mb-1">{value}</div>
+      <p className="text-[9px] font-bold text-white/80 uppercase tracking-tight leading-tight px-1">{label}</p>
     </div>
   );
 }

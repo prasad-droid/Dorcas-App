@@ -7,6 +7,7 @@ import { ScratchCard } from "../../ui/ScratchCard";
 
 import { API_BASE, APP_DOMAIN } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { RewardsSkeleton } from "../../ui/SkeletonScreen";
 
 export function RewardsScreen() {
   const { isAuthenticated } = useAuth();
@@ -92,7 +93,7 @@ export function RewardsScreen() {
     }
 
     if (points <= 0) {
-      showToast("No points available to redeem", "error");
+      showToast("No balance available to redeem", "error");
       return;
     }
 
@@ -126,8 +127,7 @@ export function RewardsScreen() {
         showToast(data.message, "error");
       }
     } catch (error) {
-      // console.error("Redeem error:", error);
-      showToast("Failed to redeem points. Please try again.", "error");
+      showToast("Failed to redeem. Please try again.", "error");
     } finally {
       setIsRedeeming(false);
     }
@@ -148,11 +148,7 @@ export function RewardsScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <RewardsSkeleton />;
   }
 
   return (
@@ -173,7 +169,7 @@ export function RewardsScreen() {
           </button>
           <div className="flex items-center gap-1.5 bg-brand/10 px-4 py-2 rounded-2xl border border-brand/5">
             <Sparkles size={16} className="text-brand" />
-            <span className="text-sm font-black text-brand">{profileData?.stats?.value2 || 0} {t('points')}</span>
+            <span className="text-sm font-black text-brand">₹{profileData?.stats?.value2 || 0}</span>
           </div>
         </div>
       </div>
@@ -184,7 +180,7 @@ export function RewardsScreen() {
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="relative z-10">
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">{t('available_redemption')}</p>
-            <h3 className="text-4xl font-black mb-4">₹{(Number(profileData?.stats?.value2 || 0) / 10).toFixed(0)} <span className="text-sm font-bold opacity-60">{t('value')}</span></h3>
+            <h3 className="text-4xl font-black mb-4">₹{profileData?.stats?.value2 || 0}</h3>
             
             {scratchedCount < 3 ? (
               <div className="bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-white/10">
@@ -294,7 +290,7 @@ export function RewardsScreen() {
           </div>
 
           <p className="text-sm text-brand/70 font-semibold mb-6 leading-relaxed">
-            Earn <span className="text-brand font-black">100 Points</span> instantly when your friends complete their first booking.
+            Earn <span className="text-brand font-black">₹100</span> instantly when your friends complete their first booking.
           </p>
 
           <div className="space-y-4">

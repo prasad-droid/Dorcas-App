@@ -7,8 +7,9 @@ import {
   Info
 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../context/ToastContext";
 import { API_BASE } from "../../../config";
+import { useToast } from "../../../context/ToastContext";
+import { ProfileSkeleton } from "../../ui/SkeletonScreen";
 
 export function TechVerificationScreen() {
   const navigate = useNavigate();
@@ -92,11 +93,7 @@ export function TechVerificationScreen() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base">
-        <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (

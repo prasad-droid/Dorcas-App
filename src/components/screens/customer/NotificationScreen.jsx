@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Calendar, Tag, Info, AlertTriangle } from "lucide-react";
 import { useLanguage } from "../../../context/LanguageContext";
+import { useAuth } from "../../../context/AuthContext";
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 
 import { API_BASE } from "../../../config";
 
@@ -84,12 +86,7 @@ export function NotificationScreen() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-6 space-y-4">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-sm font-bold text-brand/40 uppercase tracking-widest">{t('loading')}</p>
-          </div>
-        ) : notifications.length > 0 ? (
+        {isLoading ? <ListTabSkeleton /> : notifications.length > 0 ? (
           notifications.map((notif) => {
             const Icon = getIcon(notif.type);
             const { color, bg } = getColors(notif.type);

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Star, MessageSquare, Filter } from "lucide-react";
 import { API_BASE } from "../../../config";
+import { ListTabSkeleton } from "../../ui/SkeletonScreen";
 
 export function TechReviewsScreen() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export function TechReviewsScreen() {
       className="flex flex-col w-full h-full bg-base overflow-hidden"
     >
       {/* Header */}
-      <div className="brand-gradient pt-12 pb-6 px-6 rounded-b-[2.5rem] shadow-lg relative">
+      <div className="brand-gradient pt-12 pb-6 px-6 rounded-b-[2.5rem] shadow-lg relative shrink-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center gap-4">
           <button
@@ -89,9 +90,7 @@ export function TechReviewsScreen() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-            </div>
+            <ListTabSkeleton />
           ) : reviewsData.reviews.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center border border-brand/5 space-y-4">
               <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mx-auto">

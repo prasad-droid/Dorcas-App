@@ -6,6 +6,7 @@ import { categoryDetails as fallbackDetails } from "../../../data/services";
 
 import { API_BASE, UPLOAD_BASE } from "../../../config";
 import { useLanguage } from "../../../context/LanguageContext";
+import { CategorySkeleton } from "../../ui/SkeletonScreen";
 
 const IMAGE_BASE = `${UPLOAD_BASE}/categories/`;
 
@@ -103,12 +104,7 @@ export function CategoryScreen() {
       {/* List of Services */}
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-24 space-y-5 remove-scrollbar">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-full gap-4">
-            <div className="w-12 h-12 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
-            <p className="text-brand/50 font-bold text-sm">
-              {t('loading')}
-            </p>
-          </div>
+          <CategorySkeleton />
         ) : services.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 opacity-50">
             <LayoutGrid size={48} className="text-brand" />

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { API_BASE } from "../../../config";
 import { useToast } from "../../../context/ToastContext";
+import { TechCommissionSkeleton } from "../../ui/SkeletonScreen";
 
 export function TechCommissionScreen() {
   const navigate = useNavigate();
@@ -132,6 +133,10 @@ export function TechCommissionScreen() {
     handlePayCommission("all", totalDue);
   };
 
+  if (isLoading) {
+    return <TechCommissionSkeleton />;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -140,7 +145,7 @@ export function TechCommissionScreen() {
       className="flex flex-col w-full h-full bg-[#f8fafc] overflow-y-auto pb-24 remove-scrollbar"
     >
       {/* Brand Gradient Header */}
-      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative  text-white sticky top-0 z-30">
+      <div className="brand-gradient pt-12 pb-5 px-6 rounded-b-[2.5rem] shadow-lg relative  text-white sticky top-0 z-30 shrink-0">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between mb-2">
           <button
@@ -164,7 +169,7 @@ export function TechCommissionScreen() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
           <div className="relative z-10">
             <p className="text-white/60 text-[10px] font-black uppercase tracking-[2px] mb-1">Total Outstanding</p>
-            {totalCompletedJobs < 3 ? (
+            {totalCompletedJobs < 3 && totalDue <= 0 ? (
               <div className="py-4">
                 <p className="text-sm font-bold opacity-80">Commission starts after your first 3 successful jobs.</p>
                 <div className="mt-2 h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
@@ -210,13 +215,10 @@ export function TechCommissionScreen() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex-1 flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        <div className="px-6 py-8 space-y-6">
-          {activeTab === 'pending' ? (
+      
+
+      <div className="px-6 py-8 space-y-6">
+        {activeTab === 'pending' ? (
             <>
               <div className="flex items-center justify-between px-1">
                 <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-[2px]">Outstanding Commissions</h3>
@@ -330,8 +332,7 @@ export function TechCommissionScreen() {
               )}
             </div>
           )}
-        </div>
-      )}
-    </motion.div>
+      </div>
+    </motion.div> 
   );
 }
