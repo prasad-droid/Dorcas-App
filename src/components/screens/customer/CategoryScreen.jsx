@@ -49,7 +49,6 @@ export function CategoryScreen() {
                 : "services/cleaning.png",
               icon: LayoutGrid,
             }));
-            console.log(apiServices);
 
             setServices(apiServices);
           } else {

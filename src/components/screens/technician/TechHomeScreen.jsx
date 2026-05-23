@@ -133,7 +133,6 @@ export function TechHomeScreen() {
         // 3. Fetch Available New Requests (matching tech category/location)
         const requestsRes = await fetch(`${API_BASE}/bookings/get_available_jobs.php`, { headers });
         const requestsJson = await requestsRes.json();
-        console.log("Available Jobs : ", requestsJson);
 
 
         // 4. Fetch Tech Services for Fake Lead

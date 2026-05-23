@@ -30,9 +30,7 @@ repositories {
     }
 }
 
-plugins {
-    id 'com.google.gms.google-services'
-}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')

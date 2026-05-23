@@ -52,7 +52,6 @@ export function TechEarningsScreen() {
 
         if (profileJson.status) {
           const stats = profileJson.data.stats || {};
-          console.log(stats);
 
           setEarningsData(prev => ({
             ...prev,
@@ -62,7 +61,6 @@ export function TechEarningsScreen() {
             thisMonth: `${stats.monthly_earnings || "0"}`,
           }));
         }
-        console.log(statsJson);
 
 
         if (statsJson.status) {

@@ -94,7 +94,6 @@ export function OrderHistoryScreen() {
       });
 
       const data = await response.json();
-      console.log("here", data);
       if (data.status) {
         setShowReviewModal(false);
         setReviewText("");

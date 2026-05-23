@@ -31,7 +31,6 @@ export function TechVerificationScreen() {
           headers: { "Authorization": `Bearer ${token}`, "Role": role }
         });
         const data = await response.json();
-        console.log(data);
         if (data.status) {
           const status = data.data.kyc_status || "not_submitted";
           setKycStatus(status);
@@ -76,7 +75,6 @@ export function TechVerificationScreen() {
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (data.status) {
         setKycStatus("pending");

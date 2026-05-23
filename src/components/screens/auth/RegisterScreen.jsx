@@ -219,7 +219,6 @@ export const RegisterScreen = () => {
           // Start SMS Retriever for real auto-fetch
           if (Capacitor.isNativePlatform()) {
             try {
-              AndroidSmsRetriever.getHashString().then(res => console.log("App Hash for SMS:", res.hash));
               
               const setupListener = async () => {
                 const listener = await AndroidSmsRetriever.addListener('smsReceived', (event) => {
@@ -374,7 +373,7 @@ export const RegisterScreen = () => {
             className="space-y-4 overflow-y-auto max-h-[50dvh] remove-scrollbar pr-0.5"
           >
             <div>
-              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+              <label className={`block text-xs font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Full Name
               </label>
               <div className="relative group">
@@ -388,21 +387,21 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Enter your full name"
-                  className={`w-full bg-white border rounded-2xl py-3 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+              <label className={`block text-xs font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Mobile Number
               </label>
               <div className="relative group flex items-center">
                 <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
                   <Phone size={18} />
                 </div>
-                <span className={`absolute left-11 text-sm font-semibold select-none ${isTech ? "text-emerald-700/60" : "text-brand/60"}`}>
+                <span className={`absolute left-11 text-base font-semibold select-none ${isTech ? "text-emerald-700/60" : "text-brand/60"}`}>
                   +91
                 </span>
                 <input
@@ -413,7 +412,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, phoneNumber: val });
                   }}
                   placeholder="00000 00000"
-                  className={`w-full bg-white border rounded-2xl py-3 pl-20 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
@@ -442,7 +441,7 @@ export const RegisterScreen = () => {
             className="space-y-4 overflow-y-auto max-h-[50dvh] remove-scrollbar pr-0.5"
           >
             <div>
-              <label className={`block text-[10px] font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
+              <label className={`block text-xs font-black uppercase tracking-[0.1em] mb-1.5 px-1 ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                 Verification Code
               </label>
               <div className="relative group">
@@ -456,7 +455,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, otp: e.target.value })
                   }
                   placeholder="Enter 6-digit OTP"
-                  className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   maxLength={6}
                   required
                 />
@@ -756,7 +755,7 @@ export const RegisterScreen = () => {
             <h1 className={`text-2xl font-black tracking-normal ${isTech ? "text-emerald-600" : "text-brand"}`}>
               {step === 4 ? "Specialties" : "Create Account"}
             </h1>
-            <p className={`text-xs font-semibold mt-0.5 ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
+            <p className={`text-sm font-semibold mt-0.5 ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
               {step === 1 && "Join the community of trusted services"}
               {step === 2 && `Verification code sent to +91 ${formData.phoneNumber}`}
               {step === 3 && "Tell us a bit about yourself"}
@@ -768,13 +767,13 @@ export const RegisterScreen = () => {
             <div className={`flex p-1 rounded-2xl mb-5 border ${isTech ? "bg-emerald-50 border-emerald-100" : "bg-brand/5 border-brand/5"}`}>
               <button
                 onClick={() => setAuthMode("customer")}
-                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === "customer" ? "bg-white text-brand shadow-md shadow-brand/10" : (isTech ? "text-emerald-600/40" : "text-brand/40")}`}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${authMode === "customer" ? "bg-white text-brand shadow-md shadow-brand/10" : (isTech ? "text-emerald-600/40" : "text-brand/40")}`}
               >
                 Customer
               </button>
               <button
                 onClick={() => setAuthMode("technician")}
-                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all ${authMode === "technician" ? "bg-white text-emerald-600 shadow-md shadow-emerald-600/10" : "text-brand/40"}`}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all ${authMode === "technician" ? "bg-white text-emerald-600 shadow-md shadow-emerald-600/10" : "text-brand/40"}`}
               >
                 Technician
               </button>
@@ -788,7 +787,7 @@ export const RegisterScreen = () => {
               <button
                 type="submit"
                 disabled={step === 4 && formData.selectedServices.length === 0}
-                className={`w-full py-3.5 rounded-2xl shadow-lg transition-all flex justify-center items-center gap-2.5 text-sm font-black tracking-normal ${isTech
+                className={`w-full py-3.5 rounded-2xl shadow-lg transition-all flex justify-center items-center gap-2.5 text-base font-black tracking-normal ${isTech
                     ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
                     : "bg-brand shadow-brand/20 text-white hover:-translate-y-0.5"
                   }`}

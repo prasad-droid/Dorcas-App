@@ -200,7 +200,6 @@ export function BookingFormScreen() {
       });
 
       const data = await response.json();
-      console.log("Response Data:", data);
 
       if (data.status) {
         setGeneratedCard({ ...data.data.scratch_card, booking_id: data.data.booking_id });

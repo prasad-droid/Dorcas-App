@@ -122,7 +122,6 @@ export function TechServicesScreen() {
         if (activeTab === "available") {
           const response = await fetch(`${API_BASE}/bookings/get_available_jobs.php`, { headers });
           const data = await response.json();
-          console.log(data);
           
           if (data.status) {
             setAvailableJobs(data.data.map(job => {

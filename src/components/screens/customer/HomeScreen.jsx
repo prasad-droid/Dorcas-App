@@ -107,7 +107,6 @@ export function HomeScreen() {
         // Fetch Services (instead of subcategories to avoid ID mismatch)
         const subRes = await fetch(`${API_BASE}/services/get_services.php`);
         const subData = await subRes.json();
-        console.log(subData);
         
         // Fetch Offers
         try {

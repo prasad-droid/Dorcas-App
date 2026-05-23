@@ -63,7 +63,6 @@ export function ProfileScreen() {
     };
 
     if (isAuthenticated) {
-      console.log("Current Auth State:", { authMode, role: localStorage.getItem("role") });
       fetchProfile();
     }
   }, [isAuthenticated, authMode]);

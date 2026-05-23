@@ -54,7 +54,6 @@ export function TechJobDetailScreen() {
 
         const response = await fetch(`${API_BASE}/bookings/get_job_details.php?id=${jobId}`, { headers });
         const data = await response.json();
-        console.log(data);
 
         if (data.status) {
           const job = data.data;

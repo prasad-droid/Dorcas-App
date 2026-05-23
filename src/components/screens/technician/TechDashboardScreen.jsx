@@ -50,15 +50,12 @@ export function TechDashboardScreen() {
         // Fetch Profile
         const profRes = await fetch(`${API_BASE}/profile/get_profile.php`, { headers });
         const profData = await profRes.json();
-        console.log('profileData', profData);
         // Fetch Stats
         const statsRes = await fetch(`${API_BASE}/vendors/get_tech_stats.php`, { headers });
         const statsData = await statsRes.json();
-        console.log('statsData', statsData);
         // Fetch My Services
         const servicesRes = await fetch(`${API_BASE}/vendors/get_vendor_services.php`, { headers });
         const servicesData = await servicesRes.json();
-        console.log('servicesData', servicesData);
         if (servicesData.status) setServices(servicesData.data);
 
         if (profData.status) {
