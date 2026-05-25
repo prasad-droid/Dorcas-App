@@ -59,7 +59,7 @@ export function TechReviewsScreen() {
 
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 pb-24">
         {/* Rating Summary Card */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-brand/5 flex items-center justify-between">
+        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-900 flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[11px] font-black text-brand/30 uppercase tracking-widest">Average Rating</p>
             <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ export function TechReviewsScreen() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white rounded-3xl p-5 shadow-sm border border-brand/5 space-y-3"
+                className="bg-white rounded-3xl p-5 shadow-sm border border-gray-900 space-y-3"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">

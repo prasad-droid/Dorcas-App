@@ -93,7 +93,7 @@ export function NotificationScreen() {
             return (
               <div 
                 key={notif.id}
-                className="bg-white border border-brand/5 p-4 rounded-2xl flex gap-4 shadow-sm"
+                className="bg-white border border-gray-900 p-4 rounded-2xl flex gap-4 shadow-sm"
               >
                 <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center shrink-0`}>
                   <Icon size={24} className={color} />

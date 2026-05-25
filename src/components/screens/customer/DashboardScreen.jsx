@@ -78,7 +78,7 @@ export function DashboardScreen() {
 
       {/* Floating Main Stats */}
       <div className="relative z-20 px-5 -mt-12 mb-6">
-        <div className="bg-white shadow-[0_8px_24px_rgba(13,110,253,0.12)] border border-brand/5 rounded-3xl p-5 flex gap-4">
+        <div className="bg-white shadow-[0_8px_24px_rgba(13,110,253,0.12)] border border-gray-900 rounded-3xl p-5 flex gap-4">
           <div 
             onClick={() => navigate("/bookings")}
             className="flex-1 bg-brand/5 rounded-2xl p-4 flex flex-col justify-center items-center text-center border border-brand/10 cursor-pointer active:scale-95 transition-transform"
@@ -104,7 +104,7 @@ export function DashboardScreen() {
 
       <div className="px-5 space-y-6">
         {/* Reward Meter Cycle */}
-        <div className="bg-white rounded-3xl shadow-[0_4px_16px_rgba(13,110,253,0.06)] border border-brand/10 p-6 overflow-hidden relative">
+        <div className="bg-white rounded-3xl shadow-[0_4px_16px_rgba(13,110,253,0.06)] border border-gray-900 p-6 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand/5 rounded-bl-full pointer-events-none"></div>
 
           <h3 className="text-[15px] font-bold text-brand tracking-tight mb-1">Service Reward Cycle</h3>

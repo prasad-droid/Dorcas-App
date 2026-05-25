@@ -237,7 +237,7 @@ export function RewardsScreen() {
                 key={card.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => !card.is_scratched && setActiveCard(card)}
-                className={`aspect-[4/5] rounded-3xl p-4 flex flex-col items-center justify-center relative overflow-hidden shadow-sm border ${card.is_scratched
+                className={`aspect-[4/5] rounded-3xl p-4 border border-green-400 flex flex-col items-center justify-center relative overflow-hidden shadow-sm border ${card.is_scratched
                     ? "bg-emerald-50 border-emerald-100"
                     : "brand-gradient border-brand/5 cursor-pointer text-white"
                   }`}
@@ -274,7 +274,7 @@ export function RewardsScreen() {
         </section>
 
         {/* Refer & Earn */}
-        <section className="bg-brand/5 p-6 rounded-[2.5rem] shadow-sm border border-brand/10 relative overflow-hidden">
+        <section className="bg-brand/5 p-6 rounded-[2.5rem] shadow-sm border border-gray-300 relative overflow-hidden">
           <div className="absolute -right-6 -bottom-6 text-brand/5 rotate-12">
             <Share2 size={120} />
           </div>
@@ -295,7 +295,7 @@ export function RewardsScreen() {
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-white border border-brand/10 rounded-2xl px-5 py-4 text-sm font-bold text-brand/60 truncate shadow-inner">
+              <div className="flex-1 bg-white border border-gray-400 rounded-2xl px-5 py-4 text-sm font-bold text-brand/60 truncate shadow-inner">
                 {`${APP_DOMAIN}/register?ref=${profileData?.referral_code || "REF"}`}
               </div>
               <button

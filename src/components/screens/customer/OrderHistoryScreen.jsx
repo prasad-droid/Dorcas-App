@@ -41,10 +41,12 @@ export function OrderHistoryScreen() {
       });
 
       const data = await response.json();
+      
       if (data.status) {
         // Map database fields to UI fields if they differ
         const mappedBookings = data.data.map(b => ({
           id: b.id,
+          image: "https://www.dorcasaid.com/" + b.image,
           service: b.service || b.service_name || b.category_name || "Home Service",
           date: b.date || b.service_date,
           time: b.time || b.service_time,
@@ -60,7 +62,7 @@ export function OrderHistoryScreen() {
         setBookings(mappedBookings);
       }
     } catch (error) {
-      // console.error("Fetch Error:", error);
+      console.error("Fetch Error:", error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -120,6 +122,18 @@ export function OrderHistoryScreen() {
       case 'cancelled': return "bg-rose-50 text-rose-600 border-rose-100";
       case 'no_vendor': return "bg-gray-100 text-gray-600 border-gray-200";
       default: return "bg-gray-100 text-gray-700 border-gray-200";
+    }
+  };
+
+  const getCardBorderColor = (status) => {
+    const s = status?.toLowerCase();
+    switch (s) {
+      case 'completed':
+      case 'confirmed': return "border-green-500";
+      case 'pending':
+      case 'ongoing': return "border-yellow-500";
+      case 'cancelled': return "border-red-500";
+      default: return "border-gray-200";
     }
   };
 
@@ -185,6 +199,7 @@ export function OrderHistoryScreen() {
       <div className="flex-1 overflow-y-auto px-5 pt-4 pb-28 space-y-5 remove-scrollbar">
         <AnimatePresence mode="popLayout">
           {filteredBookings.length > 0 ? (
+
             filteredBookings.map((booking) => (
               <motion.div
                 layout
@@ -192,13 +207,13 @@ export function OrderHistoryScreen() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 key={booking.id}
-                className="bg-white border border-brand/5 shadow-[0_8px_30px_rgba(13,110,253,0.04)] rounded-[2.5rem] p-6 flex flex-col gap-4 relative overflow-hidden"
+                className={`bg-white border-[3px] shadow-[0_8px_30px_rgba(13,110,253,0.04)] rounded-[2.5rem] p-6 flex flex-col gap-4 relative overflow-hidden ${getCardBorderColor(booking.status)}`}
               >
                 {/* Status Badge */}
                 <div className="flex justify-between items-start mb-1">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-brand/5 rounded-2xl flex items-center justify-center text-brand">
-                      <Calendar size={22} />
+                    <div className="w-12 h-12 bg-brand/5 rounded-2xl flex items-center justify-center text-brand overflow-hidden">
+                      <img src={booking.image} alt="" className="overflow-hidden object-cover w-full h-full rounded-2xl"/>
                     </div>
                     <div>
                       <h4 className="text-[16px] font-black text-brand tracking-tight leading-tight">{booking.service}</h4>
@@ -212,14 +227,14 @@ export function OrderHistoryScreen() {
 
                 {/* Details Grid */}
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-slate-50 rounded-2xl p-3.5 flex items-center gap-3 border border-slate-100">
+                  <div className="bg-slate-50 rounded-2xl p-3.5 flex items-center gap-3 border border-gray-300">
                     <div className="text-brand/30"><Calendar size={16} /></div>
                     <div className="flex flex-col">
                       <span className="text-[9px] font-bold text-brand/30 uppercase tracking-wider">{t('date')}</span>
                       <span className="text-[12px] font-black text-brand">{formatDate(booking.date)}</span>
                     </div>
                   </div>
-                  <div className="bg-slate-50 rounded-2xl p-3.5 flex items-center gap-3 border border-slate-100">
+                  <div className="bg-slate-50 rounded-2xl p-3.5 flex items-center gap-3 border border-gray-300">
                     <div className="text-brand/30"><Clock size={16} /></div>
                     <div className="flex flex-col">
                       <span className="text-[9px] font-bold text-brand/30 uppercase tracking-wider">{t('time')}</span>
@@ -243,12 +258,6 @@ export function OrderHistoryScreen() {
                     <span className="text-[9px] font-bold text-brand/40 uppercase tracking-wider block mb-0.5">{t('total_amount')}</span>
                     <span className="text-lg font-black text-brand">{booking.price}</span>
                   </div>
-                </div>
-
-                {/* Address Snippet */}
-                <div className="flex items-start gap-2 px-1 text-brand/60">
-                  <MapPin size={14} className="mt-0.5 shrink-0" />
-                  <p className="text-[11px] font-medium leading-relaxed line-clamp-1">{booking.address}, {booking.city}</p>
                 </div>
 
                 {/* Action Buttons */}

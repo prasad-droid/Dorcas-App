@@ -207,7 +207,7 @@ export function TechJobDetailScreen() {
       <div className="px-6 pt-6 relative z-20">
 
         {/* Service Image Section */}
-        <div className="mb-6 rounded-[2rem] overflow-hidden border border-brand/10 shadow-md h-64 relative group">
+        <div className="mb-6 rounded-[2rem] overflow-hidden border border-gray-900 shadow-md h-64 relative group">
           <img
             src={jobData?.image}
             alt={jobData?.title}
@@ -223,7 +223,7 @@ export function TechJobDetailScreen() {
         </div>
 
         {/* Service Booking Table Card */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-brand/5 mb-6 overflow-hidden">
+        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-900 mb-6 overflow-hidden">
           <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
             <Briefcase className="text-blue-600" size={18} />
             <h3 className="text-xs font-black text-[#242B3A] uppercase tracking-widest">Service Booking Details</h3>
@@ -250,7 +250,7 @@ export function TechJobDetailScreen() {
         </div>
 
         {/* Schedule & Price Card */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-brand/5 mb-6">
+        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-900 mb-6">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Scheduled Time</p>
@@ -271,7 +271,7 @@ export function TechJobDetailScreen() {
 
         {/* Customer Details */}
         <SectionTitle title="Client Information" />
-        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-brand/5 mb-6 space-y-5">
+        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-900 mb-6 space-y-5">
           <DetailItem icon={User} label="Client Name" value={jobData.customer} />
           <DetailItem icon={MapPin} label="Service Address" value={jobData.address} />
 
@@ -296,7 +296,7 @@ export function TechJobDetailScreen() {
           </div>
 
           {/* Real Map iframe */}
-          <div className="mt-5 rounded-2xl overflow-hidden border border-brand/5 shadow-inner bg-white h-48 relative group">
+          <div className="mt-5 rounded-2xl overflow-hidden border border-gray-900 shadow-inner bg-white h-48 relative group">
             <iframe
               title="Job Location"
               width="100%"
@@ -320,7 +320,7 @@ export function TechJobDetailScreen() {
         {/* Schedule & Logistics */}
         <div className="space-y-4">
           <SectionTitle title="Schedule & Logistics" />
-          <div className="bg-white border border-brand/5 rounded-[2rem] p-6 shadow-md space-y-5">
+          <div className="bg-white border border-gray-900 rounded-[2rem] p-6 shadow-md space-y-5">
             <DetailItem icon={Calendar} label="Service Date" value={jobData.time.split(',')[0]} />
             <DetailItem icon={Clock} label="Requested Time" value={jobData.time.split(',')[1]} />
             <DetailItem icon={IndianRupee} label="Payment Mode" value={jobData.paymentMode} />
@@ -330,7 +330,7 @@ export function TechJobDetailScreen() {
         {/* Instructions */}
         <div className="space-y-4 pt-6">
           <SectionTitle title="Job Instructions" />
-          <div className="bg-white border border-brand/5 rounded-[2rem] p-6 shadow-md">
+          <div className="bg-white border border-gray-900 rounded-[2rem] p-6 shadow-md">
             <div className="flex gap-4">
               <div className="w-10 h-10 bg-blue-500/5 rounded-xl flex items-center justify-center text-blue-600 shrink-0 border border-blue-500/10">
                 <MessageSquare size={20} />
@@ -412,7 +412,7 @@ export function TechJobDetailScreen() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-sm bg-white border border-brand/10 rounded-[2.5rem] p-8 shadow-2xl z-[70] text-center"
+              className="relative w-full max-w-sm bg-white border border-gray-900 rounded-[2.5rem] p-8 shadow-2xl z-[70] text-center"
             >
               <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 border border-red-500/25">
                 <AlertCircle size={40} />

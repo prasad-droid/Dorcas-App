@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion,AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Search, MapPin, Bell, ArrowRight, Star, Heart, ArrowUpRight, Wallet,
@@ -107,7 +107,7 @@ export function HomeScreen() {
         // Fetch Services (instead of subcategories to avoid ID mismatch)
         const subRes = await fetch(`${API_BASE}/services/get_services.php`);
         const subData = await subRes.json();
-        
+
         // Fetch Offers
         try {
           const offerRes = await fetch(`${API_BASE}/categories/get_offers.php`);
@@ -194,7 +194,7 @@ export function HomeScreen() {
       Object.values(categoryDetails).forEach(services => {
         allServices.push(...services);
       });
-      const filtered = allServices.filter(s => 
+      const filtered = allServices.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 5);
       setSuggestions(filtered);
@@ -239,9 +239,9 @@ export function HomeScreen() {
               className="w-12 h-12 rounded-full border-2 border-white/20 p-0.5 overflow-hidden active:scale-95 transition-transform flex items-center justify-center bg-white/10 shadow-sm shrink-0"
             >
               {localImage || profileData?.profile_img ? (
-                <img 
-                  src={localImage || profileData?.profile_img} 
-                  alt="Avatar" 
+                <img
+                  src={localImage || profileData?.profile_img}
+                  alt="Avatar"
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
@@ -251,11 +251,11 @@ export function HomeScreen() {
             <div className="text-white min-w-0 flex-1">
               <p className="text-white/60 text-[9px] font-black tracking-widest uppercase mb-0.5">Welcome back,</p>
               <h1 className="text-lg font-black text-white leading-tight truncate">{profileData?.name || "Customer"}</h1>
-              
+
               {/* Address below the name horizontally, wrapped in two lines */}
               <div className="flex items-start gap-1 mt-1 text-white/95">
                 <MapPin size={12} className="shrink-0 mt-0.5 text-white" />
-                <span 
+                <span
                   className="text-[10px] font-semibold leading-tight text-left"
                   style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
                 >
@@ -282,50 +282,50 @@ export function HomeScreen() {
         </div>
       </div>
 
-        {/* Search Bar */}
-        <div className="relative mx-auto mt-5 w-80">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ">
-            <Search size={18} className="text-brand/50" />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && searchQuery.trim()) {
-                navigate(`/bookings?q=${encodeURIComponent(searchQuery)}`);
-              }
-            }}
-            className="w-full bg-base text-brand rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
-            placeholder={t('search_placeholder')}
-          />
-          
-          <AnimatePresence>
-            {showSuggestions && suggestions.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl z-50 overflow-hidden border border-brand/5"
-              >
-                {suggestions.map((svc) => (
-                  <div
-                    key={svc.id}
-                    onClick={() => {
-                      setSearchQuery(svc.name);
-                      setShowSuggestions(false);
-                      navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`);
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-brand/5 cursor-pointer transition-colors border-b border-brand/5 last:border-0"
-                  >
-                    <Search size={14} className="text-brand/30" />
-                    <span className="text-sm font-bold text-brand">{svc.name}</span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {/* Search Bar */}
+      <div className="relative mx-auto mt-5 w-80">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ">
+          <Search size={18} className="text-brand/50" />
         </div>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && searchQuery.trim()) {
+              navigate(`/bookings?q=${encodeURIComponent(searchQuery)}`);
+            }
+          }}
+          className="w-full bg-base text-brand rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
+          placeholder={t('search_placeholder')}
+        />
+
+        <AnimatePresence>
+          {showSuggestions && suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl z-50 overflow-hidden border border-gray-900"
+            >
+              {suggestions.map((svc) => (
+                <div
+                  key={svc.id}
+                  onClick={() => {
+                    setSearchQuery(svc.name);
+                    setShowSuggestions(false);
+                    navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-brand/5 cursor-pointer transition-colors border-b border-brand/5 last:border-0"
+                >
+                  <Search size={14} className="text-brand/30" />
+                  <span className="text-sm font-bold text-brand">{svc.name}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="flex-1 overflow-y-auto px-5 pt-6 pb-28 space-y-8 remove-scrollbar">
 
@@ -334,18 +334,18 @@ export function HomeScreen() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           onClick={() => navigate("/rewards")}
-          className="bg-white border border-brand/5 rounded-2xl p-4 flex justify-between items-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform"
+          className="bg-white rounded-2xl p-4 flex justify-between items-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] cursor-pointer active:scale-[0.98] transition-transform border border-gray-200"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center border border-gray-400">
               <Wallet size={20} className="text-brand" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest">{t('available_balance')}</p>
+              <p className="text-[10px] font-bold text-brand/80 uppercase tracking-widest">{t('available_balance')}</p>
               <h4 className="text-lg font-black text-brand">{profileData?.stats?.value3 || "₹0"}</h4>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-brand/5 px-3 py-2 rounded-xl">
+          <div className="flex items-center gap-2 bg-brand/5 px-3 py-2 rounded-xl border border-gray-200">
             <Gift size={16} className="text-brand" />
             <span className="text-xs font-black text-brand">{profileData?.stats?.value2 || 0} pts</span>
             <ArrowRight size={14} className="text-brand/40 ml-1" />
@@ -404,7 +404,7 @@ export function HomeScreen() {
                   onClick={() => navigate(`/category/${service.id}?name=${encodeURIComponent(service.name)}`)}
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
-                  <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-brand/20 transition-colors">
+                  <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-brand/20 transition-colors border border-gray-400">
                     <Icon size={24} strokeWidth={2} className="text-brand" />
                   </div>
                   <span className="text-[10px] font-semibold text-brand text-center leading-tight w-full break-words px-1">
@@ -431,7 +431,7 @@ export function HomeScreen() {
               <div
                 key={svc.id}
                 onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)}
-                className="w-[200px] h-[260px] shrink-0 rounded-[1.5rem] overflow-hidden relative snap-center shadow-[0_4px_12px_rgba(13,110,253,0.15)] bg-brand border border-brand/10 group cursor-pointer"
+                className="w-[200px] h-[260px] shrink-0 rounded-[1.5rem] overflow-hidden relative snap-center shadow-[0_4px_12px_rgba(13,110,253,0.15)] bg-brand border border-gray-900 group cursor-pointer"
               >
                 <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute top-3 inset-x-3 flex justify-between items-start z-10 w-auto">
@@ -465,7 +465,7 @@ export function HomeScreen() {
               <div
                 key={idx}
                 onClick={() => navigate("/deals")}
-                className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-brand/10"
+                className="min-w-[280px] h-[160px] rounded-2xl overflow-hidden relative shadow-md snap-start flex flex-col justify-end p-5 group cursor-pointer border border-gray-900"
               >
                 <img src={offer.image} alt={offer.title} className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/20 to-black/80 z-10"></div>
@@ -504,7 +504,7 @@ export function HomeScreen() {
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(categoryDetails[activeCategory] || []).map((svc) => (
-              <div key={svc.id} onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-brand/10">
+              <div key={svc.id} onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-gray-900">
                 <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
                 <div className="absolute bottom-0 w-full p-4 flex justify-between items-end z-10">
@@ -516,6 +516,6 @@ export function HomeScreen() {
           </div>
         </section>
       </div>
-    </motion.div> 
+    </motion.div>
   );
 }

@@ -121,7 +121,7 @@ export function TechVerificationScreen() {
 
       <div className="px-6 mt-6">
         {/* Status Card */}
-        <div className="bg-gray-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-brand/5 mb-8">
+        <div className="bg-gray-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-gray-900 mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-500' :
               kycStatus === 'pending' ? 'bg-amber-50 text-amber-500' :
@@ -162,7 +162,7 @@ export function TechVerificationScreen() {
                   <button
                     key={type}
                     onClick={() => setDocType(type)}
-                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 ${docType === type ? 'bg-brand border-brand text-white shadow-lg shadow-brand/20' : 'bg-white border-brand/10 text-brand'
+                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 ${docType === type ? 'bg-brand border-brand text-white shadow-lg shadow-brand/20' : 'bg-white border-gray-900 text-brand'
                       }`}
                   >
                     <FileText size={20} />

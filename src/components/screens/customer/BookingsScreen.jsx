@@ -106,7 +106,7 @@ export function BookingsScreen() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-base border border-brand/10 text-brand rounded-2xl py-3.5 pl-11 pr-4 text-[13px] font-semibold focus:outline-none focus:ring-1 focus:ring-brand shadow-[0_2px_12px_rgba(13,110,253,0.04)] placeholder:text-brand/40"
+                className="w-full bg-base border border-gray-00 text-brand rounded-2xl py-3.5 pl-11 pr-4 text-[13px] font-semibold focus:outline-none focus:ring-1 focus:ring-brand shadow-[0_2px_12px_rgba(13,110,253,0.04)] placeholder:text-brand/40"
                 placeholder={t('search_placeholder')}
               />
             </div>
@@ -147,7 +147,7 @@ export function BookingsScreen() {
             </div>
           ) : filteredServices.length > 0 ? (
             filteredServices.map((svc) => (
-              <div key={svc.id} className="bg-base border border-brand/5 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
+              <div key={svc.id} className="bg-base border border-gray-300 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
 
                 {/* Details */}
                 <div className="flex gap-3 items-start">

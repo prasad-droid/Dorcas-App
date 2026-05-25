@@ -233,7 +233,7 @@ export function TechEarningsScreen() {
               { label: "This Week", value: `₹${earningsData.thisWeek}` },
               { label: "This Month", value: `₹${earningsData.thisMonth}` },
             ].map((stat, i) => (
-              <div key={i} className="bg-white rounded-2xl p-3.5 border border-brand/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center flex flex-col justify-center min-h-[80px]">
+              <div key={i} className="bg-white rounded-2xl p-3.5 border border-gray-900 shadow-[0_8px_30px_rgb(0,0,0,0.02)] text-center flex flex-col justify-center min-h-[80px]">
                 <p className="text-[9px] font-bold text-brand/30 uppercase tracking-widest mb-1.5 leading-tight px-1">{stat.label}</p>
                 <p className="text-[15px] font-black text-brand leading-none">{stat.value}</p>
               </div>
@@ -255,7 +255,7 @@ export function TechEarningsScreen() {
             <div className="space-y-3">
               {earningsData.transactions.length > 0 ? (
                 earningsData.transactions.map((tx) => (
-                  <div key={tx.id} className="bg-white p-4 rounded-2xl border border-brand/5 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex items-center justify-between active:scale-[0.98] transition-all">
+                  <div key={tx.id} className="bg-white p-4 rounded-2xl border border-gray-900 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex items-center justify-between active:scale-[0.98] transition-all">
                     <div className="flex items-center gap-4">
                       <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center text-brand">
                         <Briefcase size={20} />

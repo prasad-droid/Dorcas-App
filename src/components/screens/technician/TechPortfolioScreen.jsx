@@ -152,7 +152,7 @@ export function TechPortfolioScreen() {
 
       {/* Stats Section */}
       <div className="relative z-20 px-5 -mt-8 mb-6">
-        <div className="bg-white shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-brand/5 rounded-2xl p-5 flex justify-between items-center text-center">
+        <div className="bg-white shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-gray-900 rounded-2xl p-5 flex justify-between items-center text-center">
           <div className="flex-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-brand/30 mb-1">Rating</p>
             <div className="flex items-center justify-center gap-1">
@@ -185,7 +185,7 @@ export function TechPortfolioScreen() {
             <div
               key={idx}
               onClick={item.action}
-              className="bg-white p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-sm border border-brand/5 hover:border-brand/20 group"
+              className="bg-white p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-sm hover:bg-brand/5 group"
             >
               <div className="w-12 h-12 bg-brand/5 group-hover:bg-brand/10 rounded-xl flex items-center justify-center transition-colors">
                 <Icon size={22} className="text-brand" />

@@ -197,7 +197,7 @@ export function TermsPolicyScreen() {
             transition={{ duration: 0.2 }}
             className="space-y-8"
           >
-            <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm">
+            <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm">
                <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-brand">
                      <Shield size={20} />
@@ -225,7 +225,7 @@ export function TermsPolicyScreen() {
                    <h4 className="text-[15px] font-black text-brand tracking-tight">{section.title}</h4>
                 </div>
                 
-                <div className="bg-white rounded-3xl p-6 border border-brand/5 shadow-sm">
+                <div className="bg-white rounded-3xl p-6 border border-gray-900 shadow-sm">
                    {section.category && (
                      <div className="mb-4 inline-block bg-brand/5 px-3 py-1 rounded-full">
                         <span className="text-[10px] font-black text-brand uppercase tracking-wider">{section.category}</span>

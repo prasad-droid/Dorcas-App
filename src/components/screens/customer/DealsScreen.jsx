@@ -130,7 +130,7 @@ export function DealsScreen() {
           </>
         )}
 
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-brand/5">
+        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-900">
           <h4 className="font-black text-brand uppercase tracking-wider text-sm mb-4">How it works</h4>
           <div className="space-y-4">
             {[

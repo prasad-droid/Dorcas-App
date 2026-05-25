@@ -216,7 +216,7 @@ export const LoginScreen = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your full name"
-                    className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>
@@ -241,7 +241,7 @@ export const LoginScreen = () => {
                       setPhoneNumber(val);
                     }}
                     placeholder="00000 00000"
-                    className={`w-full bg-white border rounded-2xl py-3.5 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-3.5 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>

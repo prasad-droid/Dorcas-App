@@ -101,7 +101,7 @@ export function ReferralScreen() {
 
       <div className="px-6 -mt-12 space-y-6 relative z-20">
         {/* Code Card */}
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-brand/5 border border-brand/5 flex flex-col items-center">
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-brand/5 border border-gray-900 flex flex-col items-center">
           <p className="text-[10px] font-black text-brand/30 uppercase tracking-[0.2em] mb-4">Your Unique Referral Code</p>
           <div className="w-full flex items-center gap-3 p-2 bg-brand/5 rounded-2xl border border-dashed border-brand/20">
             <div className="flex-1 text-center font-black text-2xl text-brand tracking-[0.1em] py-2">
@@ -124,14 +124,14 @@ export function ReferralScreen() {
 
         {/* Stats Card */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white p-6 rounded-[2rem] border border-brand/5 shadow-sm">
+          <div className="bg-white p-6 rounded-[2rem] border border-gray-900 shadow-sm">
             <div className="w-10 h-10 bg-brand/5 rounded-xl flex items-center justify-center text-brand mb-4">
               <Users size={20} />
             </div>
             <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest leading-none mb-1">Total Referrals</p>
             <span className="text-2xl font-black text-brand">{refData.history?.length || 0}</span>
           </div>
-          <div className="bg-white p-6 rounded-[2rem] border border-brand/5 shadow-sm">
+          <div className="bg-white p-6 rounded-[2rem] border border-gray-900 shadow-sm">
             <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 mb-4">
               <Zap size={20} />
             </div>
@@ -145,7 +145,7 @@ export function ReferralScreen() {
           <h3 className="text-[11px] font-black text-brand/30 uppercase tracking-widest px-1">Recent Referrals</h3>
           <div className="space-y-3">
             {refData.history.length > 0 ? refData.history.map((log, i) => (
-              <div key={i} className="bg-white p-4 rounded-2xl border border-brand/5 shadow-sm flex items-center justify-between">
+              <div key={i} className="bg-white p-4 rounded-2xl border border-gray-900 shadow-sm flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-brand/5 rounded-full flex items-center justify-center text-brand font-bold text-xs">
                     {log.referee_name?.[0] || "U"}
@@ -172,7 +172,7 @@ export function ReferralScreen() {
         </div>
 
         {/* How it Works */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-brand/5 shadow-sm space-y-8">
+        <div className="bg-white rounded-[2.5rem] p-8 border border-gray-900 shadow-sm space-y-8">
           <h3 className="text-sm font-black text-brand uppercase tracking-widest px-1 border-l-4 border-brand">How it works</h3>
           
           {[

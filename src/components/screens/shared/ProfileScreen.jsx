@@ -14,9 +14,9 @@ import { API_BASE } from "../../../config";
 const ProfileMenuItem = ({ icon: Icon, label, desc, action }) => (
   <div 
     onClick={action}
-    className="bg-brand/5 p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-[0_2px_10px_rgba(13,110,253,0.03)] border border-brand/5 hover:bg-brand/10"
+    className="bg-brand/5 p-4 rounded-2xl flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-all shadow-[0_2px_10px_rgba(13,110,253,0.03)] hover:bg-brand/10 border border-gray-300"
   >
-    <div className="w-12 h-12 bg-base shadow-sm rounded-xl flex items-center justify-center border border-brand/5">
+    <div className="w-12 h-12 bg-base shadow-sm rounded-xl flex items-center justify-center">
       <Icon size={20} className="text-brand" />
     </div>
     <div className="flex-1">
@@ -144,7 +144,7 @@ export function ProfileScreen() {
       </div>
 
       <div className="relative z-20 px-6 -mt-8 mb-4">
-        <div className="bg-base shadow-[0_8px_20px_rgba(13,110,253,0.08)] border border-brand/5 rounded-2xl p-4 flex justify-between items-center text-center divide-x divide-brand/10">
+        <div className="bg-base shadow-[0_8px_20px_rgba(13,110,253,0.08)] border border-gray-300 rounded-2xl p-4 flex justify-between items-center text-center divide-x divide-brand/10">
           <div className="flex-1">
             <p className="text-[11px] font-bold uppercase tracking-wider text-brand/50 mb-1">
               {isTech ? "Jobs Done" : (profileData?.stats?.label1 || t('bookings'))}

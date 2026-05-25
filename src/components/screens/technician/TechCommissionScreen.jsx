@@ -231,7 +231,7 @@ export function TechCommissionScreen() {
                 const amount = parseFloat(job.amount_paid || 0);
                 const commission = parseFloat(job.commission_amount || 0);
                 return (
-                  <div key={job.id} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm space-y-4">
+                  <div key={job.id} className="bg-white rounded-[2rem] p-5 border border-gray-900 shadow-sm space-y-4">
                     <div className="flex justify-between items-start">
                       <div className="flex gap-4">
                         <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
@@ -292,7 +292,7 @@ export function TechCommissionScreen() {
               
               {paymentHistory.length > 0 ? (
                 paymentHistory.map((item) => (
-                  <div key={item.order_id} className="bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm space-y-4">
+                  <div key={item.order_id} className="bg-white rounded-[2rem] p-5 border border-gray-900 shadow-sm space-y-4">
                     <div className="flex justify-between items-center">
                       <div className="flex gap-4 items-center">
                         <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">

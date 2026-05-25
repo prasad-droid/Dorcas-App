@@ -249,7 +249,7 @@ export function SettingsScreen() {
         {/* Account Settings Group */}
         <div className="space-y-3">
           <h4 className="text-[11px] font-black text-brand/30 uppercase tracking-[0.2em] px-1">{t('identity')}</h4>
-          <div className="bg-white rounded-[2rem] border border-brand/5 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-[2rem] border border-gray-900 shadow-sm overflow-hidden">
             <SettingItem icon={User} label={t('personal_info')} value="Name, Email, Phone" onClick={() => setActiveModal('profile')} />
             <SettingItem icon={MapPin} label={t('saved_addresses')} value={profileData?.city || "Manage Addresses"} onClick={() => setActiveModal('address')} />
             <SettingItem icon={CreditCard} label={t('payment_methods')} value={t('cod')} onClick={() => setActiveModal('payment')} />
@@ -259,7 +259,7 @@ export function SettingsScreen() {
         {/* Preferences Group */}
         <div className="space-y-3">
           <h4 className="text-[11px] font-black text-brand/30 uppercase tracking-[0.2em] px-1">{t('preferences')}</h4>
-          <div className="bg-white rounded-[2rem] border border-brand/5 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-[2rem] border border-gray-900 shadow-sm overflow-hidden">
             <SettingItem
               icon={Bell}
               label={t('notifications')}
@@ -278,7 +278,7 @@ export function SettingsScreen() {
         {/* Support & About Group */}
         <div className="space-y-3">
           <h4 className="text-[11px] font-black text-brand/30 uppercase tracking-[0.2em] px-1">{t('support')}</h4>
-          <div className="bg-white rounded-[2rem] border border-brand/5 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-[2rem] border border-gray-900 shadow-sm overflow-hidden">
             <SettingItem icon={Info} label={t('help_support')} onClick={() => navigate("/support")} />
             <SettingItem icon={FileText} label={t('terms_policies')} onClick={() => navigate("/terms-policy")} />
           </div>
@@ -473,7 +473,7 @@ export function SettingsScreen() {
               {activeModal === 'notifications' && (
                 <div className="space-y-6">
                   <h3 className="text-xl font-black text-brand">{t('notification_settings')}</h3>
-                  <div className="bg-white rounded-[2rem] border border-brand/5 shadow-sm overflow-hidden">
+                  <div className="bg-white rounded-[2rem] border border-gray-900 shadow-sm overflow-hidden">
                     {[
                       { id: 'bookings', label: t('booking_updates'), desc: 'Status, timings, and vendor info' },
                       { id: 'offers', label: t('offers_rewards'), desc: 'Discounts, scratch cards, and points' },

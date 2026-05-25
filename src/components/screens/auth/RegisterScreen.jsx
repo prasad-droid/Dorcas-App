@@ -387,7 +387,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   placeholder="Enter your full name"
-                  className={`w-full bg-white border rounded-2xl py-3 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
@@ -412,7 +412,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, phoneNumber: val });
                   }}
                   placeholder="00000 00000"
-                  className={`w-full bg-white border rounded-2xl py-3 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   required
                 />
               </div>
@@ -455,7 +455,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, otp: e.target.value })
                   }
                   placeholder="Enter 6-digit OTP"
-                  className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   maxLength={6}
                   required
                 />
@@ -488,7 +488,7 @@ export const RegisterScreen = () => {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   placeholder="john@example.com"
-                  className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                 />
               </div>
             </div>
@@ -509,7 +509,7 @@ export const RegisterScreen = () => {
                       setFormData({ ...formData, city: e.target.value })
                     }
                     placeholder="City"
-                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>
@@ -529,7 +529,7 @@ export const RegisterScreen = () => {
                       setFormData({ ...formData, state: e.target.value })
                     }
                     placeholder="State"
-                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-2.5 pl-12 pr-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>
@@ -559,7 +559,7 @@ export const RegisterScreen = () => {
               </div>
               <div className="relative group">
                 <textarea
-                  className={`w-full bg-white border rounded-2xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   placeholder="Street address, building name, flat number, etc."
                   value={formData.address}
                   onChange={(e) =>
@@ -579,7 +579,7 @@ export const RegisterScreen = () => {
                 <input
                   type="text"
                   placeholder="6-digit Pincode"
-                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                   value={formData.pincode}
                   onChange={(e) =>
                     setFormData({ ...formData, pincode: e.target.value })
@@ -601,7 +601,7 @@ export const RegisterScreen = () => {
                     })
                   }
                   placeholder="Code (Optional)"
-                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-brand/10 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                  className={`w-full bg-white border rounded-2xl py-2.5 px-4 text-sm font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                 />
               </div>
             </div>

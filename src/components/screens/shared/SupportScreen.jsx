@@ -125,7 +125,7 @@ export function SupportScreen() {
 
       {/* Tabs */}
       <div className="px-5 -mt-8 relative z-20 mb-6">
-        <div className="bg-white p-1.5 rounded-2xl shadow-xl flex gap-1 border border-brand/5">
+        <div className="bg-white p-1.5 rounded-2xl shadow-xl flex gap-1 border border-gray-300">
           <button 
             onClick={() => { setActiveTab("customer"); setExpandedIndex(null); }}
             className={`flex-1 py-3 rounded-xl text-xs font-black transition-all ${activeTab === "customer" ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-brand/40"}`}
@@ -148,7 +148,7 @@ export function SupportScreen() {
             <motion.div 
               key={idx}
               layout
-              className={`bg-white rounded-3xl border border-brand/5 shadow-sm overflow-hidden transition-all ${expandedIndex === idx ? "ring-2 ring-brand/10" : ""}`}
+              className={`bg-white rounded-3xl border border-gray-300 shadow-sm overflow-hidden transition-all ${expandedIndex === idx ? "ring-2 ring-brand/10" : ""}`}
             >
               <button 
                 onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}

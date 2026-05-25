@@ -117,7 +117,7 @@ export function CategoryScreen() {
             return (
               <div
                 key={sub.id}
-                className="relative bg-brand/5 rounded-[2rem] p-5 overflow-hidden border border-brand/10 shadow-sm flex min-h-[170px]"
+                className="relative bg-brand/5 rounded-[2rem] p-5 overflow-hidden border border-gray-900 shadow-sm flex min-h-[170px]"
               >
                 {/* Left Content Side */}
                 <div className="w-[60%] z-10 flex flex-col items-start gap-2.5">

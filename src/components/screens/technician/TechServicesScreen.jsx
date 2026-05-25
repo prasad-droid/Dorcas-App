@@ -267,11 +267,22 @@ export function TechServicesScreen() {
 }
 
 function JobCard({ job, onAccept, onDetails, isOngoing, isCompleted }) {
+  const getCardBorderColor = (job, isOngoing, isCompleted) => {
+    if (isCompleted) {
+      if (job.status?.toLowerCase() === 'cancelled') return 'border-red-500';
+      return 'border-green-500';
+    }
+    if (isOngoing || job.status?.toLowerCase() === 'ongoing' || job.status?.toLowerCase() === 'pending') {
+      return 'border-yellow-500';
+    }
+    return 'border-gray-900';
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm"
+      className={`bg-white border-2 rounded-3xl p-4 shadow-sm ${getCardBorderColor(job, isOngoing, isCompleted)}`}
     >
       <div className="flex gap-3 items-start">
         <img src={job.image} alt="job" className="w-[72px] h-[72px] rounded-2xl object-cover shrink-0" />

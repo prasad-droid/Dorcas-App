@@ -50,30 +50,61 @@ export function TechHomeScreen() {
   const [selectedMonth, setSelectedMonth] = useState(null);
 
   useEffect(() => {
+    const updateLocationOnServer = async (lat, lng) => {
+      try {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        if (!token) return;
+        await fetch(`${API_BASE}/profile/update_location.php`, {
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Role": role,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ latitude: lat, longitude: lng })
+        });
+      } catch (err) {
+        console.warn("Failed to update location on server", err);
+      }
+    };
+
     const fetchLocation = async () => {
       try {
+        const handlePosition = (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setUserLocation({ lat, lng });
+          updateLocationOnServer(lat, lng);
+        };
+
         if (Capacitor.isNativePlatform()) {
           const perm = await Geolocation.checkPermissions();
           if (perm.location === 'granted') {
             const position = await Geolocation.getCurrentPosition({ timeout: 5000 });
-            setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+            handlePosition(position);
           } else if (perm.location === 'prompt') {
             const req = await Geolocation.requestPermissions();
             if (req.location === 'granted') {
               const position = await Geolocation.getCurrentPosition();
-              setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+              handlePosition(position);
             }
           }
         } else if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
-          });
+          navigator.geolocation.getCurrentPosition(handlePosition);
         }
       } catch (err) {
         console.warn("Location error:", err);
       }
     };
     fetchLocation();
+    
+    // Also set up polling for location updates every 3 minutes
+    const locationInterval = setInterval(() => {
+      fetchLocation();
+    }, 180000);
+
+    return () => clearInterval(locationInterval);
   }, []);
 
   useEffect(() => {
@@ -315,13 +346,14 @@ export function TechHomeScreen() {
         {/* Dashboard Content (Visible) */}
         <div>
           {/* Active Work / Request Card */}
-          <AnimatePresence mode="wait">
-            {activeJob ? (
+          <div className="space-y-4">
+            <AnimatePresence>
+              {activeJob && (
               <motion.div
                 key="active-job"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border border-brand rounded-xl p-4 shadow-md relative overflow-hidden"
+                className="bg-white border-[3px] border-yellow-500 rounded-xl p-4 shadow-md relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 bg-brand text-white px-3 py-1 rounded-bl-lg text-[9px] font-black uppercase tracking-widest">{t('ongoing')}</div>
                 <div className="flex gap-4 mb-4">
@@ -342,9 +374,10 @@ export function TechHomeScreen() {
                   {t('view_details')}
                 </button>
               </motion.div>
-            ) : availableRequests.length > 0 ? (
-              <motion.div
-                key="new-request"
+              )}
+              {availableRequests.length > 0 && (
+                <motion.div
+                  key="new-request"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="gradient-border-green rounded-[1.5rem] p-4 shadow-md overflow-hidden relative"
@@ -391,22 +424,25 @@ export function TechHomeScreen() {
                     {t('ignore')}
                   </button>
                 </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="waiting"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="bg-brand/5 border border-dashed border-brand/20 rounded-xl p-8 flex flex-col items-center justify-center text-center"
-              >
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand mb-3 shadow-sm">
-                  <Clock size={24} className="animate-pulse" />
-                </div>
-                <h3 className="font-black text-brand text-sm">{t('waiting_jobs')}</h3>
-                <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest mt-1">{t('waiting_desc')}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+              {!activeJob && availableRequests.length === 0 && (
+                <motion.div
+                  key="waiting"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="bg-brand/5 border border-dashed border-brand/20 rounded-xl p-8 flex flex-col items-center justify-center text-center"
+                >
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand mb-3 shadow-sm">
+                    <Clock size={24} className="animate-pulse" />
+                  </div>
+                  <h3 className="font-black text-brand text-sm">{t('waiting_jobs')}</h3>
+                  <p className="text-[10px] font-bold text-brand/40 uppercase tracking-widest mt-1">{t('waiting_desc')}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Commission Due Alert */}
           <AnimatePresence>
@@ -439,7 +475,7 @@ export function TechHomeScreen() {
             <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('performance_overview')}</h3>
 
             {/* Main Graph Card */}
-            <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm">
+            <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm">
               <div className="flex justify-between items-end mb-8">
                 <div>
                   <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest mb-1">{t('monthly_analytics')}</p>
@@ -537,7 +573,7 @@ export function TechHomeScreen() {
                   <div
                     key={i}
                     onClick={() => stat.label === t('avg_rating') && navigate("/tech/reviews")}
-                    className={`bg-white rounded-[2rem] p-5 border border-brand/5 shadow-sm ${stat.label === t('avg_rating') ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
+                    className={`bg-white rounded-[2rem] p-5 border border-gray-900 shadow-sm ${stat.label === t('avg_rating') ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
                   >
                     <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
                       <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
@@ -562,7 +598,7 @@ export function TechHomeScreen() {
           <div className="grid grid-cols-1 gap-6 mt-5">
             <div className="space-y-4">
               <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('top_services')}</h3>
-              <div className="bg-white rounded-[2rem] p-6 border border-brand/5 shadow-sm space-y-4">
+              <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm space-y-4">
                 {techStats?.top_services && techStats.top_services.length > 0 ? techStats.top_services.map((s, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -579,7 +615,7 @@ export function TechHomeScreen() {
               <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('recent_completed')}</h3>
               <div className="space-y-3">
                 {techStats?.recent_completed && techStats.recent_completed.length > 0 ? techStats.recent_completed.map((job, i) => (
-                  <div key={i} className="bg-white p-4 rounded-2xl border border-brand/5 shadow-sm flex items-center justify-between">
+                  <div key={i} className="bg-white p-4 rounded-2xl border border-gray-900 shadow-sm flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
                         <CheckCircle2 size={20} />

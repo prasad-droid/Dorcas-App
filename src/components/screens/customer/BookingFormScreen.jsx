@@ -265,7 +265,7 @@ export function BookingFormScreen() {
 
       <div className="px-6 pb-30">
         {/* Service Summary Card */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-brand/5 mb-8 mt-4">
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-900 mb-8 mt-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center text-brand">
               <Shield size={28} />
@@ -324,7 +324,7 @@ export function BookingFormScreen() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
-                  className="w-full bg-white border border-brand/5 text-brand rounded-2xl pt-5.5 pb-4 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm resize-none"
+                  className="w-full bg-white border border-gray-900 text-brand rounded-2xl pt-5.5 pb-4 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm resize-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -349,7 +349,7 @@ export function BookingFormScreen() {
                 placeholder={t('special_instructions')}
                 value={formData.instructions}
                 onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                className="w-full bg-white border border-brand/5 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
+                className="w-full bg-white border border-gray-900 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
               />
             </div>
           </div>
@@ -439,7 +439,7 @@ function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, ma
         onChange={(e) => onChange(e.target.value)}
         maxLength={maxLength}
         required
-        className="w-full bg-white border border-brand/5 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
+        className="w-full bg-white border border-gray-900 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
       />
     </div>
   );
@@ -492,7 +492,7 @@ function BookingSuccessView({ details, onClose, card }) {
         <p className="text-brand/50 font-bold mt-1 uppercase text-[10px] tracking-widest">Job ID: {card?.booking_id || "PENDING"}</p>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-brand/5 mb-8">
+      <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-900 mb-8">
         <h3 className="text-sm font-black text-brand/30 uppercase tracking-widest mb-6">{t('view_details')}</h3>
         <div className="space-y-4">
           <DetailRow label={t('home')} value={details.service} />
