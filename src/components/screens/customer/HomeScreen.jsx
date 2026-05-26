@@ -283,7 +283,7 @@ export function HomeScreen() {
       </div>
 
       {/* Search Bar */}
-      <div className="relative mx-auto mt-5 w-80">
+      <div className="relative mx-auto mt-5 w-80 ">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ">
           <Search size={18} className="text-brand/50" />
         </div>
@@ -296,7 +296,7 @@ export function HomeScreen() {
               navigate(`/bookings?q=${encodeURIComponent(searchQuery)}`);
             }
           }}
-          className="w-full bg-base text-brand rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
+          className="w-full bg-base text-brand border-2 border-red-400 rounded-2xl py-3 pl-11 pr-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-base shadow-sm placeholder:text-brand/40"
           placeholder={t('search_placeholder')}
         />
 
@@ -347,13 +347,13 @@ export function HomeScreen() {
           </div>
           <div className="flex items-center gap-2 bg-brand/5 px-3 py-2 rounded-xl border border-gray-200">
             <Gift size={16} className="text-brand" />
-            <span className="text-xs font-black text-brand">{profileData?.stats?.value2 || 0} pts</span>
             <ArrowRight size={14} className="text-brand/40 ml-1" />
           </div>
         </motion.div>
+        
 
         {/* Animated Video/Image Grid Section */}
-        <section className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-lg border-4 border-base">
+        <section className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-lg border-4 border-emerald-400 p-5">
           <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-[2px] bg-base">
             <div className="relative overflow-hidden bg-brand/10">
               <img src="services/cleaning.png" alt="Cleaning" className="w-full h-full object-cover animate-[pulse_4s_ease-in-out_infinite]" />
@@ -396,15 +396,20 @@ export function HomeScreen() {
           </div>
 
           <div className="grid grid-cols-4 gap-x-2 gap-y-4">
-            {(categories.length > 0 ? categories : fallbackCategories).slice(0, 11).map((service) => {
+            {(categories.length > 0 ? categories : fallbackCategories).slice(0, 11).map((service, idx) => {
               const Icon = service.icon || LayoutGrid;
+              let borderColor = "border-gray-400";
+              if (idx < 4) borderColor = "border-green-400";
+              else if (idx < 8) borderColor = "border-yellow-400";
+              else borderColor = "border-blue-400";
+
               return (
                 <div
                   key={service.id}
                   onClick={() => navigate(`/category/${service.id}?name=${encodeURIComponent(service.name)}`)}
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
-                  <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-brand/20 transition-colors border border-gray-400">
+                  <div className={`w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-brand/20 transition-colors border-2 ${borderColor}`}>
                     <Icon size={24} strokeWidth={2} className="text-brand" />
                   </div>
                   <span className="text-[10px] font-semibold text-brand text-center leading-tight w-full break-words px-1">
@@ -417,7 +422,7 @@ export function HomeScreen() {
               onClick={() => navigate("/bookings")}
               className="flex flex-col items-center gap-2 group cursor-pointer"
             >
-              <div className="w-14 h-14 brand-gradient rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+              <div className="w-14 h-14 brand-gradient rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-blue-400">
                 <ArrowRight size={24} strokeWidth={2.5} className="text-base" />
               </div>
               <span className="text-[10px] font-semibold text-brand text-center leading-tight w-full break-words px-1">
@@ -504,7 +509,7 @@ export function HomeScreen() {
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {(categoryDetails[activeCategory] || []).map((svc) => (
-              <div key={svc.id} onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-gray-900">
+              <div key={svc.id} onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}&category=${encodeURIComponent(activeCategory)}`)} className="relative w-full h-[180px] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(13,110,253,0.15)] group cursor-pointer border border-gray-900">
                 <img src={svc.image} alt={svc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
                 <div className="absolute bottom-0 w-full p-4 flex justify-between items-end z-10">

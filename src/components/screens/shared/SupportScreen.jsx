@@ -199,14 +199,14 @@ export function SupportScreen() {
               <div className="space-y-3">
                  <div className="grid grid-cols-2 gap-3">
                     <button 
-                      onClick={() => window.location.href = 'tel:022234567890'}
+                      onClick={() => window.location.href = 'tel:8624939757'}
                       className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
                     >
                        <Phone size={16} />
-                       022 234567890
+                       8624939757
                     </button>
                     <button 
-                      onClick={() => window.location.href = 'mailto:support@dorcasaid.com'}
+                      onClick={() => window.location.href = 'mailto:Enquiry.dorcasaid@gmail.com'}
                       className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
                     >
                        <Mail size={16} />

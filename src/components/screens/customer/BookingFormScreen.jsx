@@ -44,6 +44,24 @@ export function BookingFormScreen() {
   });
 
   const serviceName = queryParams.get("name") || "Home Cleaning";
+  const categoryName = queryParams.get("category") || "Other Services";
+
+  const categoryStyles = {
+    "Appliance": { border: "border-blue-500", bg: "bg-blue-600", text: "text-blue-700", bgLight: "bg-blue-100", borderCard: "border-blue-400" },
+    "AC Services": { border: "border-gray-400", bg: "bg-gray-600", text: "text-gray-700", bgLight: "bg-gray-100", borderCard: "border-gray-400" },
+    "Salon": { border: "border-pink-400", bg: "bg-pink-500", text: "text-pink-600", bgLight: "bg-pink-100", borderCard: "border-pink-400" },
+    "Cleaning": { border: "border-emerald-400", bg: "bg-emerald-500", text: "text-emerald-700", bgLight: "bg-emerald-100", borderCard: "border-emerald-400" },
+    "Home Repair": { border: "border-orange-400", bg: "bg-orange-500", text: "text-orange-600", bgLight: "bg-orange-100", borderCard: "border-orange-400" },
+    "Packing & Movers": { border: "border-yellow-400", bg: "bg-yellow-500", text: "text-yellow-700", bgLight: "bg-yellow-100", borderCard: "border-yellow-400" },
+    "IT Service": { border: "border-purple-400", bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-100", borderCard: "border-purple-400" },
+    "Home Health Care": { border: "border-teal-400", bg: "bg-teal-500", text: "text-teal-700", bgLight: "bg-teal-100", borderCard: "border-teal-400" },
+    "Legal & Doc.": { border: "border-indigo-400", bg: "bg-indigo-500", text: "text-indigo-600", bgLight: "bg-indigo-100", borderCard: "border-indigo-400" },
+    "Legal & Documentation": { border: "border-indigo-400", bg: "bg-indigo-500", text: "text-indigo-600", bgLight: "bg-indigo-100", borderCard: "border-indigo-400" },
+    "Event & Party": { border: "border-rose-400", bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-100", borderCard: "border-rose-400" },
+    "Other Services": { border: "border-cyan-400", bg: "bg-cyan-500", text: "text-cyan-700", bgLight: "bg-cyan-100", borderCard: "border-cyan-400" }
+  };
+
+  const theme = categoryStyles[categoryName] || categoryStyles["Other Services"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -265,14 +283,14 @@ export function BookingFormScreen() {
 
       <div className="px-6 pb-30">
         {/* Service Summary Card */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-900 mb-8 mt-4">
+        <div className={`bg-white rounded-3xl p-6 shadow-sm border-2 ${theme.borderCard} mb-8 mt-4`}>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-brand/10 rounded-2xl flex items-center justify-center text-brand">
+            <div className={`w-14 h-14 ${theme.bgLight} rounded-2xl flex items-center justify-center ${theme.text}`}>
               <Shield size={28} />
             </div>
             <div>
               <h2 className="text-xl font-black text-brand leading-tight">{serviceName}</h2>
-              <p className="text-xs font-bold text-brand/40 uppercase tracking-widest mt-1">Premium Home Service</p>
+              <p className={`text-xs font-bold ${theme.text} uppercase tracking-widest mt-1`}>Premium Home Service</p>
             </div>
           </div>
         </div>
@@ -283,8 +301,8 @@ export function BookingFormScreen() {
             <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1">{t('personal_info')}</h3>
 
             <div className="grid grid-cols-1 gap-4">
-              <FormInput icon={User} placeholder={t('full_name')} value={formData.fullName} onChange={(val) => setFormData({ ...formData, fullName: val })} />
-              <FormInput icon={Phone} placeholder={t('mobile_number')} type="tel" value={formData.phoneNumber} onChange={(val) => setFormData({ ...formData, phoneNumber: val })} />
+              <FormInput icon={User} placeholder={t('full_name')} value={formData.fullName} onChange={(val) => setFormData({ ...formData, fullName: val })} theme={theme} />
+              <FormInput icon={Phone} placeholder={t('mobile_number')} type="tel" value={formData.phoneNumber} onChange={(val) => setFormData({ ...formData, phoneNumber: val })} theme={theme} />
             </div>
 
             <div className="flex items-center justify-between mt-6 px-1">
@@ -324,19 +342,19 @@ export function BookingFormScreen() {
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
-                  className="w-full bg-white border border-gray-900 text-brand rounded-2xl pt-5.5 pb-4 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm resize-none"
+                  className={`w-full bg-white border-2 ${theme.borderCard} text-brand rounded-2xl pt-5.5 pb-4 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 transition-all placeholder:text-brand/20 shadow-sm resize-none`}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <FormInput icon={MapPin} placeholder={t('city')} value={formData.city} onChange={(val) => setFormData({ ...formData, city: val })} />
-                <FormInput icon={MapPin} placeholder={t('pincode')} maxLength={6} value={formData.pincode} onChange={(val) => setFormData({ ...formData, pincode: val })} />
+                <FormInput icon={MapPin} placeholder={t('city')} value={formData.city} onChange={(val) => setFormData({ ...formData, city: val })} theme={theme} />
+                <FormInput icon={MapPin} placeholder={t('pincode')} maxLength={6} value={formData.pincode} onChange={(val) => setFormData({ ...formData, pincode: val })} theme={theme} />
               </div>
             </div>
 
             <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1 mt-6">Schedule Preference</h3>
             <div className="grid grid-cols-2 gap-4">
-              <FormInput icon={Calendar} placeholder={t('service_date')} type="date" value={formData.date} onChange={(val) => setFormData({ ...formData, date: val })} />
-              <FormInput icon={Clock} placeholder={t('preferred_time')} type="time" value={formData.time} onChange={(val) => setFormData({ ...formData, time: val })} />
+              <FormInput icon={Calendar} placeholder={t('service_date')} type="date" value={formData.date} onChange={(val) => setFormData({ ...formData, date: val })} theme={theme} />
+              <FormInput icon={Clock} placeholder={t('preferred_time')} type="time" value={formData.time} onChange={(val) => setFormData({ ...formData, time: val })} theme={theme} />
             </div>
 
             <h3 className="text-[11px] font-black text-brand/40 uppercase tracking-[2px] px-1 mt-6">Additional Info</h3>
@@ -349,7 +367,7 @@ export function BookingFormScreen() {
                 placeholder={t('special_instructions')}
                 value={formData.instructions}
                 onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-                className="w-full bg-white border border-gray-900 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
+                className={`w-full bg-white border-2 ${theme.borderCard} text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 transition-all placeholder:text-brand/20 shadow-sm`}
               />
             </div>
           </div>
@@ -412,7 +430,7 @@ export function BookingFormScreen() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isSubmitting}
-              className={`w-full brand-gradient text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(21,84,171,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
+              className={`w-full ${theme.bg} text-white py-5 rounded-[2rem] text-[17px] font-black shadow-[0_15px_35px_rgba(21,84,171,0.3)] transition-all flex items-center justify-center gap-3 ${isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"}`}
             >
               {isSubmitting ? t('loading') : t('confirm_booking')}
               {!isSubmitting && <Shield size={20} />}
@@ -426,7 +444,7 @@ export function BookingFormScreen() {
   );
 }
 
-function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, maxLength }) {
+function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, maxLength, theme }) {
   return (
     <div className="relative group">
       <div className="absolute left-5 top-1/2 -translate-y-1/2 text-brand/20 group-focus-within:text-brand transition-colors">
@@ -439,7 +457,7 @@ function FormInput({ icon: Icon, placeholder, type = "text", value, onChange, ma
         onChange={(e) => onChange(e.target.value)}
         maxLength={maxLength}
         required
-        className="w-full bg-white border border-gray-900 text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 focus:border-brand/20 transition-all placeholder:text-brand/20 shadow-sm"
+        className={`w-full bg-white border-2 ${theme?.borderCard || 'border-gray-900'} text-brand rounded-2xl py-4.5 pl-14 pr-6 text-[15px] font-bold focus:outline-none focus:ring-4 focus:ring-brand/5 transition-all placeholder:text-brand/20 shadow-sm`}
       />
     </div>
   );

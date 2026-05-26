@@ -10,6 +10,21 @@ const stripHtml = (html) => {
   return html.replace(/<[^>]*>?/gm, '');
 };
 
+const categoryStyles = {
+  "Appliance": { border: "border-blue-500", bg: "bg-blue-600", text: "text-blue-700", bgLight: "bg-blue-100" },
+  "AC Services": { border: "border-gray-400", bg: "bg-gray-600", text: "text-gray-700", bgLight: "bg-gray-100" },
+  "Salon": { border: "border-pink-400", bg: "bg-pink-500", text: "text-pink-600", bgLight: "bg-pink-100" },
+  "Cleaning": { border: "border-emerald-400", bg: "bg-emerald-500", text: "text-emerald-700", bgLight: "bg-emerald-100" },
+  "Home Repair": { border: "border-orange-400", bg: "bg-orange-500", text: "text-orange-600", bgLight: "bg-orange-100" },
+  "Packing & Movers": { border: "border-yellow-400", bg: "bg-yellow-500", text: "text-yellow-700", bgLight: "bg-yellow-100" },
+  "IT Service": { border: "border-purple-400", bg: "bg-purple-500", text: "text-purple-600", bgLight: "bg-purple-100" },
+  "Home Health Care": { border: "border-teal-400", bg: "bg-teal-500", text: "text-teal-700", bgLight: "bg-teal-100" },
+  "Legal & Doc.": { border: "border-indigo-400", bg: "bg-indigo-500", text: "text-indigo-600", bgLight: "bg-indigo-100" },
+  "Legal & Documentation": { border: "border-indigo-400", bg: "bg-indigo-500", text: "text-indigo-600", bgLight: "bg-indigo-100" },
+  "Event & Party": { border: "border-rose-400", bg: "bg-rose-500", text: "text-rose-600", bgLight: "bg-rose-100" },
+  "Other Services": { border: "border-cyan-400", bg: "bg-cyan-500", text: "text-cyan-700", bgLight: "bg-cyan-100" }
+};
+
 export function BookingsScreen() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -146,8 +161,10 @@ export function BookingsScreen() {
               <p className="text-brand/50 font-bold text-sm">{t('finding_services')}</p>
             </div>
           ) : filteredServices.length > 0 ? (
-            filteredServices.map((svc) => (
-              <div key={svc.id} className="bg-base border border-gray-300 rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden">
+            filteredServices.map((svc) => {
+              const theme = categoryStyles[svc.categoryName] || { border: "border-gray-300", bg: "bg-blue-600", text: "text-blue-700", bgLight: "bg-blue-100" };
+              return (
+              <div key={svc.id} className={`bg-base border-2 ${theme.border} rounded-3xl p-4 shadow-[0_6px_24px_rgba(13,110,253,0.08)] relative overflow-hidden`}>
 
                 {/* Details */}
                 <div className="flex gap-3 items-start">
@@ -155,7 +172,7 @@ export function BookingsScreen() {
                   <div className="flex-1 min-w-0 pt-0.5">
                     <div className="flex justify-between items-start mb-1">
                       <h3 className="text-[14px] font-bold text-brand leading-tight truncate pr-2">{svc.name}</h3>
-                      <span className="bg-brand/10 text-brand px-2 py-1 rounded-lg text-[9px] uppercase tracking-wider font-bold shrink-0 line-clamp-1 max-w-[80px] text-center">{svc.categoryName}</span>
+                      <span className={`${theme.bgLight} ${theme.text} px-2 py-1 rounded-lg text-[9px] uppercase tracking-wider font-bold shrink-0 line-clamp-1 max-w-[80px] text-center`}>{svc.categoryName}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5 mb-2">
@@ -169,13 +186,13 @@ export function BookingsScreen() {
 
                 {/* Actions */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  <button onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}`)} className="flex items-center justify-center gap-2 brand-gradient text-white py-[12px] rounded-2xl text-[13px] font-bold shadow-md shadow-brand/20 hover:opacity-90 transition-opacity">
+                  <button onClick={() => navigate(`/book/${svc.id}/0?name=${encodeURIComponent(svc.name)}&category=${encodeURIComponent(svc.categoryName)}`)} className={`flex items-center justify-center gap-2 ${theme.bg} text-white py-[12px] rounded-2xl text-[13px] font-bold shadow-md hover:opacity-90 transition-opacity`}>
                     <CalendarCheck size={16} />
                     {t('book_now')}
                   </button>
                 </div>
               </div>
-            ))
+            )})
           ) : (
             <div className="pt-10 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 bg-brand/5 rounded-full flex items-center justify-center mb-4">

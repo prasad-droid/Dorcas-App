@@ -17,10 +17,12 @@ export function SettingsScreen() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { showToast } = useToast();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [localImage, setLocalImage] = useState(null);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editedAddress, setEditedAddress] = useState("");
   const [editedCity, setEditedCity] = useState("");
 
@@ -109,6 +111,38 @@ export function SettingsScreen() {
       console.error("Address update error:", error);
     } finally {
       setIsEditingAddress(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+
+      const response = await fetch(`${API_BASE}/profile/request_account_deletion.php`, {
+        method: 'POST',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Role": role,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ reason: "User requested from app settings" })
+      });
+
+      const data = await response.json();
+      
+      if (data.status) {
+        showToast(data.message || "Account deletion request sent to admin.", "success");
+        setActiveModal(null);
+      } else {
+        showToast(data.message || "Failed to submit request.", "error");
+      }
+    } catch (error) {
+      console.error("Account deletion request error:", error);
+      showToast("Something went wrong. Try again.", "error");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -289,7 +323,7 @@ export function SettingsScreen() {
           <h4 className="text-[11px] font-black text-red-300 uppercase tracking-[0.2em] px-1">{t('danger_zone')}</h4>
           <div className="bg-red-50 rounded-[2rem] border border-red-100 overflow-hidden">
             <SettingItem icon={LogOut} label={t('sign_out')} color="red" onClick={logout} />
-            <SettingItem icon={Trash2} label={t('delete_account')} color="red" onClick={() => setActiveModal('delete')} />
+            <SettingItem icon={Trash2} label="Request Account Deletion" color="red" onClick={() => setActiveModal('delete')} />
           </div>
         </div>
 
@@ -515,8 +549,12 @@ export function SettingsScreen() {
                     <p className="text-sm font-semibold text-brand/60 mt-2 leading-relaxed">{t('delete_confirm')}</p>
                   </div>
                   <div className="flex flex-col gap-3">
-                    <button className="w-full bg-red-500 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-500/20 active:scale-95 transition-transform">
-                      {t('yes_delete')}
+                    <button 
+                      onClick={handleDeleteAccount}
+                      disabled={isDeleting}
+                      className={`w-full bg-red-500 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-500/20 transition-transform ${isDeleting ? "opacity-70 cursor-not-allowed" : "active:scale-95"}`}
+                    >
+                      {isDeleting ? "Sending Request..." : "Yes, Request Deletion"}
                     </button>
                     <button
                       onClick={() => setActiveModal(null)}

@@ -134,7 +134,7 @@ export function CategoryScreen() {
                   <button
                     onClick={() =>
                       navigate(
-                        `/book/${sub.id}/0?name=${encodeURIComponent(sub.name)}`,
+                        `/book/${sub.id}/0?name=${encodeURIComponent(sub.name)}&category=${encodeURIComponent(categoryName)}`,
                       )
                     }
                     className="mt-auto brand-gradient text-white px-5 py-2.5 rounded-full text-xs font-bold hover:opacity-90 transition-opacity shadow-sm"

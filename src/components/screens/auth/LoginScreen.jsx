@@ -184,7 +184,7 @@ export const LoginScreen = () => {
           </div>
 
           {/* Role Selector */}
-          <div className={`flex p-1 rounded-2xl mb-5 border ${isTech ? "bg-emerald-50 border-emerald-100" : "bg-brand/5 border-brand/5"}`}>
+          <div className={`flex p-1 rounded-2xl mb-5 border-2 ${isTech ? "bg-emerald-50 border-emerald-400" : "bg-brand/5 border-blue-400"}`}>
             <button
               type="button"
               onClick={() => setAuthMode("customer")}
@@ -208,7 +208,7 @@ export const LoginScreen = () => {
                   Full Name
                 </label>
                 <div className="relative group">
-                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600" : "text-brand/30 group-focus-within:text-brand"}`}>
+                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors border-2 ${isTech ? "text-emerald-600/30 group-focus-within:text-emerald-600 border-emrald-400" : "text-brand/30 group-focus-within:text-brand"}`}>
                     <User size={18} />
                   </div>
                   <input
@@ -216,7 +216,7 @@ export const LoginScreen = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your full name"
-                    className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-3.5 pl-12 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-2 border-emerald-600 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-2 border-blue-400 text-blue-900 focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>
@@ -241,7 +241,7 @@ export const LoginScreen = () => {
                       setPhoneNumber(val);
                     }}
                     placeholder="00000 00000"
-                    className={`w-full bg-white border rounded-2xl py-3.5 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-emerald-600/20 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-gray-900 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
+                    className={`w-full bg-white border rounded-2xl py-3.5 pl-20 pr-4 text-base font-semibold focus:outline-none focus:ring-4 transition-all shadow-sm ${isTech ? "border-2 border-emerald-600 text-emerald-700 focus:ring-emerald-500/5 focus:border-emerald-600/40 placeholder:text-emerald-600/40" : "border-2 border-blue-400 text-brand focus:ring-brand/5 focus:border-brand/40 placeholder:text-brand/45"}`}
                     required
                   />
                 </div>
