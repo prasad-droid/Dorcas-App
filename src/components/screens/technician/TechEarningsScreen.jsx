@@ -208,7 +208,7 @@ export function TechEarningsScreen() {
           </div>
 
           {/* Pending Commissions Card (New) */}
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 flex items-center justify-between shadow-sm">
+          <div className="bg-amber-50 border-2 border-amber-500 rounded-2xl p-5 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600">
                 <Wallet size={20} />

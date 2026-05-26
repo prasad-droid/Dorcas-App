@@ -98,7 +98,7 @@ export function TechHomeScreen() {
       }
     };
     fetchLocation();
-    
+
     // Also set up polling for location updates every 3 minutes
     const locationInterval = setInterval(() => {
       fetchLocation();
@@ -349,81 +349,81 @@ export function TechHomeScreen() {
           <div className="space-y-4">
             <AnimatePresence>
               {activeJob && (
-              <motion.div
-                key="active-job"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white border-[3px] border-yellow-500 rounded-xl p-4 shadow-md relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 bg-brand text-white px-3 py-1 rounded-bl-lg text-[9px] font-black uppercase tracking-widest">{t('ongoing')}</div>
-                <div className="flex gap-4 mb-4">
-                  <div className="w-16 h-16 bg-brand/5 rounded-lg flex items-center justify-center text-brand shrink-0">
-                    <img src={`https://dorcasaid.com/${activeJob.image}`} alt="" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-black text-brand text-lg leading-tight">{activeJob.service_name || activeJob.category_name}</h3>
-                    <p className="text-xs font-bold text-brand/40 flex items-center gap-1 mt-1">
-                      <MapPin size={10} /> {activeJob.address || "Location TBD"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigate(`/tech/job/${activeJob.id}`)}
-                  className="w-full bg-brand text-white py-3 rounded-lg font-bold text-sm shadow-sm active:scale-95 transition-transform"
+                <motion.div
+                  key="active-job"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white border-[3px] border-yellow-500 rounded-xl p-4 shadow-md relative overflow-hidden"
                 >
-                  {t('view_details')}
-                </button>
-              </motion.div>
+                  <div className="absolute top-0 right-0 bg-brand text-white px-3 py-1 rounded-bl-lg text-[9px] font-black uppercase tracking-widest">{t('ongoing')}</div>
+                  <div className="flex gap-4 mb-4">
+                    <div className="w-16 h-16 bg-brand/5 rounded-lg flex items-center justify-center text-brand shrink-0">
+                      <img src={`https://dorcasaid.com/${activeJob.image}`} alt="" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-black text-brand text-lg leading-tight">{activeJob.service_name || activeJob.category_name}</h3>
+                      <p className="text-xs font-bold text-brand/40 flex items-center gap-1 mt-1">
+                        <MapPin size={10} /> {activeJob.address || "Location TBD"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/tech/job/${activeJob.id}`)}
+                    className="w-full bg-brand text-white py-3 rounded-lg font-bold text-sm shadow-sm active:scale-95 transition-transform"
+                  >
+                    {t('view_details')}
+                  </button>
+                </motion.div>
               )}
               {availableRequests.length > 0 && (
                 <motion.div
                   key="new-request"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="gradient-border-green rounded-[1.5rem] p-4 shadow-md overflow-hidden relative"
-              >
-                <div className="flex gap-4">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-black/[0.02] bg-brand/5 flex items-center justify-center">
-                    <img
-                      src={availableRequests[0].image}
-                      className="w-full h-full object-contain p-2"
-                      alt="Service"
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between py-1">
-                    <div>
-                      <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-black text-brand/30 uppercase tracking-widest">New Request</span>
-                        <span className="text-sm font-black text-brand">₹{availableRequests[0].service_price || 0}</span>
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="gradient-border-green rounded-[1.5rem] p-4 shadow-md overflow-hidden relative"
+                >
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 border border-black/[0.02] bg-brand/5 flex items-center justify-center">
+                      <img
+                        src={availableRequests[0].image}
+                        className="w-full h-full object-contain p-2"
+                        alt="Service"
+                      />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between py-1">
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <span className="text-[10px] font-black text-brand/30 uppercase tracking-widest">New Request</span>
+                          <span className="text-sm font-black text-brand">₹{availableRequests[0].service_price || 0}</span>
+                        </div>
+                        <h3 className="font-black text-brand text-base mt-0.5 leading-tight">{availableRequests[0].service_name || availableRequests[0].title}</h3>
+                        <p className="text-[11px] font-bold text-brand/40 flex items-center gap-1 mt-1">
+                          <MapPin size={10} /> {availableRequests[0].city || "Nearby"} • {availableRequests[0].distance || "2.4 km"}
+                        </p>
                       </div>
-                      <h3 className="font-black text-brand text-base mt-0.5 leading-tight">{availableRequests[0].service_name || availableRequests[0].title}</h3>
-                      <p className="text-[11px] font-bold text-brand/40 flex items-center gap-1 mt-1">
-                        <MapPin size={10} /> {availableRequests[0].city || "Nearby"} • {availableRequests[0].distance || "2.4 km"}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="px-2 py-1 bg-gray-50 rounded-md text-[9px] font-black text-brand/60 uppercase border border-black/[0.02]">{availableRequests[0].time || "Today"}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="px-2 py-1 bg-gray-50 rounded-md text-[9px] font-black text-brand/60 uppercase border border-black/[0.02]">{availableRequests[0].time || "Today"}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex gap-2 mt-4">
-                  <button
-                    onClick={() => {
-                      if (availableRequests[0].is_fake) {
-                        navigate("/tech/verification");
-                      } else {
-                        navigate(`/tech/job/${availableRequests[0].id}`);
-                      }
-                    }}
-                    className="flex-1 bg-brand text-white py-2.5 rounded-lg font-bold text-sm shadow-sm active:scale-95 transition-transform"
-                  >
-                    {availableRequests[0].is_fake ? "Verify to Accept" : t('view_accept')}
-                  </button>
-                  <button className="px-5 bg-gray-50 text-brand/40 py-2.5 rounded-lg font-bold text-sm border border-black/[0.02] active:scale-95 transition-transform">
-                    {t('ignore')}
-                  </button>
-                </div>
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => {
+                        if (availableRequests[0].is_fake) {
+                          navigate("/tech/verification");
+                        } else {
+                          navigate(`/tech/job/${availableRequests[0].id}`);
+                        }
+                      }}
+                      className="flex-1 bg-brand text-white py-2.5 rounded-lg font-bold text-sm shadow-sm active:scale-95 transition-transform"
+                    >
+                      {availableRequests[0].is_fake ? "Verify to Accept" : t('view_accept')}
+                    </button>
+                    <button className="px-5 bg-gray-50 text-brand/40 py-2.5 rounded-lg font-bold text-sm border border-black/[0.02] active:scale-95 transition-transform">
+                      {t('ignore')}
+                    </button>
+                  </div>
                 </motion.div>
               )}
               {!activeJob && availableRequests.length === 0 && (
@@ -432,7 +432,7 @@ export function TechHomeScreen() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="bg-brand/5 border border-dashed border-brand/20 rounded-xl p-8 flex flex-col items-center justify-center text-center"
+                  className="bg-brand/5 border-2 border-emerald-400 rounded-xl p-8 flex flex-col items-center justify-center text-center"
                 >
                   <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-brand mb-3 shadow-sm">
                     <Clock size={24} className="animate-pulse" />
@@ -451,7 +451,7 @@ export function TechHomeScreen() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 bg-red-50 border border-red-100 rounded-2xl p-4 flex gap-4 items-center"
+                className="mt-4 bg-red-50 border-2 border-red-400 rounded-2xl p-4 flex gap-4 items-center"
               >
                 <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 shrink-0">
                   <IndianRupee size={24} />
@@ -475,7 +475,7 @@ export function TechHomeScreen() {
             <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('performance_overview')}</h3>
 
             {/* Main Graph Card */}
-            <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm">
+            <div className="bg-white rounded-[2rem] p-6 border-2 border-purple-600 shadow-sm">
               <div className="flex justify-between items-end mb-8">
                 <div>
                   <p className="text-[10px] font-black text-brand/30 uppercase tracking-widest mb-1">{t('monthly_analytics')}</p>
@@ -565,15 +565,15 @@ export function TechHomeScreen() {
 
               {
                 [
-                  { label: t('avg_rating'), value: stats.avgRating, icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
-                  { label: "Acceptance Rate", value: techStats?.activity?.acceptance_rate || stats.acceptanceRate, icon: Zap, color: "text-purple-500", bg: "bg-purple-50" },
-                  { label: "Completed Jobs", value: techStats?.activity?.total_completed || stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
-                  { label: "Missed / Declined", value: techStats?.activity ? (parseInt(techStats.activity.total_declined) + parseInt(techStats.activity.total_expired)) : "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" }
+                  { label: t('avg_rating'), value: stats.avgRating, icon: Star, color: "text-amber-500", bg: "bg-amber-50", border: "border-yellow-500" },
+                  { label: "Acceptance Rate", value: techStats?.activity?.acceptance_rate || stats.acceptanceRate, icon: Zap, color: "text-purple-500", bg: "bg-purple-50", border: 'border-purple-500' },
+                  { label: "Completed Jobs", value: techStats?.activity?.total_completed || stats.completedJobs, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50", border: 'border-emerald-500' },
+                  { label: "Missed / Declined", value: techStats?.activity ? (parseInt(techStats.activity.total_declined) + parseInt(techStats.activity.total_expired)) : "0", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50", border: 'border-red-500' }
                 ].map((stat, i) => (
                   <div
                     key={i}
                     onClick={() => stat.label === t('avg_rating') && navigate("/tech/reviews")}
-                    className={`bg-white rounded-[2rem] p-5 border border-gray-900 shadow-sm ${stat.label === t('avg_rating') ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
+                    className={`bg-white rounded-[2rem] p-5 border-2 ${stat.border} shadow-sm ${stat.label === t('avg_rating') ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
                   >
                     <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color} mb-3`}>
                       <stat.icon size={18} fill={stat.icon === Star ? "currentColor" : "none"} />
@@ -598,7 +598,7 @@ export function TechHomeScreen() {
           <div className="grid grid-cols-1 gap-6 mt-5">
             <div className="space-y-4">
               <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('top_services')}</h3>
-              <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm space-y-4">
+              <div className="bg-white rounded-[2rem] p-6 border-2 border-blue-500 shadow-sm space-y-4">
                 {techStats?.top_services && techStats.top_services.length > 0 ? techStats.top_services.map((s, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -615,7 +615,7 @@ export function TechHomeScreen() {
               <h3 className="text-[11px] font-black text-brand/80 uppercase tracking-widest px-1">{t('recent_completed')}</h3>
               <div className="space-y-3">
                 {techStats?.recent_completed && techStats.recent_completed.length > 0 ? techStats.recent_completed.map((job, i) => (
-                  <div key={i} className="bg-white p-4 rounded-2xl border border-gray-900 shadow-sm flex items-center justify-between">
+                  <div key={i} className="bg-white p-4 rounded-2xl border border-emerald-600 shadow-sm flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500">
                         <CheckCircle2 size={20} />
