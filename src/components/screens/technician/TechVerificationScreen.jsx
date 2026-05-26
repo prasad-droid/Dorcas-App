@@ -121,12 +121,16 @@ export function TechVerificationScreen() {
 
       <div className="px-6 mt-6">
         {/* Status Card */}
-        <div className="bg-gray-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border border-gray-900 mb-8">
+        <div className={`bg-gray-100 rounded-3xl p-6 shadow-[0_10px_30px_rgba(13,110,253,0.08)] border-2  ${kycStatus === 'verified' ? 'border-2 border-emerald-600' :
+          kycStatus === 'pending' ? 'border-2 border-amber-600' :
+            kycStatus === 'rejected' ? 'border-2 border-red-600' :
+              'border-2 border-brand-600'
+          } mb-8`}>
           <div className="flex items-center gap-4 mb-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-500' :
-              kycStatus === 'pending' ? 'bg-amber-50 text-amber-500' :
-                kycStatus === 'rejected' ? 'bg-red-50 text-red-500' :
-                  'bg-brand/5 text-brand'
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-500 border border-emerald-600' :
+              kycStatus === 'pending' ? 'bg-amber-50 text-amber-500 border border-amber-600' :
+                kycStatus === 'rejected' ? 'bg-red-50 text-red-500 border border-red-600' :
+                  'bg-brand/5 text-brand border border-brand-600'
               }`}>
               {kycStatus === 'verified' ? <CheckCircle2 size={24} /> :
                 kycStatus === 'pending' ? <Clock size={24} /> :
