@@ -3,7 +3,15 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.psmcodes.dorcasaid',
   appName: 'DorcasAid',
-  webDir: 'dist'
+  webDir: 'dist',
+  server: {
+    allowNavigation: [
+      "dorcasaid.com",
+      "*.dorcasaid.com",
+      "secure.ccavenue.com",
+      "*.ccavenue.com"
+    ]
+  }
 };
 
 export default config;
