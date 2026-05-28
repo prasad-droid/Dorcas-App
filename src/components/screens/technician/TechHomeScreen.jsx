@@ -460,12 +460,15 @@ export function TechHomeScreen() {
                   <h4 className="text-[13px] font-black text-brand leading-tight">Commission Dues Pending</h4>
                   <p className="text-[10px] font-bold text-red-600/60 uppercase mt-0.5">Please pay to keep receiving jobs</p>
                 </div>
-                <button
-                  onClick={() => navigate("/tech/commissions")}
-                  className="bg-brand text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform"
-                >
-                  Pay Now
-                </button>
+                <div className="flex flex-col items-end gap-1.5">
+                  <button
+                    onClick={() => navigate("/tech/commissions")}
+                    className="bg-brand text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform shadow-sm"
+                  >
+                    Pay Now
+                  </button>
+                  <span className="text-[12px] font-black text-red-600">₹{pendingCommissions.reduce((sum, j) => sum + parseFloat(j.commission_amount || 0), 0).toFixed(2)}</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
