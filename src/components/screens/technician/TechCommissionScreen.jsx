@@ -104,7 +104,8 @@ export function TechCommissionScreen() {
         body: JSON.stringify({ 
           job_id: jobId,
           amount: amount,
-          payment_gateway: "ccavenue"
+          payment_gateway: "ccavenue",
+          return_url: window.location.origin
         })
       });
 
