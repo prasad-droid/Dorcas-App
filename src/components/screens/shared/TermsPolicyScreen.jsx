@@ -16,37 +16,37 @@ export function TermsPolicyScreen() {
       id: "general",
       title: "1. General Terms",
       icon: FileText,
-      content: "Welcome to Dorcasaid (\"we\", \"our\", \"us\") — a home services platform connecting customers with verified local service vendors. By accessing or using our website, mobile application, or any related services, you agree to be bound by these Terms and Conditions. These terms apply to all users of the platform including customers, vendors/service providers, and administrators. Please read them carefully before using Dorcasaid. These Terms constitute a legally binding agreement. If you do not agree with any part, please discontinue use of the platform immediately."
+      content: "Welcome to Dorcas (\"we\", \"our\", \"us\") — a home services platform connecting customers with verified local service vendors. By accessing or using our website, mobile application, or any related services, you agree to be bound by these Terms and Conditions. These terms apply to all users of the platform including customers, vendors/service providers, and administrators. Please read them carefully before using Dorcas. These Terms constitute a legally binding agreement. If you do not agree with any part, please discontinue use of the platform immediately."
     },
     {
       id: "acceptance",
       title: "2. Acceptance of Terms",
       icon: UserCheck,
-      content: "By creating an account or using any part of the Dorcasaid platform, you confirm that:\n\n• You are at least 18 years of age or have parental consent.\n• You have read, understood, and agreed to these Terms & Conditions.\n• You agree to our Privacy Policy and Cookie Policy.\n• The information you provide during registration is accurate and up to date.\n• You will not use the platform for any unlawful or fraudulent purpose.\n\nDorcasaid reserves the right to update these terms at any time. Continued use after updates constitutes acceptance of the revised terms."
+      content: "By creating an account or using any part of the Dorcas platform, you confirm that:\n\n• You are at least 18 years of age or have parental consent.\n• You have read, understood, and agreed to these Terms & Conditions.\n• You agree to our Privacy Policy and Cookie Policy.\n• The information you provide during registration is accurate and up to date.\n• You will not use the platform for any unlawful or fraudulent purpose.\n\nDorcas reserves the right to update these terms at any time. Continued use after updates constitutes acceptance of the revised terms."
     },
     {
       id: "privacy_terms",
       title: "3. Privacy & Data",
       icon: Lock,
-      content: "We collect and process personal data to provide, improve, and secure the Dorcasaid platform. By using our services, you consent to data collection as described in our Privacy Policy.\n\nData We Collect:\n• Name, phone number, email address, and location during registration.\n• Booking history, service preferences, and communication records.\n• KYC documents for vendors (Aadhaar, PAN, or equivalent government ID).\n• Payment and transaction data processed through secure gateways.\n• Device info, IP address, and usage analytics for platform security.\n\nDorcasaid does not sell your personal data to third parties. KYC documents are used solely for identity verification and are stored securely."
+      content: "We collect and process personal data to provide, improve, and secure the Dorcas platform. By using our services, you consent to data collection as described in our Privacy Policy.\n\nData We Collect:\n• Name, phone number, email address, and location during registration.\n• Booking history, service preferences, and communication records.\n• KYC documents for vendors (Aadhaar, PAN, or equivalent government ID).\n• Payment and transaction data processed through secure gateways.\n• Device info, IP address, and usage analytics for platform security.\n\nDorcas does not sell your personal data to third parties. KYC documents are used solely for identity verification and are stored securely."
     },
     {
       id: "payments",
       title: "4. Payments & Refunds",
       icon: CreditCard,
-      content: "All payments on Dorcasaid are processed through secure, PCI-compliant payment gateways (CCAvenue / Razorpay). By making a payment you agree to the following:\n\n• Service charges are displayed clearly before booking confirmation.\n• Refunds for cancellations made 24+ hours before the service date will be processed within 5–7 business days.\n• Cancellations made within 2 hours of the scheduled service may not be eligible for a refund.\n• Vendor commission dues must be paid within the specified due date to continue receiving new job requests.\n• Vendors with 2 or more unpaid dues may have their job request access suspended automatically.\n\nDorcasaid reserves the right to modify pricing structures and commission rates. Vendors will be notified of any changes at least 7 days in advance."
+      content: "All payments on Dorcas are processed through secure, PCI-compliant payment gateways (CCAvenue / Razorpay). By making a payment you agree to the following:\n\n• Service charges are displayed clearly before booking confirmation.\n• Refunds for cancellations made 24+ hours before the service date will be processed within 5–7 business days.\n• Cancellations made within 2 hours of the scheduled service may not be eligible for a refund.\n• Vendor commission dues must be paid within the specified due date to continue receiving new job requests.\n• Vendors with 2 or more unpaid dues may have their job request access suspended automatically.\n\nDorcas reserves the right to modify pricing structures and commission rates. Vendors will be notified of any changes at least 7 days in advance."
     },
     {
       id: "liability",
       title: "5. Limitation of Liability",
       icon: Scale,
-      content: "Dorcasaid is a marketplace platform that connects customers with independent service vendors. We are not directly liable for the quality, safety, or outcomes of any service rendered by vendors.\n\n• Dorcasaid is not responsible for damages arising from vendor negligence or misconduct.\n• We do not guarantee continuous, uninterrupted access to the platform at all times.\n• Disputes between customers and vendors will be reviewed by our support team in good faith.\n• All vendors undergo KYC verification to ensure accountability and trust."
+      content: "Dorcas is a marketplace platform that connects customers with independent service vendors. We are not directly liable for the quality, safety, or outcomes of any service rendered by vendors.\n\n• Dorcas is not responsible for damages arising from vendor negligence or misconduct.\n• We do not guarantee continuous, uninterrupted access to the platform at all times.\n• Disputes between customers and vendors will be reviewed by our support team in good faith.\n• All vendors undergo KYC verification to ensure accountability and trust."
     },
     {
       id: "termination",
       title: "6. Account Termination",
       icon: AlertCircle,
-      content: "Dorcasaid reserves the right to suspend or permanently terminate any account without prior notice for the following reasons:\n\n• Fraudulent, misleading, or deceptive activity on the platform.\n• Submitting false KYC documents or impersonating another individual.\n• Abusive, threatening, or inappropriate behaviour toward customers, vendors, or staff.\n• Persistent non-payment of vendor dues or chargebacks.\n• Violation of any section of these Terms & Conditions.\n\nUsers may also delete their own account by contacting our support team. Any pending dues or active bookings must be resolved before deletion."
+      content: "Dorcas reserves the right to suspend or permanently terminate any account without prior notice for the following reasons:\n\n• Fraudulent, misleading, or deceptive activity on the platform.\n• Submitting false KYC documents or impersonating another individual.\n• Abusive, threatening, or inappropriate behaviour toward customers, vendors, or staff.\n• Persistent non-payment of vendor dues or chargebacks.\n• Violation of any section of these Terms & Conditions.\n\nUsers may also delete their own account by contacting our support team. Any pending dues or active bookings must be resolved before deletion."
     },
     {
       id: "customers",
@@ -67,13 +67,13 @@ export function TermsPolicyScreen() {
       title: "9. Terms for Administrators",
       icon: Settings,
       category: "Admin Agreement",
-      content: "Access & Authority:\n• Admin access is granted exclusively by Dorcasaid management and is non-transferable.\n• Admins must review vendor KYC submissions within 24 hours.\n\nData Responsibility:\n• Admins must handle all user data with strict confidentiality.\n• Exporting or misusing user data outside platform scope is strictly prohibited.\n\nPlatform Moderation:\n• Admins are empowered to suspend or reinstate accounts based on violations.\n• Misuse of administrative privileges will result in immediate termination."
+      content: "Access & Authority:\n• Admin access is granted exclusively by Dorcas management and is non-transferable.\n• Admins must review vendor KYC submissions within 24 hours.\n\nData Responsibility:\n• Admins must handle all user data with strict confidentiality.\n• Exporting or misusing user data outside platform scope is strictly prohibited.\n\nPlatform Moderation:\n• Admins are empowered to suspend or reinstate accounts based on violations.\n• Misuse of administrative privileges will result in immediate termination."
     },
     {
       id: "disputes",
       title: "10. Dispute Resolution & Governing Law",
       icon: Scale,
-      content: "Any disputes arising from the use of the Dorcasaid platform shall first be resolved through our internal support team. If unresolved, disputes shall be subject to:\n\n• Mediation through a mutually agreed third-party mediator before litigation.\n• Jurisdiction of courts located in Navi Mumbai, Maharashtra, India.\n• Applicable laws of India including the IT Act 2000, Consumer Protection Act 2019, and Indian Contract Act 1872.\n\nFor refund disputes, both parties must provide evidence within 48 hours of the disputed service."
+      content: "Any disputes arising from the use of the Dorcas platform shall first be resolved through our internal support team. If unresolved, disputes shall be subject to:\n\n• Mediation through a mutually agreed third-party mediator before litigation.\n• Jurisdiction of courts located in Navi Mumbai, Maharashtra, India.\n• Applicable laws of India including the IT Act 2000, Consumer Protection Act 2019, and Indian Contract Act 1872.\n\nFor refund disputes, both parties must provide evidence within 48 hours of the disputed service."
     }
   ];
 
@@ -82,7 +82,7 @@ export function TermsPolicyScreen() {
       id: "overview",
       title: "1. Overview",
       icon: Eye,
-      content: "At Dorcasaid (\"we\", \"our\", \"us\"), your privacy is fundamental to everything we build. This Privacy Policy explains how we collect, use, share, and protect your personal information when you use our home services platform — whether you're a customer, vendor/service provider, or administrator.\n\nDorcasaid operates in compliance with the Information Technology Act, 2000, and applicable rules under India's data protection framework. By using our platform, you consent to the practices described in this policy."
+      content: "At Dorcas (\"we\", \"our\", \"us\"), your privacy is fundamental to everything we build. This Privacy Policy explains how we collect, use, share, and protect your personal information when you use our home services platform — whether you're a customer, vendor/service provider, or administrator.\n\nDorcas operates in compliance with the Information Technology Act, 2000, and applicable rules under India's data protection framework. By using our platform, you consent to the practices described in this policy."
     },
     {
       id: "collection",
@@ -130,7 +130,7 @@ export function TermsPolicyScreen() {
       id: "minors",
       title: "9. Children's Privacy",
       icon: Info,
-      content: "Dorcasaid is not intended for use by individuals under the age of 18. We do not knowingly collect personal data from minors. If you believe a minor has registered, please contact support@dorcasaid.com."
+      content: "Dorcas is not intended for use by individuals under the age of 18. We do not knowingly collect personal data from minors. If you believe a minor has registered, please contact support@dorcasaid.com."
     },
     {
       id: "kyc_privacy",
@@ -211,7 +211,7 @@ export function TermsPolicyScreen() {
               </div>
               <p className="text-[13px] font-semibold text-brand/60 leading-relaxed">
                 {activeTab === "terms"
-                  ? "Our terms of service define the relationship between Dorcasaid and our community members to ensure a professional experience."
+                  ? "Our terms of service define the relationship between Dorcas and our community members to ensure a professional experience."
                   : "Your privacy is our priority. We are committed to transparency and security in how we handle your personal information."}
               </p>
             </div>

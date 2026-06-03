@@ -328,7 +328,7 @@ export function SettingsScreen() {
         </div>
 
         <div className="text-center pb-24">
-          <p className="text-[10px] font-black text-brand/20 uppercase tracking-[0.3em]">Dorcasaid Premium App v2.4.0</p>
+          <p className="text-[10px] font-black text-brand/20 uppercase tracking-[0.3em]">Dorcas Premium App v2.4.0</p>
         </div>
       </div>
 

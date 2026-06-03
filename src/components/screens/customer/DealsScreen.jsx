@@ -42,8 +42,8 @@ export function DealsScreen() {
 
     if (navigator.share) {
       navigator.share({
-        title: 'Join Dorcasaid',
-        text: `Hey! Join me on Dorcasaid and get professional home services. Use my referral code ${refCode} to earn points!`,
+        title: 'Join Dorcas',
+        text: `Hey! Join me on Dorcas and get professional home services. Use my referral code ${refCode} to earn points!`,
         url: shareUrl
       }).catch(() => { });
     } else {
@@ -134,7 +134,7 @@ export function DealsScreen() {
           <h4 className="font-black text-brand uppercase tracking-wider text-sm mb-4">How it works</h4>
           <div className="space-y-4">
             {[
-              { step: "1", text: "Invite your friends to Dorcasaid using your unique link." },
+              { step: "1", text: "Invite your friends to Dorcas using your unique link." },
               { step: "2", text: "They sign up and complete their first home service." },
               { step: "3", text: "You instantly receive 500 reward points in your wallet!" }
             ].map((item, i) => (

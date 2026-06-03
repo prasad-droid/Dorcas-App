@@ -143,7 +143,7 @@ export function RewardsScreen() {
   const shareWhatsApp = () => {
     const code = profileData?.referral_code || "REF";
     const link = `${APP_DOMAIN}/register?ref=${code}`;
-    const text = `Hey! Join Dorcasaid for reliable home services. Use my link to sign up and we both get rewards: ${link}`;
+    const text = `Hey! Join Dorcas for reliable home services. Use my link to sign up and we both get rewards: ${link}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -348,7 +348,7 @@ export function RewardsScreen() {
                 onReveal={() => handleScratchComplete(activeCard.id)}
               />
 
-              <p className="mt-10 text-white/40 text-[10px] font-bold uppercase tracking-[4px]">Verified by Dorcasaid Rewards</p>
+              <p className="mt-10 text-white/40 text-[10px] font-bold uppercase tracking-[4px]">Verified by Dorcas Rewards</p>
             </motion.div>
           </motion.div>
         )}

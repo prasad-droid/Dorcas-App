@@ -201,7 +201,7 @@ function AppContent() {
                 <div className="w-28 h-28 bg-base rounded-3xl flex items-center justify-center mb-6 shadow-2xl p-5 border border-white/20">
                   <Logo className="w-full h-full text-brand" />
                 </div>
-                <h1 className="text-4xl font-extrabold text-white tracking-tight mb-8">Dorcasaid</h1>
+                <h1 className="text-4xl font-extrabold text-white tracking-tight mb-8">Dorcas</h1>
 
                 <div className="flex gap-2">
                   {[0, 1, 2].map((i) => (

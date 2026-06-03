@@ -737,7 +737,7 @@ export const RegisterScreen = () => {
         <div className="flex items-center gap-2">
           <Logo className={`w-8 h-8 ${isTech ? "text-emerald-600" : "text-brand"}`} />
           <span className={`font-black text-xl tracking-tight ${isTech ? "text-emerald-600" : "text-brand"}`}>
-            Dorcasaid
+            Dorcas
           </span>
         </div>
         <div className="w-10" />

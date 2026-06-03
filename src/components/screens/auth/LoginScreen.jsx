@@ -143,7 +143,7 @@ export const LoginScreen = () => {
       } else {
         showToast(data.message || "Invalid details", "error");
       }
-    } catch (error) { 
+    } catch (error) {
       showToast("Something went wrong. Please try again.", "error");
     } finally {
       setIsSubmitting(false);

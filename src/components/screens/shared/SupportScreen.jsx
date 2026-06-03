@@ -14,8 +14,8 @@ export function SupportScreen() {
 
   const customerFaqs = [
     {
-      q: "What is Dorcasaid?",
-      a: "Dorcasaid is our specialized support and protection program. It ensures that every service booked through our platform is covered by our quality guarantee and professional standards."
+      q: "What is Dorcas?",
+      a: "Dorcas is our specialized support and protection program. It ensures that every service booked through our platform is covered by our quality guarantee and professional standards."
     },
     {
       q: "How do I book a service?",
@@ -31,7 +31,7 @@ export function SupportScreen() {
     },
     {
       q: "How do I know if a service provider is trustworthy?",
-      a: "Every provider on Dorcasaid undergoes a rigorous background verification process. We also display real customer ratings and reviews to help you make an informed choice."
+      a: "Every provider on Dorcas undergoes a rigorous background verification process. We also display real customer ratings and reviews to help you make an informed choice."
     },
     {
       q: "What if I have an issue with a service?",
@@ -49,12 +49,12 @@ export function SupportScreen() {
 
   const technicianFaqs = [
     {
-      q: "Who can join Dorcasaid as a service provider?",
-      a: "Any skilled professional with experience in home services, appliances, cleaning, or other listed categories can apply to join the Dorcasaid network."
+      q: "Who can join Dorcas as a service provider?",
+      a: "Any skilled professional with experience in home services, appliances, cleaning, or other listed categories can apply to join the Dorcas network."
     },
     {
       q: "How do I register as a service provider?",
-      a: "Download the Dorcasaid app and sign up by selecting the 'Technician/Vendor' role. You'll need to provide your professional details and complete the onboarding process."
+      a: "Download the Dorcas app and sign up by selecting the 'Technician/Vendor' role. You'll need to provide your professional details and complete the onboarding process."
     },
     {
       q: "What documents are required to get approved?",
@@ -217,7 +217,7 @@ export function SupportScreen() {
           </div>
         </div>
         <div className="mt-8 pb-12 flex justify-center">
-          <p className="text-[10px] font-bold text-brand/20 uppercase tracking-widest">Dorcasaid App Version 1.0.0</p>
+          <p className="text-[10px] font-bold text-brand/20 uppercase tracking-widest">Dorcas App Version 1.0.0</p>
         </div>
       </div>
     </motion.div>
