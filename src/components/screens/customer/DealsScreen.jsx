@@ -39,13 +39,13 @@ export function DealsScreen() {
   const handleShare = () => {
     const refCode = profileData?.referral_code || "REF123";
     const shareUrl = `https://dorcasaid.com/invite/${refCode}`;
-    
+
     if (navigator.share) {
       navigator.share({
         title: 'Join Dorcasaid',
         text: `Hey! Join me on Dorcasaid and get professional home services. Use my referral code ${refCode} to earn points!`,
         url: shareUrl
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       navigator.clipboard.writeText(shareUrl);
       showToast("Referral link copied to clipboard!", "success");
@@ -53,14 +53,14 @@ export function DealsScreen() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col w-full h-full bg-base"
     >
       <div className="brand-gradient px-5 pt-12 pb-6 rounded-b-[2rem] shadow-sm text-base flex items-center gap-4">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="w-10 h-10 bg-base/20 backdrop-blur-md rounded-full flex items-center justify-center"
         >
@@ -73,13 +73,13 @@ export function DealsScreen() {
         {isLoading ? <ListTabSkeleton /> : (
           <>
             <div className="relative h-[300px] rounded-[2.5rem] overflow-hidden shadow-2xl group border-4 border-white">
-              <img 
-                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop" 
-                alt="Refer & Earn" 
+              <img
+                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop"
+                alt="Refer & Earn"
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand via-brand/40 to-transparent" />
-              
+
               <div className="absolute inset-0 p-8 flex flex-col justify-end">
                 <div className="bg-white/20 backdrop-blur-md w-14 h-14 rounded-2xl flex items-center justify-center mb-4 border border-white/30">
                   <Users size={32} className="text-white" />
@@ -106,7 +106,7 @@ export function DealsScreen() {
                 <div className="flex-1 bg-brand/5 py-4 px-6 rounded-2xl text-center font-black text-2xl text-brand tracking-[8px] shadow-inner">
                   {profileData?.referral_code || "---"}
                 </div>
-                <button 
+                <button
                   onClick={() => {
                     navigator.clipboard.writeText(profileData?.referral_code || "");
                     showToast("Code copied!", "success");
@@ -119,7 +119,7 @@ export function DealsScreen() {
             </div>
 
             <div className="space-y-4">
-              <button 
+              <button
                 onClick={handleShare}
                 className="w-full brand-gradient text-base py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-brand/20 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
               >

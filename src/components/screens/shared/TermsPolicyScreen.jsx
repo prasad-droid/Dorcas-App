@@ -149,7 +149,7 @@ export function TermsPolicyScreen() {
   const currentSections = activeTab === "terms" ? termsSections : privacySections;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -159,7 +159,7 @@ export function TermsPolicyScreen() {
       <div className="bg-brand pt-14 pb-4 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between mb-4">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 bg-base/20 rounded-full flex items-center justify-center hover:bg-base/30 transition-colors shadow-sm"
           >
@@ -168,21 +168,21 @@ export function TermsPolicyScreen() {
           <h2 className="text-xl font-black tracking-tight">Terms & Policies</h2>
           <div className="w-10"></div>
         </div>
-        
+
         {/* Tab Switcher */}
         <div className="relative z-10 bg-white/10 backdrop-blur-md p-1 rounded-2xl flex gap-1 mb-4">
-           <button 
-             onClick={() => setActiveTab("terms")}
-             className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${activeTab === "terms" ? "bg-white text-brand shadow-lg" : "text-white/60"}`}
-           >
-             Terms
-           </button>
-           <button 
-             onClick={() => setActiveTab("privacy")}
-             className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${activeTab === "privacy" ? "bg-white text-brand shadow-lg" : "text-white/60"}`}
-           >
-             Privacy
-           </button>
+          <button
+            onClick={() => setActiveTab("terms")}
+            className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${activeTab === "terms" ? "bg-white text-brand shadow-lg" : "text-white/60"}`}
+          >
+            Terms
+          </button>
+          <button
+            onClick={() => setActiveTab("privacy")}
+            className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${activeTab === "privacy" ? "bg-white text-brand shadow-lg" : "text-white/60"}`}
+          >
+            Privacy
+          </button>
         </div>
       </div>
 
@@ -198,42 +198,42 @@ export function TermsPolicyScreen() {
             className="space-y-8"
           >
             <div className="bg-white rounded-[2rem] p-6 border border-gray-900 shadow-sm">
-               <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-brand">
-                     <Shield size={20} />
-                  </div>
-                  <div>
-                     <h3 className="text-lg font-black text-brand leading-none">
-                        {activeTab === "terms" ? "Service Agreement" : "Privacy Commitment"}
-                     </h3>
-                     <p className="text-[10px] font-bold text-brand/40 uppercase tracking-wider mt-1">Version 1.2 • April 2026</p>
-                  </div>
-               </div>
-               <p className="text-[13px] font-semibold text-brand/60 leading-relaxed">
-                  {activeTab === "terms" 
-                    ? "Our terms of service define the relationship between Dorcasaid and our community members to ensure a professional experience." 
-                    : "Your privacy is our priority. We are committed to transparency and security in how we handle your personal information."}
-               </p>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center text-brand">
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-brand leading-none">
+                    {activeTab === "terms" ? "Service Agreement" : "Privacy Commitment"}
+                  </h3>
+                  <p className="text-[10px] font-bold text-brand/40 uppercase tracking-wider mt-1">Version 1.2 • April 2026</p>
+                </div>
+              </div>
+              <p className="text-[13px] font-semibold text-brand/60 leading-relaxed">
+                {activeTab === "terms"
+                  ? "Our terms of service define the relationship between Dorcasaid and our community members to ensure a professional experience."
+                  : "Your privacy is our priority. We are committed to transparency and security in how we handle your personal information."}
+              </p>
             </div>
 
             {currentSections.map((section, idx) => (
               <div key={section.id} className="space-y-4">
                 <div className="flex items-center gap-3 px-1">
-                   <div className="w-8 h-8 bg-brand/5 rounded-full flex items-center justify-center text-brand">
-                      <section.icon size={16} />
-                   </div>
-                   <h4 className="text-[15px] font-black text-brand tracking-tight">{section.title}</h4>
+                  <div className="w-8 h-8 bg-brand/5 rounded-full flex items-center justify-center text-brand">
+                    <section.icon size={16} />
+                  </div>
+                  <h4 className="text-[15px] font-black text-brand tracking-tight">{section.title}</h4>
                 </div>
-                
+
                 <div className="bg-white rounded-3xl p-6 border border-gray-900 shadow-sm">
-                   {section.category && (
-                     <div className="mb-4 inline-block bg-brand/5 px-3 py-1 rounded-full">
-                        <span className="text-[10px] font-black text-brand uppercase tracking-wider">{section.category}</span>
-                     </div>
-                   )}
-                   <div className="text-[13px] font-semibold text-brand/70 leading-relaxed whitespace-pre-line">
-                      {section.content}
-                   </div>
+                  {section.category && (
+                    <div className="mb-4 inline-block bg-brand/5 px-3 py-1 rounded-full">
+                      <span className="text-[10px] font-black text-brand uppercase tracking-wider">{section.category}</span>
+                    </div>
+                  )}
+                  <div className="text-[13px] font-semibold text-brand/70 leading-relaxed whitespace-pre-line">
+                    {section.content}
+                  </div>
                 </div>
                 {idx < currentSections.length - 1 && <div className="h-px bg-brand/5 mx-6" />}
               </div>
@@ -242,18 +242,18 @@ export function TermsPolicyScreen() {
         </AnimatePresence>
 
         <div className="bg-brand/5 rounded-3xl p-8 text-center space-y-4">
-           <h4 className="text-brand font-black">Need more clarification?</h4>
-           <p className="text-xs font-semibold text-brand/50 leading-relaxed">
-              We're here to help. Reach out to our legal compliance team for any queries.
-           </p>
-           <div className="flex flex-col gap-2">
-              <button 
-                onClick={() => window.location.href = `mailto:${activeTab === 'terms' ? 'support@dorcasaid.com' : 'privacy@dorcasaid.com'}`}
-                className="bg-brand text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-lg shadow-brand/20 active:scale-95 transition-transform"
-              >
-                 Email {activeTab === 'terms' ? 'Support' : 'Privacy'} Team
-              </button>
-           </div>
+          <h4 className="text-brand font-black">Need more clarification?</h4>
+          <p className="text-xs font-semibold text-brand/50 leading-relaxed">
+            We're here to help. Reach out to our legal compliance team for any queries.
+          </p>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => window.location.href = `mailto:${activeTab === 'terms' ? 'support@dorcasaid.com' : 'privacy@dorcasaid.com'}`}
+              className="bg-brand text-white px-8 py-3.5 rounded-2xl text-xs font-black shadow-lg shadow-brand/20 active:scale-95 transition-transform"
+            >
+              Email {activeTab === 'terms' ? 'Support' : 'Privacy'} Team
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>

@@ -39,7 +39,7 @@ export function SettingsScreen() {
   const togglePushNotifications = (enabled) => {
     setNotifSettings(prev => ({ ...prev, bookings: enabled }));
     localStorage.setItem("pushNotificationsEnabled", enabled ? "true" : "false");
-    
+
     // Attempt to register/unregister
     if (enabled && window.Capacitor?.isNativePlatform()) {
       import('@capacitor/push-notifications').then(({ PushNotifications }) => {
@@ -131,7 +131,7 @@ export function SettingsScreen() {
       });
 
       const data = await response.json();
-      
+
       if (data.status) {
         showToast(data.message || "Account deletion request sent to admin.", "success");
         setActiveModal(null);
@@ -549,7 +549,7 @@ export function SettingsScreen() {
                     <p className="text-sm font-semibold text-brand/60 mt-2 leading-relaxed">{t('delete_confirm')}</p>
                   </div>
                   <div className="flex flex-col gap-3">
-                    <button 
+                    <button
                       onClick={handleDeleteAccount}
                       disabled={isDeleting}
                       className={`w-full bg-red-500 text-white py-4 rounded-2xl font-black shadow-lg shadow-red-500/20 transition-transform ${isDeleting ? "opacity-70 cursor-not-allowed" : "active:scale-95"}`}

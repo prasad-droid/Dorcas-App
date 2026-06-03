@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { 
-  ChevronLeft, HelpCircle, ChevronDown, ChevronUp, 
-  Search, MessageCircle, Phone, Mail, Sparkles 
+import {
+  ChevronLeft, HelpCircle, ChevronDown, ChevronUp,
+  Search, MessageCircle, Phone, Mail, Sparkles
 } from "lucide-react";
 
 export function SupportScreen() {
@@ -83,13 +83,13 @@ export function SupportScreen() {
   ];
 
   const currentFaqs = activeTab === "customer" ? customerFaqs : technicianFaqs;
-  const filteredFaqs = currentFaqs.filter(faq => 
-    faq.q.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredFaqs = currentFaqs.filter(faq =>
+    faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
     faq.a.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -99,7 +99,7 @@ export function SupportScreen() {
       <div className="bg-brand pt-14 pb-20 px-5 rounded-b-[2.5rem] shadow-sm relative overflow-hidden text-base flex flex-col">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         <div className="relative z-10 flex items-center justify-between mb-6">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 bg-base/20 rounded-full flex items-center justify-center hover:bg-base/30 transition-colors shadow-sm"
           >
@@ -108,12 +108,12 @@ export function SupportScreen() {
           <h2 className="text-xl font-black tracking-tight">Help & Support</h2>
           <div className="w-10"></div>
         </div>
-        
+
         <div className="relative z-10">
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors" size={18} />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search for help..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -126,13 +126,13 @@ export function SupportScreen() {
       {/* Tabs */}
       <div className="px-5 -mt-8 relative z-20 mb-6">
         <div className="bg-white p-1.5 rounded-2xl shadow-xl flex gap-1 border border-gray-300">
-          <button 
+          <button
             onClick={() => { setActiveTab("customer"); setExpandedIndex(null); }}
             className={`flex-1 py-3 rounded-xl text-xs font-black transition-all ${activeTab === "customer" ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-brand/40"}`}
           >
             For Customers
           </button>
-          <button 
+          <button
             onClick={() => { setActiveTab("technician"); setExpandedIndex(null); }}
             className={`flex-1 py-3 rounded-xl text-xs font-black transition-all ${activeTab === "technician" ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-brand/40"}`}
           >
@@ -145,12 +145,12 @@ export function SupportScreen() {
       <div className="flex-1 overflow-y-auto px-5 pb-28 space-y-4 remove-scrollbar">
         {filteredFaqs.length > 0 ? (
           filteredFaqs.map((faq, idx) => (
-            <motion.div 
+            <motion.div
               key={idx}
               layout
               className={`bg-white rounded-3xl border border-gray-300 shadow-sm overflow-hidden transition-all ${expandedIndex === idx ? "ring-2 ring-brand/10" : ""}`}
             >
-              <button 
+              <button
                 onClick={() => setExpandedIndex(expandedIndex === idx ? null : idx)}
                 className="w-full p-5 flex items-center justify-between text-left"
               >
@@ -159,10 +159,10 @@ export function SupportScreen() {
                   {expandedIndex === idx ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </div>
               </button>
-              
+
               <AnimatePresence>
                 {expandedIndex === idx && (
-                  <motion.div 
+                  <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -188,36 +188,36 @@ export function SupportScreen() {
 
         {/* Contact Support Section */}
         <div className="mt-8 bg-gradient-to-br from-brand to-brand/80 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl">
-           <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-           <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-4">
-                 <Sparkles size={18} className="text-white/60" />
-                 <span className="text-[10px] font-black uppercase tracking-[3px]">Still need help?</span>
+          <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles size={18} className="text-white/60" />
+              <span className="text-[10px] font-black uppercase tracking-[3px]">Still need help?</span>
+            </div>
+            <h3 className="text-2xl font-black mb-6 leading-tight">Our support team is<br />here for you 24/7</h3>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => window.location.href = 'tel:8624939757'}
+                  className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
+                >
+                  <Phone size={16} />
+                  8624939757
+                </button>
+                <button
+                  onClick={() => window.location.href = 'mailto:Enquiry.dorcasaid@gmail.com'}
+                  className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
+                >
+                  <Mail size={16} />
+                  Email
+                </button>
               </div>
-              <h3 className="text-2xl font-black mb-6 leading-tight">Our support team is<br/>here for you 24/7</h3>
-              
-              <div className="space-y-3">
-                 <div className="grid grid-cols-2 gap-3">
-                    <button 
-                      onClick={() => window.location.href = 'tel:8624939757'}
-                      className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
-                    >
-                       <Phone size={16} />
-                       8624939757
-                    </button>
-                    <button 
-                      onClick={() => window.location.href = 'mailto:Enquiry.dorcasaid@gmail.com'}
-                      className="bg-white text-brand py-4 rounded-2xl font-black text-[13px] flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-black/10"
-                    >
-                       <Mail size={16} />
-                       Email
-                    </button>
-                 </div>
-              </div>
-           </div>
+            </div>
+          </div>
         </div>
         <div className="mt-8 pb-12 flex justify-center">
-           <p className="text-[10px] font-bold text-brand/20 uppercase tracking-widest">Dorcasaid App Version 1.0.0</p>
+          <p className="text-[10px] font-bold text-brand/20 uppercase tracking-widest">Dorcasaid App Version 1.0.0</p>
         </div>
       </div>
     </motion.div>

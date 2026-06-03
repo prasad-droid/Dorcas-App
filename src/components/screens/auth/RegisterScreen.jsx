@@ -41,7 +41,7 @@ export const RegisterScreen = () => {
     pincode: "",
     city: "",
     state: "",
-    area: "", 
+    area: "",
     address: "",
     landmark: "",
     referralCode: referralParam || "",
@@ -114,8 +114,8 @@ export const RegisterScreen = () => {
       if (Capacitor.isNativePlatform()) {
         const perm = await Geolocation.checkPermissions();
         if (perm.location !== 'granted') {
-           const req = await Geolocation.requestPermissions();
-           if (req.location !== 'granted') throw new Error("Permission denied");
+          const req = await Geolocation.requestPermissions();
+          if (req.location !== 'granted') throw new Error("Permission denied");
         }
         coordinates = await Geolocation.getCurrentPosition({
           enableHighAccuracy: true,
@@ -162,7 +162,7 @@ export const RegisterScreen = () => {
           address: data.display_name || prev.address,
           landmark: addr.house_number || addr.building || prev.landmark,
         }));
-        
+
         if (isManual) showToast("Location updated successfully", "success");
       }
     } catch (error) {
@@ -215,11 +215,11 @@ export const RegisterScreen = () => {
         if (data.status) {
           showToast("OTP sent successfully!", "success");
           setStep(2);
-          
+
           // Start SMS Retriever for real auto-fetch
           if (Capacitor.isNativePlatform()) {
             try {
-              
+
               const setupListener = async () => {
                 const listener = await AndroidSmsRetriever.addListener('smsReceived', (event) => {
                   const otpMatch = event.message.match(/\d{6}/);
@@ -231,10 +231,10 @@ export const RegisterScreen = () => {
                 });
                 await AndroidSmsRetriever.startWatch();
               };
-              
+
               setupListener();
             } catch (e) {
-               console.warn("SMS Retriever not available", e);
+              console.warn("SMS Retriever not available", e);
             }
           }
 
@@ -548,7 +548,7 @@ export const RegisterScreen = () => {
                 <label className={`block text-[10px] font-black uppercase tracking-[0.1em] ${isTech ? "text-emerald-700/80" : "text-brand/70"}`}>
                   Full Address
                 </label>
-                <button 
+                <button
                   type="button"
                   onClick={() => getLocation(true)}
                   className={`flex items-center gap-1.5 transition-colors ${isTech ? "text-emerald-600 hover:text-emerald-700" : "text-brand hover:text-brand/80"}`}
@@ -632,29 +632,26 @@ export const RegisterScreen = () => {
               {categories.map((category) => {
                 const isOpen = openCategory === category.id;
                 const selectedCount = category.services.filter(s => formData.selectedServices.includes(s.id)).length;
-                
+
                 return (
                   <div key={category.id} className="group">
                     {/* Category Header */}
                     <button
                       type="button"
                       onClick={() => setOpenCategory(isOpen ? null : category.id)}
-                      className={`w-full p-4 rounded-2xl flex justify-between items-center transition-all border ${
-                        isOpen 
-                          ? "bg-white border-emerald-600 shadow-lg shadow-emerald-600/5 ring-4 ring-emerald-500/5" 
+                      className={`w-full p-4 rounded-2xl flex justify-between items-center transition-all border ${isOpen
+                          ? "bg-white border-emerald-600 shadow-lg shadow-emerald-600/5 ring-4 ring-emerald-500/5"
                           : "bg-white border-emerald-600/10 hover:border-emerald-600/30"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                          isOpen ? "bg-emerald-600 text-white animate-pulse" : "bg-emerald-50 text-emerald-600"
-                        }`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isOpen ? "bg-emerald-600 text-white animate-pulse" : "bg-emerald-50 text-emerald-600"
+                          }`}>
                           <img src={`https://www.dorcasaid.com/admin/${category.category_img}`} alt="" className="w-5 h-5 object-contain" />
                         </div>
                         <div className="text-left">
-                          <span className={`block font-black text-xs tracking-tight transition-colors ${
-                            isOpen ? "text-emerald-600" : "text-emerald-800/80"
-                          }`}>
+                          <span className={`block font-black text-xs tracking-tight transition-colors ${isOpen ? "text-emerald-600" : "text-emerald-800/80"
+                            }`}>
                             {category.category_name}
                           </span>
                           {selectedCount > 0 && (
@@ -664,9 +661,8 @@ export const RegisterScreen = () => {
                           )}
                         </div>
                       </div>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${
-                        isOpen ? "bg-emerald-50 text-emerald-600 rotate-180" : "bg-emerald-50 text-emerald-600/40"
-                      }`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform duration-300 ${isOpen ? "bg-emerald-50 text-emerald-600 rotate-180" : "bg-emerald-50 text-emerald-600/40"
+                        }`}>
                         <ChevronLeft size={12} className="-rotate-90" />
                       </div>
                     </button>
@@ -690,14 +686,13 @@ export const RegisterScreen = () => {
                                   type="button"
                                   key={service.id}
                                   onClick={() => toggleService(service.id)}
-                                  className={`p-3 rounded-xl border text-[10px] font-bold transition-all flex flex-col gap-2 relative overflow-hidden text-left ${
-                                    isSelected 
-                                      ? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/20" 
+                                  className={`p-3 rounded-xl border text-[10px] font-bold transition-all flex flex-col gap-2 relative overflow-hidden text-left ${isSelected
+                                      ? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/20"
                                       : "bg-white border-emerald-600/10 text-emerald-800/60 hover:border-emerald-600/25"
-                                  }`}
+                                    }`}
                                 >
                                   {isSelected && (
-                                    <motion.div 
+                                    <motion.div
                                       initial={{ scale: 0 }}
                                       animate={{ scale: 1 }}
                                       className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-bl-lg flex items-center justify-center"
@@ -788,8 +783,8 @@ export const RegisterScreen = () => {
                 type="submit"
                 disabled={step === 4 && formData.selectedServices.length === 0}
                 className={`w-full py-3.5 rounded-2xl shadow-lg transition-all flex justify-center items-center gap-2.5 text-base font-black tracking-normal ${isTech
-                    ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
-                    : "bg-brand shadow-brand/20 text-white hover:-translate-y-0.5"
+                  ? "bg-emerald-600 shadow-emerald-600/20 text-white hover:brightness-110 disabled:opacity-50 disabled:grayscale"
+                  : "bg-brand shadow-brand/20 text-white hover:-translate-y-0.5"
                   }`}
               >
                 {step === 1
@@ -835,17 +830,17 @@ export const RegisterScreen = () => {
               className="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
             >
               <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 ${isTech ? "bg-emerald-600/5" : "bg-brand/5"}`} />
-              
+
               <div className="relative z-10 flex flex-col items-center text-center">
                 <div className={`w-20 h-20 rounded-3xl flex items-center justify-center text-white mb-6 shadow-xl ${isTech ? "bg-emerald-600 shadow-emerald-600/20" : "bg-brand shadow-brand/20"}`}>
                   <MapPin size={40} />
                 </div>
-                
+
                 <h3 className={`text-2xl font-black tracking-tight mb-3 ${isTech ? "text-emerald-600" : "text-brand"}`}>Location Access</h3>
                 <p className={`text-sm font-medium leading-relaxed mb-8 ${isTech ? "text-emerald-800/60" : "text-brand/60"}`}>
                   To provide you with the best experience and find nearby services, we need access to your location.
                 </p>
-                
+
                 <button
                   onClick={() => {
                     getLocation();
@@ -855,7 +850,7 @@ export const RegisterScreen = () => {
                 >
                   Allow Access
                 </button>
-                
+
                 <button
                   onClick={() => setShowLocationModal(false)}
                   className={`mt-4 text-[11px] font-black uppercase tracking-[0.1em] transition-colors ${isTech ? "text-emerald-600/40 hover:text-emerald-600" : "text-brand/30 hover:text-brand"}`}
@@ -883,17 +878,17 @@ export const RegisterScreen = () => {
               className="relative bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500" />
-              
+
               <div className="flex flex-col items-center text-center">
                 <div className="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center text-emerald-500 mb-8">
                   <Check size={48} strokeWidth={3} />
                 </div>
-                
+
                 <h3 className="text-2xl font-black text-brand tracking-tight mb-4">Registration Successful!</h3>
                 <p className="text-sm font-medium text-brand/60 leading-relaxed mb-8">
                   Welcome to the partner community. To start receiving bookings, you must now complete your <span className="text-brand font-black">KYC verification</span>.
                 </p>
-                
+
                 <div className="w-full space-y-4">
                   <button
                     onClick={() => {
