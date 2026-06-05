@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.psmcodes.dorcasaid',
+  appId: 'com.enats.dorcas',
   appName: 'Dorcas',
   webDir: 'dist',
   server: {
