@@ -11,7 +11,12 @@ const config: CapacitorConfig = {
       "secure.ccavenue.com",
       "*.ccavenue.com"
     ]
-  }
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+  },
 };
 
 export default config;

@@ -7,10 +7,8 @@ import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-
 import { MobileAppLayout } from "./components/layout/MobileAppLayout";
 
 // Capacitor & Notifications
-import { PushNotifications } from '@capacitor/push-notifications';
-import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
-import { NotificationService } from "./services/NotificationService";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 // Auth Screens
 import { LoginScreen } from "./components/screens/auth/LoginScreen";
@@ -89,41 +87,7 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState(false);
 
   // Push Notifications Setup
-  useEffect(() => {
-    if (isAuthenticated && Capacitor.isNativePlatform()) {
-      const initPush = async () => {
-        const isEnabled = localStorage.getItem("pushNotificationsEnabled") !== "false";
-        if (!isEnabled) return; // Do not register or listen if disabled
-
-        let permStatus = await PushNotifications.checkPermissions();
-        if (permStatus.receive === 'prompt') {
-          permStatus = await PushNotifications.requestPermissions();
-        }
-
-        if (permStatus.receive === 'granted') {
-          try {
-            await PushNotifications.register();
-          } catch (err) {
-            console.error("Push registration failed", err);
-          }
-
-          PushNotifications.addListener('registration', (token) => {
-            NotificationService.registerDevice(token.value, null, authMode);
-          });
-
-          PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            showToast(`${notification.title}: ${notification.body}`, "info");
-          });
-
-          PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-            navigate("/notifications");
-          });
-        }
-      };
-
-      initPush();
-    }
-  }, [isAuthenticated, authMode]);
+  usePushNotifications();
 
   // Back Button Handling
   useEffect(() => {
